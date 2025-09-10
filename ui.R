@@ -13,7 +13,10 @@ ui <- dashboardPage(
     header = dashboardHeader(),
     sidebar = dashboardSidebar(collapsed = TRUE),
     body = dashboardBody(
+        # Title banner
         h2("LRRK2 Browser", style = "text-align:center; font-weight:bold;"),
+
+        # Overview numbers for LRRK2
         box(
             title = tags$div(
                 "LRRK2 Metadata",
@@ -30,8 +33,10 @@ ui <- dashboardPage(
                 "Leucine Rich Repeat Kinase 2",
                 style = "text-align: center; font-weight: bold; font-size: 20px; margin-bottom: 10px;"
             ),
-            uiOutput("geneNumbers")
+            uiOutput("geneOverview")
         ),
+
+        # Summary table for different variant functional annotation categories
         box(
             title = tags$div(
                 "Variant function summary",
@@ -44,9 +49,10 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_function_box_color, "; padding: 10px;"),
-            uiOutput("exonicGeneWaffleTable")#,
-            # uiOutput("noncodingGeneWaffleTable")
+            uiOutput("annotationSummaryTable")#,
         ),
+
+        # Protein subdomain diagram
         box(
             title = tags$div(
                 "Protein Diagram",
@@ -61,6 +67,8 @@ ui <- dashboardPage(
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", protein_diagram_box_color, "; padding: 10px;"),
             plotlyOutput("proteinDiagram")
         ),
+
+        # cDNA diagram
         box(
             title = tags$div(
                 "cDNA Diagram",
@@ -75,6 +83,8 @@ ui <- dashboardPage(
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", cdna_diagram_box_color, "; padding: 10px;"),
             plotlyOutput("cdnaDiagram")
         ),
+
+        # Main variant table
         box(
             title = tags$div(
                 "Variant Table",
