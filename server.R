@@ -513,16 +513,19 @@ server <- function(input, output) {
                         )
                     }
 
-                    # Give users the option to save their table
+                    # Populate table
                     datatable(
                         dat,
                         extensions = 'Buttons',
                         options = list(
-                            dom = 'Bfrtip',
+                            dom = 'Blfrtip',
                             buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
-                            paging = F,
+                            paging = TRUE,
+                            pageLength = 25,
+                            lengthChange = TRUE,
+                            lengthMenu = list(c(10,25,50,100,500,-1), c("10","25","50","100","500","All")),
                             scrollX = T,
-                            lengthChange = FALSE
+                            deferRender = TRUE
                         ),
                         rownames= FALSE,
                         escape = FALSE
