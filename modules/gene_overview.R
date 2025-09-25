@@ -1,0 +1,55 @@
+#!/usr/bin/env Rscript
+
+geneOverviewUI <- function(id) {
+  ns <- NS(id)
+  uiOutput(ns("geneOverview"))
+}
+
+geneOverviewServer <- function(id) {
+    moduleServer(id, function(input, output, session) {
+        output$geneOverview <- renderUI({
+            fluidRow(
+                column(
+                    width = 3,
+                    align = "center",
+                    descriptionBlock(
+                        header = tags$b("CHR"),
+                        text = 12,
+                        rightBorder = TRUE,
+                        marginBottom = FALSE
+                    )
+                ),
+                column(
+                    width = 3,
+                    align = "center",
+                    descriptionBlock(
+                        header = tags$b("BP (GrCh38)"),
+                        text = "40224997 - 40369285",
+                        rightBorder = TRUE,
+                        marginBottom = FALSE
+                    )
+                ),
+                column(
+                    width = 3,
+                    align = "center",
+                    descriptionBlock(
+                        header = tags$b("BP (T2T)"),
+                        text = "40177355 - 40321422",
+                        rightBorder = TRUE,
+                        marginBottom = FALSE
+                    )
+                ),
+                column(
+                    width = 3,
+                    align = "center",
+                    descriptionBlock(
+                        header = tags$b("BP (GrCh37)"),
+                        text = "40618799 - 40763087",
+                        rightBorder = TRUE,
+                        marginBottom = FALSE
+                    )
+                )
+            )
+        })
+    })
+}

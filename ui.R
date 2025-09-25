@@ -33,7 +33,7 @@ ui <- dashboardPage(
                 "Leucine Rich Repeat Kinase 2",
                 style = "text-align: center; font-weight: bold; font-size: 20px; margin-bottom: 10px;"
             ),
-            uiOutput("geneOverview")
+            geneOverviewUI("gene_overview")
         ),
 
         # Summary table for different variant functional annotation categories
@@ -49,7 +49,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_function_box_color, "; padding: 10px;"),
-            uiOutput("annotationSummaryTable")#,
+            annotationSummaryTableUI("annotation_summary_table")
         ),
 
         # Protein subdomain diagram
@@ -65,7 +65,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", protein_diagram_box_color, "; padding: 10px;"),
-            plotlyOutput("proteinDiagram")
+            proteinDiagramUI("protein_diagram")
         ),
 
         # cDNA diagram
@@ -81,7 +81,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", cdna_diagram_box_color, "; padding: 10px;"),
-            plotlyOutput("cdnaDiagram")
+            cdnaDiagramUI("cdna_diagram")
         ),
 
         # Main variant table
@@ -97,7 +97,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_table_color, "; padding: 10px;"),
-            uiOutput("geneVartable")
+            geneVarTableUI("gene_var_table")
         )
     ),
     controlbar = dashboardControlbar()

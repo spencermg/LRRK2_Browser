@@ -2,21 +2,23 @@
 
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
-# Required packages
-pkgs <- c(
-  "shiny",
-  "shinydashboard",
-  "shinydashboardPlus",
-  "DT",
-  "plotly",
-  "shinyWidgets",
-  "data.table",
-  "bslib"
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+
+pacman::p_load(
+  shiny,
+  shinydashboard,
+  shinydashboardPlus,
+  DT,
+  plotly,
+  shinyWidgets,
+  data.table,
+  bslib
 )
 
-# Load packages, installing any that are missing
-to_install <- pkgs[!pkgs %in% installed.packages()[,"Package"]]
-if (length(to_install)) {
-  install.packages(to_install)
-}
-invisible(lapply(pkgs, library, character.only = TRUE))
+source("modules/gene_overview.R", local = TRUE)
+source("modules/annotation_summary_table.R", local = TRUE)
+source("modules/protein_diagram.R", local = TRUE)
+source("modules/cdna_diagram.R", local = TRUE)
+source("modules/gene_var_table.R", local = TRUE)
