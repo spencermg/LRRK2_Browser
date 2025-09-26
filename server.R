@@ -55,10 +55,10 @@ clean_variant_table <- function(tbl) {
     # Find frequency of cases and controls
     tbl <- as.data.table(tbl)
     if (all(c("het_PD", "hom_PD", "total_PD") %in% names(tbl))) {
-        tbl[, `PD Frequency` := (het_PD + hom_PD) / total_PD]
+        tbl[, `PD Frequency` := (het_PD + 2*hom_PD) / (2*total_PD)]
     }
     if (all(c("het_HC", "hom_HC", "total_HC") %in% names(tbl))) {
-        tbl[, `Control Frequency` := (het_HC + hom_HC) / total_HC]
+        tbl[, `Control Frequency` := (het_HC + 2*hom_HC) / (2*total_HC)]
     }
 
     # Keep only selected columns
