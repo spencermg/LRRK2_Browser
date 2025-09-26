@@ -62,9 +62,13 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
             )
         })
 
-        # Render the DT into the DTOutput above
         output$table <- DT::renderDT({
             dat <- dat_rx()
+
+            # columns to show in scientific notation (edit these names as needed)
+            sci_cols <- intersect(c("PD frequency", "Control frequency", "Gnomad allele frequency"), colnames(dat))
+            sci_targets <- match(sci_cols, colnames(dat)) - 1L  # DataTables is 0-indexed
+
             DT::datatable(
                 dat,
                 extensions = "Buttons",
@@ -76,7 +80,30 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
                     lengthChange = TRUE,
                     lengthMenu = list(c(10,25,50,100,500,-1), c("10","25","50","100","500","All")),
                     scrollX = TRUE,
-                    deferRender = TRUE
+                    deferRender = TRUE,
+                    columnDefs = if (length(sci_targets)) list(
+                        list(
+                            targets   = sci_targets,
+                            className = "dt-right",
+                            render    = DT::JS(
+                                # show scientific notation for display; keep numeric for sort/filter
+                                "function(data, type, row, meta){",
+                                "  if (data === null || data === undefined || data === '') {",
+                                "    return (type === 'display') ? '' : null;",
+                                "  }",
+                                "  var num = Number(data);",
+                                "  if (!isFinite(num)) {",
+                                "    return (type === 'display') ? data : null;",
+                                "  }",
+                                "  if (type === 'display') {",
+                                "    return num.toExponential(3);  // 3 significant digits; adjust as needed",
+                                "  }",
+                                "  // for 'sort', 'type', and 'filter' return the raw numeric",
+                                "  return num;",
+                                "}"
+                            )
+                        )
+                    ) else NULL
                 ),
                 rownames = FALSE,
                 escape   = FALSE
@@ -87,5 +114,8 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
                 color = "black"
             )
         })
+
+
+
     })
 }
