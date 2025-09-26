@@ -128,6 +128,14 @@ clean_variant_table <- function(tbl) {
     return(tbl)
 }
 
+# Variants to include in lollipops for the protein diagram
+variants <- data.frame(
+  aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
+  label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
+  color  = c("#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444"),
+  value  = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+)
+
 # Process tables, keeping combined tables by default
 all_tables_cleaned <- lapply(all_tables, clean_variant_table)
 
@@ -144,7 +152,7 @@ server <- function(input, output, session) {
     annotationSummaryTableServer("annotation_summary_table", all_tables_cleaned)
 
     # Protein domain diagram
-    proteinDiagramServer("protein_diagram", protein_domain_colors, protein_domain_positions, subdomain_gap)
+    proteinDiagramServer("protein_diagram", protein_domain_colors, protein_domain_positions, subdomain_gap, variants, 12)
 
     # cDNA diagram
     cdnaDiagramServer("cdna_diagram", exon_colors, exon_positions, subdomain_gap)
