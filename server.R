@@ -19,24 +19,24 @@ protein_domain_colors <- c(
     "#B2FFFF"
 )
 exon_colors <- c(
-    rep(protein_domain_colors[1], 15), # 15 exons corresponding to the first subdomain
-    rep(protein_domain_colors[2], 3),  # 3 exons corresponding to the second subdomain
-    rep(protein_domain_colors[3], 10), # 10 exons corresponding to the third subdomain
-    rep(protein_domain_colors[4], 4),  # 4 exons corresponding to the fourth subdomain
-    rep(protein_domain_colors[5], 2),  # 2 exons corresponding to the fifth subdomain
+    rep(protein_domain_colors[1], 17), # 17 exons corresponding to the first subdomain
+    rep(protein_domain_colors[2], 2),  # 2 exons corresponding to the second subdomain
+    rep(protein_domain_colors[3], 9),  # 9 exons corresponding to the third subdomain
+    rep(protein_domain_colors[4], 3),  # 3 exons corresponding to the fourth subdomain
+    rep(protein_domain_colors[5], 3),  # 3 exons corresponding to the fifth subdomain
     rep(protein_domain_colors[6], 4),  # 4 exons corresponding to the sixth subdomain
-    rep(protein_domain_colors[7], 6),  # 6 exons corresponding to the seventh subdomain
-    rep(protein_domain_colors[8], 7)   # 7 exons corresponding to the eighth subdomain
+    rep(protein_domain_colors[7], 5),  # 5 exons corresponding to the seventh subdomain
+    rep(protein_domain_colors[8], 8)   # 8 exons corresponding to the eighth subdomain
 )
 
 # Start positions for each protein subdomain and exon
 protein_domain_positions <- c(1, 705, 800, 1335, 1511, 1674, 1879, 2142, 2498)
 exon_positions <- c(
-    1, 287, 373, 483, 572, 707, 842, 974, 1094, 1237, 1317, 1424, 1554, 1679, 
-    1792, 1937, 2077, 2206, 2377, 2636, 2825, 2944, 3014, 3232, 3483, 3632, 
-    3726, 3913, 4095, 4325, 4453, 4672, 4874, 4963, 5151, 5306, 5453, 5645,
-    5792, 5893, 6084, 6245, 6416, 6517, 6712, 6906, 6979, 7164, 7317, 7526, 
-    7598, 9239
+    1, 152, 238, 348, 437, 572, 707, 839, 959, 1102, 1182, 1289, 1419, 1544, 
+    1657, 1802, 1942, 2071, 2242, 2501, 2690, 2809, 2879, 3097, 3348, 3497, 
+    3591, 3778, 3960, 4190, 4318, 4537, 4739, 4828, 5016, 5171, 5318, 5510, 
+    5657, 5758, 5949, 6110, 6281, 6382, 6577, 6771, 6844, 7029, 7182, 7391, 
+    7463, 7585
 )
 
 

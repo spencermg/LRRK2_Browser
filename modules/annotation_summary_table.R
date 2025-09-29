@@ -1,9 +1,18 @@
 #!/usr/bin/env Rscript
 
+# =========================================================================
+# UI FUNCTION
+# =========================================================================
+
 annotationSummaryTableUI <- function(id) {
   ns <- NS(id)
   uiOutput(ns("annotationSummaryTable"))
 }
+
+
+# =========================================================================
+# SERVER FUNCTION
+# =========================================================================
 
 annotationSummaryTableServer <- function(id, all_tables_cleaned) {
     variantTable <- all_tables_cleaned$Combined

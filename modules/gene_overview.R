@@ -1,9 +1,18 @@
 #!/usr/bin/env Rscript
 
+# =========================================================================
+# UI FUNCTION
+# =========================================================================
+
 geneOverviewUI <- function(id) {
   ns <- NS(id)
   uiOutput(ns("geneOverview"))
 }
+
+
+# =========================================================================
+# SERVER FUNCTION
+# =========================================================================
 
 geneOverviewServer <- function(id) {
     moduleServer(id, function(input, output, session) {

@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
 
+# =========================================================================
+# INITIALIZE VARIABLES
+# =========================================================================
+
 metadata_box_color         <- "#0C8DC3" # GP2 dark blue
 variant_function_box_color <- "#D8EAF8" # GP2 light blue
 protein_diagram_box_color  <- "#EAF4FF" # GP2 light grey
@@ -7,6 +11,11 @@ cdna_diagram_box_color     <- "#8C4E9F" # GP2 purple
 variant_table_color        <- "#CF2FB3" # GP2 Pink
 box_outline_color          <- "#D3D3D3" # Light grey
 box_title_font_style       <- "font-weight: bold; font-size: 28px;"
+
+
+# =========================================================================
+# UI FUNCTION
+# =========================================================================
 
 ui <- dashboardPage(
     title = "LRRK2 Browser",

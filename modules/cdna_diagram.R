@@ -1,20 +1,24 @@
 #!/usr/bin/env Rscript
 
+# =========================================================================
+# UI FUNCTION
+# =========================================================================
+
 cdnaDiagramUI <- function(id) {
   ns <- NS(id)
   plotlyOutput(ns("cdnaDiagram"))
 }
 
+
+# =========================================================================
+# SERVER FUNCTION
+# =========================================================================
+
 cdnaDiagramServer <- function(id, exon_colors, exon_positions, subdomain_gap) {
-    # Number of exons
     num_exons <- length(exon_positions) - 1
-    # Adjusted start positions of each exon, accounting for line segments 
     exon_positions_adj <- exon_positions + (0:(num_exons)) * subdomain_gap
-    # Metadata used for the boxes for each protein exon
     exon_names <- paste("", 1:num_exons)
-    # Add tooltips for each box
     exon_info <- paste("Exon", 1:num_exons)
-    # Create data tables with metadata for each subdomain and exon
     exons <- data.frame(
         start = exon_positions_adj[-(num_exons+1)],
         end   = exon_positions_adj[-1],
