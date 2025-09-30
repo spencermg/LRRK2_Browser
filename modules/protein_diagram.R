@@ -25,7 +25,7 @@ proteinDiagramServer <- function(
     min_label_sep_px = 50,
     lane_lift = 0.07,
     lane_offset = 1,
-    y_padding = 0.07         # extra headroom at top of plot
+    y_padding = 0.07
 ) {
     num_protein_domains <- length(protein_domain_positions) - 1
     protein_domain_positions_adj <- protein_domain_positions + (0:num_protein_domains) * subdomain_gap

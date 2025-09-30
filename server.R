@@ -7,6 +7,9 @@
 # Length of line segment between protein subdomains and exons
 subdomain_gap <- 20
 
+# Mean pRAB10/RAB10 threshold to be considered kinase active
+kinase_activation_threshold <- 1.40
+
 # Define colors to use for each subdomain and exon
 protein_domain_colors <- c(
     "#AEC6CF", 
@@ -50,6 +53,16 @@ ancestry_tables <- split(df, df$Ancestry)
 combined_table <- fread("lrrk2_grouped.tsv")
 all_tables <- c(list(Combined = combined_table), ancestry_tables)
 
+# Define function to move a column in a data table
+move_dt_column <- function(tbl, column_being_moved, column_before) {
+    setcolorder(tbl, c(
+        names(tbl)[1:which(names(tbl) == column_before)],
+        column_being_moved,
+        setdiff(names(tbl), c(names(tbl)[1:which(names(tbl) == column_before)], column_being_moved))
+    ))
+    return(tbl)
+}
+
 # Define function to process tables
 clean_variant_table <- function(tbl) {
     # Find frequency of cases and controls
@@ -78,9 +91,7 @@ clean_variant_table <- function(tbl) {
         "prot_change",
         "domain",
         "Consurf_score",
-        "Mean_pRAB10/RAB10",
-        "SD",
-        "Interpretation"
+        "Mean_pRAB10/RAB10"
     )
     tbl <- tbl[, intersect(keep_cols, names(tbl)), with = FALSE]
 
@@ -103,9 +114,16 @@ clean_variant_table <- function(tbl) {
         tbl$exon <- suppressWarnings(as.numeric(tbl$exon))
     }
 
+    # Clean up clinical significance columns
+    tbl[, (c("CLNSIG","CLNDN")) := lapply(.SD, function(x) {
+        x <- gsub("_", " ", x, fixed = TRUE)
+        x <- gsub("|", ", ", x, fixed = TRUE)
+        x
+    }), .SDcols = c("CLNSIG","CLNDN")]
+
     # Rename columns
     colnames(tbl) <- c(
-        "Variant",
+        "Variant (GrCh38)",
         "PD frequency",
         "Control frequency",
         "Gnomad allele frequency",
@@ -120,20 +138,27 @@ clean_variant_table <- function(tbl) {
         "AA change",
         "Protein domain",
         "Conservation score",
-        "Kinase activity (mean pRAB10/RAB10)",
-        "Standard deviation",
-        "Interpretation"
+        "Kinase activity (mean pRAB10/RAB10)"
     )
+
+    tbl[, `Deleterious?` := fifelse(CADD > 20, "Yes", "")]
+    tbl[, `Kinase active?` := fifelse(`Kinase activity (mean pRAB10/RAB10)` > kinase_activation_threshold, "Yes", "")]
+    tbl[, `Conserved?` := fifelse(`Conservation score` > 5, "Yes", "")]
+
+    tbl <- move_dt_column(tbl, "Deleterious?", "CADD")
+    tbl <- move_dt_column(tbl, "Conserved?", "Conservation score")
+    tbl <- move_dt_column(tbl, "Kinase active?", "Kinase activity (mean pRAB10/RAB10)")
 
     return(tbl)
 }
 
+### TODO: Update this with all variants and real values for variants
 # Variants to include in lollipops for the protein diagram
 variants <- data.frame(
-  aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
-  label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
-  color  = c("#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444"),
-  value  = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
+    label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
+    color  = c("#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444"),
+    value  = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 )
 
 # Process tables, keeping combined tables by default
@@ -158,5 +183,5 @@ server <- function(input, output, session) {
     cdnaDiagramServer("cdna_diagram", exon_colors, exon_positions, subdomain_gap)
 
     # Main variant table
-    geneVarTableServer("gene_var_table", all_tables_cleaned)
+    geneVarTableServer("gene_var_table", all_tables_cleaned, kinase_activation_threshold)
 }

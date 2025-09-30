@@ -17,13 +17,13 @@ geneVarTableUI <- function(id) {
                     width    = "250px"
                 ),
 
-                # Multi-select button filters
+                # Filter buttons
                 shinyWidgets::checkboxGroupButtons(
-                    inputId  = ns("filters"),
-                    label    = "Filters:",
-                    choices  = c("CADD > 20", "Kinase active"),
-                    selected = NULL,                 # none selected by default
-                    status   = "primary",
+                    inputId   = ns("filters"),
+                    label     = "Filters:",
+                    choices   = c("Deleterious", "Conserved", "Kinase active"),
+                    selected  = NULL,
+                    status    = "primary",
                     justified = FALSE,
                     checkIcon = list(
                         yes = icon("ok", lib = "glyphicon"),
@@ -31,7 +31,7 @@ geneVarTableUI <- function(id) {
                     )
                 ),
 
-                # Reset button (clears selected filter buttons)
+                # Reset button
                 actionButton(
                     inputId = ns("reset_filters"),
                     label   = "Reset filters",
@@ -53,7 +53,7 @@ geneVarTableUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-geneVarTableServer <- function(id, all_tables_cleaned) {
+geneVarTableServer <- function(id, all_tables_cleaned, kinase_activation_threshold) {
     moduleServer(id, function(input, output, session) {
 
         # Initialize dataset selector
@@ -63,36 +63,29 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
             selected = if ("Combined" %in% names(all_tables_cleaned)) "Combined" else names(all_tables_cleaned)[1]
         )
 
-        # Reset button clears the filter buttons
+        # Add reset button
         observeEvent(input$reset_filters, {
             shinyWidgets::updateCheckboxGroupButtons(session, "filters", selected = character(0))
         })
 
-        # Base data (selected dataset)
-        dat_base <- reactive({
-            all_tables_cleaned[[ req(input$dataset) ]]
-        })
-
-        # Apply selected filters (can be both, one, or none)
+        # Apply selected filters
         dat_rx <- reactive({
-            dat <- dat_base()
+            dat <- all_tables_cleaned[[ req(input$dataset) ]]
             sel <- input$filters %||% character(0)
 
-            # --- CADD > 20 ---
-            if ("CADD > 20" %in% sel) {
-                cadd <- dat[["CADD"]]
-                # robust coercion to numeric; keep NA as FALSE in filter
-                cadd_num <- suppressWarnings(as.numeric(cadd))
-                keep <- !is.na(cadd_num) & cadd_num > 20
+            if ("Deleterious" %in% sel) {
+                deleterious <- dat[["Deleterious?"]]
+                keep <- !is.na(deleterious) & deleterious == "Yes"
                 dat <- dat[ keep, , drop = FALSE]
             }
-
-            # --- Kinase active ---
+            if ("Conserved" %in% sel) {
+                conserved <- dat[["Conserved?"]]
+                keep <- !is.na(conserved) & conserved == "Yes"
+                dat <- dat[ keep, , drop = FALSE]
+            }
             if ("Kinase active" %in% sel) {
-                ka <- dat[["Kinase activity (mean pRAB10/RAB10)"]]
-                # robust coercion to numeric; keep NA as FALSE in filter
-                kinase_active_num <- suppressWarnings(as.numeric(ka))
-                keep <- !is.na(kinase_active_num) & kinase_active_num > 1.40
+                kinase_active <- dat[["Kinase active?"]]
+                keep <- !is.na(kinase_active) & kinase_active == "Yes"
                 dat <- dat[ keep, , drop = FALSE]
             }
 
@@ -100,16 +93,20 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
         })
 
         output$table <- DT::renderDT({
+            # Grab dataset with current filters applied
             dat <- dat_rx()
 
-            # columns to show in scientific notation
+            # Columns to show in scientific notation
             sci_cols    <- intersect(c("PD frequency", "Control frequency", "Gnomad allele frequency"), colnames(dat))
-            sci_targets <- match(sci_cols, colnames(dat)) - 1L  # DataTables is 0-indexed
+            sci_targets <- match(sci_cols, colnames(dat)) - 1L
 
+            # Populate data table
             DT::datatable(
                 dat,
                 extensions = "Buttons",
-                options = list(
+                rownames   = FALSE,
+                escape     = FALSE,
+                options    = list(
                     dom          = "Blfrtip",
                     buttons      = c("copy", "csv", "excel", "pdf", "print"),
                     paging       = TRUE,
@@ -118,35 +115,33 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
                     lengthMenu   = list(c(10,25,50,100,500,-1), c("10","25","50","100","500","All")),
                     scrollX      = TRUE,
                     deferRender  = TRUE,
-                    columnDefs = if (length(sci_targets)) list(
+                    columnDefs   = if (length(sci_targets)) list(
                         list(
                             targets   = sci_targets,
                             className = "dt-right",
                             render    = DT::JS(
                                 "function(data, type, row, meta){",
                                 "  if (data === null || data === undefined || data === '') {",
-                                "    return (type === 'display') ? '' : null;",
+                                "       return (type === 'display') ? '' : null;",
                                 "  }",
                                 "  var num = Number(data);",
                                 "  if (!isFinite(num)) {",
-                                "    return (type === 'display') ? data : null;",
+                                "       return (type === 'display') ? data : null;",
                                 "  }",
                                 "  if (type === 'display') {",
-                                "    return num.toExponential(3);",
+                                "       return num.toExponential(3);",
                                 "  }",
                                 "  return num;",
                                 "}"
                             )
                         )
                     ) else NULL
-                ),
-                rownames = FALSE,
-                escape   = FALSE
+                )
             ) |>
             DT::formatStyle(
-                columns = colnames(dat),
+                columns         = colnames(dat),
                 backgroundColor = "#FFFFFF",
-                color = "black"
+                color           = "black"
             )
         })
     })
