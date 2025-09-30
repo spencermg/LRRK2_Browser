@@ -1,0 +1,10 @@
+# Ignore directory with reference files
+reference_scripts/
+
+# Ignore raw data
+kinase_activity.tsv
+lrrk2_data.tsv
+lrrk2_grouped.tsv
+
+# Ignore DS Store
+.DS_Store
