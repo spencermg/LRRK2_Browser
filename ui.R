@@ -74,7 +74,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", protein_diagram_box_color, "; padding: 10px;"),
-            proteinDiagramUI("protein_diagram")
+            diagramUI("protein_diagram")
         ),
 
         # cDNA diagram
@@ -90,7 +90,7 @@ ui <- dashboardPage(
             width = 12,
             solidHeader = FALSE,
             style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", cdna_diagram_box_color, "; padding: 10px;"),
-            cdnaDiagramUI("cdna_diagram")
+            diagramUI("cdna_diagram")
         ),
 
         # Main variant table

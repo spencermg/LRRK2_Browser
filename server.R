@@ -156,7 +156,9 @@ clean_variant_table <- function(tbl) {
 # Variants to include in lollipops for the protein diagram
 variants <- data.frame(
     aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
-    label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
+    aa_label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
+    cdna_pos = c(3200, 4309, 4309, 4321, 4321, 4321, 4322, 4883, 5385, 6055, 6059, 7153),
+    cdna_label  = c("C3200A","A4309C","A4309G","C4321A","C4321G","C4321T","G4322A","G4883C","G5385T","G6055A","T6059C","G7153A"),
     color  = c("#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444"),
     value  = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 )
@@ -177,10 +179,37 @@ server <- function(input, output, session) {
     annotationSummaryTableServer("annotation_summary_table", all_tables_cleaned)
 
     # Protein domain diagram
-    proteinDiagramServer("protein_diagram", protein_domain_colors, protein_domain_positions, subdomain_gap, variants, 12)
+    num_protein_domains <- length(protein_domain_positions) - 1
+    protein_domain_names <- c("ARM","ANK","LRR","ROC","COR-A","COR-B","KIN","WD-40")
+    protein_domain_positions_adj <- protein_domain_positions + (0:num_protein_domains) * subdomain_gap
+    protein_domain_tooltips <- rep("Protein subdomain", num_protein_domains)
+    protein_domains <- data.frame(
+        start = protein_domain_positions_adj[-(num_protein_domains + 1)],
+        end   = protein_domain_positions_adj[-1],
+        label = protein_domain_names,
+        color = protein_domain_colors,
+        info  = protein_domain_tooltips
+    )
+    protein_variants <- variants[, c("aa_pos", "aa_label", "color", "value")]
+    colnames(protein_variants) <- c("pos", "label", "color", "value")
+    diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, protein_variants, "protein", 12)
 
     # cDNA diagram
-    cdnaDiagramServer("cdna_diagram", exon_colors, exon_positions, subdomain_gap)
+    num_exons <- length(exon_positions) - 1
+    exon_names <- paste("", 1:num_exons)
+    exon_positions_adj <- exon_positions + (0:(num_exons)) * subdomain_gap
+    exon_tooltips <- paste("Exon", 1:num_exons)
+    exons <- data.frame(
+        start = exon_positions_adj[-(num_exons+1)],
+        end   = exon_positions_adj[-1],
+        label = exon_names,
+        color = exon_colors,
+        info  = exon_tooltips
+    )
+    cdna_variants <- variants[, c("cdna_pos", "cdna_label", "color", "value")]
+    colnames(cdna_variants) <- c("pos", "label", "color", "value")
+    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, cdna_variants, "cDNA", 12)
+    #cdnaDiagramServer("cdna_diagram", exon_colors, exon_positions, subdomain_gap)
 
     # Main variant table
     geneVarTableServer("gene_var_table", all_tables_cleaned, kinase_activation_threshold)
