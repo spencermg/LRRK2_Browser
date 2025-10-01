@@ -18,6 +18,7 @@ geneOverviewServer <- function(id) {
     moduleServer(id, function(input, output, session) {
         output$geneOverview <- renderUI({
             fluidRow(
+                # Chromosome number
                 column(
                     width = 3,
                     align = "center",
@@ -28,6 +29,7 @@ geneOverviewServer <- function(id) {
                         marginBottom = FALSE
                     )
                 ),
+                # GrCh38 coordinates
                 column(
                     width = 3,
                     align = "center",
@@ -38,6 +40,7 @@ geneOverviewServer <- function(id) {
                         marginBottom = FALSE
                     )
                 ),
+                # T2T coordinates
                 column(
                     width = 3,
                     align = "center",
@@ -48,6 +51,7 @@ geneOverviewServer <- function(id) {
                         marginBottom = FALSE
                     )
                 ),
+                # GrCh37 coordinates
                 column(
                     width = 3,
                     align = "center",

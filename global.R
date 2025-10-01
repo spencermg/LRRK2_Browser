@@ -17,6 +17,7 @@ pacman::p_load(
   bslib
 )
 
+source ("util.R")
 mod_files <- list.files("modules", pattern = "\\.[Rr]$", full.names = TRUE)
 invisible(
     lapply(mod_files, function(f) {
