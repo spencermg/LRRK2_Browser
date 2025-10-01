@@ -5,55 +5,60 @@
 # =========================================================================
 
 geneVarTableUI <- function(id) {
-    ns <- NS(id)
-    tagList(
-        fluidRow(
-            div(
-                # Dataset selector
-                selectInput(
-                    inputId  = ns("dataset"),
-                    label    = "Choose ancestry:",
-                    choices  = NULL,
-                    width    = "250px"
-                ),
-
-                # Filter buttons
-                shinyWidgets::checkboxGroupButtons(
-                    inputId   = ns("filters"),
-                    label     = "Filters:",
-                    choices   = c("Deleterious", "Conserved", "Kinase active"),
-                    selected  = NULL,
-                    status    = "primary",
-                    justified = FALSE,
-                    checkIcon = list(
-                        yes = icon("ok", lib = "glyphicon"),
-                        no  = icon("remove", lib = "glyphicon")
-                    )
-                ),
-
-                # Reset button
-                actionButton(
-                    inputId = ns("reset_filters"),
-                    label   = "Reset filters",
-                    class   = "btn btn-secondary",
-                    icon    = icon("undo")
-                ),
-
-                # Table
-                DT::DTOutput(ns("table")),
-
-                style = "margin: 12px 50px 50px 12px;"
-            )
+  ns <- NS(id)
+  tagList(
+    # Disclaimer message
+    div(
+      "DISCLAIMER: Data displayed here should be used for research purposes clinical guidelines.",
+      style = "color: red; font-style: italic; margin: 5px 0 15px 0;"
+    ),
+    
+    # Row with ancestry dropdown + filter buttons
+    fluidRow(
+      column(
+        width = 3,
+        selectInput(
+          inputId  = ns("dataset"),
+          label    = "Choose ancestry:",
+          choices  = NULL,
+          width    = "100%"
         )
+      ),
+      column(
+        width = 3,
+        shinyWidgets::checkboxGroupButtons(
+          inputId   = ns("filters"),
+          label     = "Filters:",
+          choices   = c("Deleterious", "Conserved", "Kinase active"),
+          selected  = NULL,
+          status    = "primary",
+          justified = FALSE,
+          width     = "100%" ,
+          checkIcon = list(
+            yes = icon("ok", lib = "glyphicon"),
+            no  = icon("remove", lib = "glyphicon")
+          )
+        )
+      )
+    ),
+    
+    # Table
+    fluidRow(
+      column(
+        width = 12,
+        DT::DTOutput(ns("table"))
+      )
     )
+  )
 }
+
 
 
 # =========================================================================
 # SERVER FUNCTION
 # =========================================================================
 
-geneVarTableServer <- function(id, all_tables_cleaned, kinase_activation_threshold) {
+geneVarTableServer <- function(id, all_tables_cleaned) {
     moduleServer(id, function(input, output, session) {
 
         # Initialize dataset selector
@@ -62,11 +67,6 @@ geneVarTableServer <- function(id, all_tables_cleaned, kinase_activation_thresho
             choices  = names(all_tables_cleaned),
             selected = if ("Combined" %in% names(all_tables_cleaned)) "Combined" else names(all_tables_cleaned)[1]
         )
-
-        # Add reset button
-        observeEvent(input$reset_filters, {
-            shinyWidgets::updateCheckboxGroupButtons(session, "filters", selected = character(0))
-        })
 
         # Apply selected filters
         dat_rx <- reactive({
