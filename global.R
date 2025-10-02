@@ -7,14 +7,14 @@ if (!requireNamespace("pacman", quietly = TRUE)) {
 }
 
 pacman::p_load(
-  shiny,
-  shinydashboard,
-  shinydashboardPlus,
-  DT,
-  plotly,
-  shinyWidgets,
-  data.table,
-  bslib
+    shiny,
+    shinydashboard,
+    shinydashboardPlus,
+    DT,
+    plotly,
+    shinyWidgets,
+    data.table,
+    bslib
 )
 
 source ("util.R")

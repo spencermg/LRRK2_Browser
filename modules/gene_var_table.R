@@ -9,7 +9,7 @@ geneVarTableUI <- function(id) {
   tagList(
     # Disclaimer message
     div(
-      "DISCLAIMER: Data displayed here should be used for research purposes clinical guidelines.",
+      "DISCLAIMER: Data displayed here should be interpreted with caution for research purposes only, and not used for official clinical guidelines.",
       style = "color: red; font-style: italic; margin: 5px 0 15px 0;"
     ),
     
@@ -25,7 +25,7 @@ geneVarTableUI <- function(id) {
         )
       ),
       column(
-        width = 3,
+        width = 4,
         shinyWidgets::checkboxGroupButtons(
           inputId   = ns("filters"),
           label     = "Filters:",
@@ -58,8 +58,9 @@ geneVarTableUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-geneVarTableServer <- function(id, all_tables_cleaned) {
+geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
     moduleServer(id, function(input, output, session) {
+        ns <- session$ns
 
         # Initialize dataset selector
         updateSelectInput(
@@ -93,19 +94,27 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
         })
 
         output$table <- DT::renderDT({
-            # Grab dataset with current filters applied
             dat <- dat_rx()
+
+            # Make first column (variant ID) clickable
+            if (nrow(dat) > 0) {
+                dat[[1]] <- paste0(
+                    '<a href="#" class="variant-link" style="color: #0C8DC3; text-decoration: underline;">',
+                    dat[[1]],
+                    '</a>'
+                )
+            }
 
             # Columns to show in scientific notation
             sci_cols    <- intersect(c("PD frequency", "Control frequency", "Gnomad allele frequency"), colnames(dat))
             sci_targets <- match(sci_cols, colnames(dat)) - 1L
 
-            # Populate data table
             DT::datatable(
                 dat,
                 extensions = "Buttons",
                 rownames   = FALSE,
-                escape     = FALSE,
+                escape     = FALSE,        # Allow HTML links
+                selection  = "none",
                 options    = list(
                     dom          = "Blfrtip",
                     buttons      = c("copy", "csv", "excel", "pdf", "print"),
@@ -143,6 +152,23 @@ geneVarTableServer <- function(id, all_tables_cleaned) {
                 backgroundColor = "#FFFFFF",
                 color           = "black"
             )
+        })
+
+        # Capture clicks on variant links
+        observeEvent(input$table_cell_clicked, {
+            info <- input$table_cell_clicked
+            dat <- dat_rx()
+
+            # Only trigger on first column (variant ID)
+            if (!is.null(info$col) && info$col == 0 && !is.null(clicked_variant)) {
+                variant_id <- dat[[1]][info$row]
+                ancestry <- input$dataset
+                clicked_variant(list(
+                    variant_id = variant_id,
+                    ancestry = ancestry,
+                    counter = Sys.time()
+                ))
+            }
         })
     })
 }
