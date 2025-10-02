@@ -31,7 +31,7 @@ diagramServer <- function(
     # Map position to x-value accounting for connecting line segments
     map_pos_to_x <- function(pos_vec) {
         subdomain_idx <- findInterval(pos_vec, domain_positions, left.open = TRUE)
-        pos_vec + subdomain_idx * subdomain_gap
+        pos_vec + (subdomain_idx - 0.5) * subdomain_gap
     }
 
     moduleServer(id, function(input, output, session) {
