@@ -5,51 +5,51 @@
 # =========================================================================
 
 geneVarTableUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    # Disclaimer message
-    div(
-      "DISCLAIMER: Data displayed here should be interpreted with caution for research purposes only, and not used for official clinical guidelines.",
-      style = "color: red; font-style: italic; margin: 5px 0 15px 0;"
-    ),
-    
-    # Row with ancestry dropdown + filter buttons
-    fluidRow(
-      column(
-        width = 3,
-        selectInput(
-          inputId  = ns("dataset"),
-          label    = "Choose ancestry:",
-          choices  = NULL,
-          width    = "100%"
+    ns <- NS(id)
+    tagList(
+        # Disclaimer message
+        div(
+            "DISCLAIMER: Data displayed here should be interpreted with caution for research purposes only, and not used for official clinical guidelines.",
+            style = "color: red; font-style: italic; margin: 5px 0 15px 0;"
+        ),
+        
+        # Row with ancestry dropdown + filter buttons
+        fluidRow(
+            column(
+                width = 3,
+                selectInput(
+                    inputId  = ns("dataset"),
+                    label    = "Choose ancestry:",
+                    choices  = NULL,
+                    width    = "100%"
+                )
+            ),
+            column(
+                width = 4,
+                shinyWidgets::checkboxGroupButtons(
+                    inputId   = ns("filters"),
+                    label     = "Filters:",
+                    choices   = c("Deleterious", "Conserved", "Kinase active"),
+                    selected  = NULL,
+                    status    = "primary",
+                    justified = FALSE,
+                    width     = "100%" ,
+                    checkIcon = list(
+                        yes = icon("ok", lib = "glyphicon"),
+                        no  = icon("remove", lib = "glyphicon")
+                  )
+                )
+            )
+        ),
+        
+        # Table
+        fluidRow(
+            column(
+                width = 12,
+                DT::DTOutput(ns("table"))
+            )
         )
-      ),
-      column(
-        width = 4,
-        shinyWidgets::checkboxGroupButtons(
-          inputId   = ns("filters"),
-          label     = "Filters:",
-          choices   = c("Deleterious", "Conserved", "Kinase active"),
-          selected  = NULL,
-          status    = "primary",
-          justified = FALSE,
-          width     = "100%" ,
-          checkIcon = list(
-            yes = icon("ok", lib = "glyphicon"),
-            no  = icon("remove", lib = "glyphicon")
-          )
-        )
-      )
-    ),
-    
-    # Table
-    fluidRow(
-      column(
-        width = 12,
-        DT::DTOutput(ns("table"))
-      )
     )
-  )
 }
 
 
@@ -113,7 +113,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 dat,
                 extensions = "Buttons",
                 rownames   = FALSE,
-                escape     = FALSE,        # Allow HTML links
+                escape     = FALSE,
                 selection  = "none",
                 options    = list(
                     dom          = "Blfrtip",
@@ -136,6 +136,9 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                                 "  var num = Number(data);",
                                 "  if (!isFinite(num)) {",
                                 "       return (type === 'display') ? data : null;",
+                                "  }",
+                                "  if (num === 0) {",
+                                "       return (type === 'display') ? '0' : 0;",
                                 "  }",
                                 "  if (type === 'display') {",
                                 "       return num.toExponential(3);",

@@ -34,8 +34,16 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             }
             variant_details <- do.call(rbind, variant_details)
 
-            # Indicate columns to display in the table
+            # Indicate columns to display in the table and convert frequencies to scientific notation
             variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "Gnomad allele frequency"), drop = FALSE]
+            for (col in c("PD frequency", "Control frequency", "Gnomad allele frequency")) {
+                variant_display[[col]] <- ifelse(
+                    is.na(variant_display[[col]]),
+                    "N/A",
+                    format(variant_display[[col]], scientific = TRUE, digits = 5)
+                )
+                variant_display[[col]] <- gsub("^0e[\\+\\-]0+$", "0", variant_display[[col]])
+            }
 
             # Build the popup content
             popup_content <- if (nrow(variant_details) > 0) {
@@ -47,7 +55,6 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     ),
                     tags$div(
                         style = "margin-bottom: 20px;",
-                        tags$p(tags$strong("Variant (GrCh38): "), variant_details$`Variant (GrCh38)`[1]),
                         if ("rsID" %in% colnames(variant_details) && !is.na(variant_details$rsID[1])) {
                             tags$p(tags$strong("rsID: "), variant_details$rsID[1])
                         },
