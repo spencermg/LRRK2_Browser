@@ -93,6 +93,22 @@ ui <- dashboardPage(
             diagramUI("cdna_diagram")
         ),
 
+        # cDNA diagram
+        box(
+            title = tags$div(
+                "Kinase Activity by Variant",
+                style = box_title_font_style
+            ),
+            closable = FALSE,
+            collapsible = TRUE,
+            collapsed = FALSE,
+            status = NULL,
+            width = 12,
+            solidHeader = FALSE,
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", cdna_diagram_box_color, "; padding: 10px;"),
+            barChartUI("bar_chart")
+        ),
+
         # Main variant table
         box(
             title = tags$div(

@@ -121,9 +121,12 @@ server <- function(input, output, session) {
     # cDNA diagram
     diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, cdna_variants, "cDNA", 12)
 
+    # Kinase activity bar chart
+    barChartServer("bar_chart", all_tables_cleaned$Combined)
+
     # Reactive value to store clicked variant information
     clicked_variant <- reactiveVal(NULL)
-    
+
     # Main variant table
     geneVarTableServer("gene_var_table", all_tables_cleaned, clicked_variant)
     
