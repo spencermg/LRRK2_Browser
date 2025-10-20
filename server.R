@@ -13,18 +13,8 @@ conservation_conserved_threshold <- 5
 kinase_activation_threshold <- 1.40
 
 # Define colors to use for each subdomain and exon
-# protein_domain_colors <- c(
-#     "#AEC6CF", 
-#     "#CBAACB", 
-#     "#FFB7B2", 
-#     "#FF6961", 
-#     "#FFB347", 
-#     "#FDFD96", 
-#     "#77DD77", 
-#     "#B2FFFF"
-# )
 protein_domain_colors <- c(
-    "#035c81", #3383a7
+    "#035c81",
     "#e3e4e3",
     "#0c8dc3", 
     "#cccccc", 
