@@ -68,7 +68,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             }
 
             # Make the bar plot
-            plot_ly(
+            p <- plot_ly(
                 dat_df,
                 x = ~`Variant (GrCh38)`,
                 y = ~`Kinase activity (mean pRAB10/RAB10)`,
@@ -76,25 +76,57 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 marker = list(color = color_palette),
                 customdata = custom_data,
                 hovertemplate = "%{x}<br>cDNA change: %{customdata[0]}<br>AA change: %{customdata[1]}<br>Kinase activity: %{y:.3f}<extra></extra>"
-            ) %>%
-            layout(
-                title = NULL,
-                xaxis = list(
-                    title = "Variant",
-                    tickangle = 45,
-                    fixedrange = TRUE
-                ),
-                yaxis = list(
-                    title = "Kinase activity",
-                    fixedrange = TRUE
-                ),
-                margin = list(l = 100),
-                showlegend = FALSE
-            ) %>%
-            config(
-                displayModeBar = FALSE,
-                scrollZoom = FALSE
             )
+
+            if (input$sort_order == "coord") {
+                line_shape <- list(
+                    type = "line",
+                    xref = "paper",
+                    x0 = 0,
+                    x1 = 1,
+                    yref = "y",
+                    y0 = 1.4,
+                    y1 = 1.4,
+                    line = list(color = "#8c4e9f", width = 2, dash = "dash")
+                )
+                
+                line_annotation <- list(
+                    xref = "paper",
+                    x = 1.00,
+                    y = 1.4,
+                    text = "Kinase active",
+                    showarrow = FALSE,
+                    font = list(color = "#8c4e9f", size = 14),
+                    xanchor = "left",
+                    yanchor = "middle"
+                )
+            } else {
+                line_shape <- NULL
+                line_annotation <- NULL
+            }
+
+            p <- p %>%
+                layout(
+                    title = NULL,
+                    xaxis = list(
+                        title = "Variant",
+                        tickangle = 45,
+                        fixedrange = TRUE
+                    ),
+                    yaxis = list(
+                        title = "Kinase activity",
+                        fixedrange = TRUE
+                    ),
+                    margin = list(l = 100, r = 120),
+                    showlegend = FALSE,
+                    shapes = line_shape,
+                    annotations = line_annotation
+                ) %>%
+                config(
+                    displayModeBar = FALSE,
+                    scrollZoom = FALSE
+                )
+            p
         })
     })
 }
