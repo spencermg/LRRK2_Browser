@@ -11,6 +11,7 @@ subdomain_gap <- 20
 cadd_deleterious_threshold <- 20
 conservation_conserved_threshold <- 5
 kinase_activation_threshold <- 1.40
+kinase_inactivation_threshold <- 0.50
 
 # Define colors to use for each subdomain and exon
 protein_domain_colors <- c(
@@ -122,7 +123,11 @@ server <- function(input, output, session) {
     diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, cdna_variants, "cDNA", 12)
 
     # Kinase activity bar chart
-    barChartServer("bar_chart", all_tables_cleaned$Combined)
+    exon_color_mapping <- setNames(
+        rep(protein_domain_colors, times = c(17, 2, 9, 3, 3, 4, 5, 8)), 
+        seq_len(length(exon_colors))
+    )
+    barChartServer("bar_chart", all_tables_cleaned$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
 
     # Reactive value to store clicked variant information
     clicked_variant <- reactiveVal(NULL)
