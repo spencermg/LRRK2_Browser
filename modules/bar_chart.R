@@ -38,7 +38,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             # Subset only variants with kinase activity
             dat <- variant_data[
                 !is.na(variant_data[["Kinase activity (mean pRAB10/RAB10)"]]),
-                c("Variant (GrCh38)", "Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #"),
+                c("AA change", "Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #"),
                 with = FALSE
             ]
 
@@ -48,7 +48,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 activity = dat[order(-dat[["Kinase activity (mean pRAB10/RAB10)"]]), ]
             )
 
-            dat[, `Variant (GrCh38)` := factor(`Variant (GrCh38)`, levels = dat$`Variant (GrCh38)`)]
+            dat[, `AA change` := factor(`AA change`, levels = dat$`AA change`)]
             
             # Convert to data frame for plotly
             dat_df <- as.data.frame(dat)
@@ -70,7 +70,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             # Make the bar plot
             p <- plot_ly(
                 dat_df,
-                x = ~`Variant (GrCh38)`,
+                x = ~`AA change`,
                 y = ~`Kinase activity (mean pRAB10/RAB10)`,
                 type = "bar",
                 marker = list(color = color_palette),
@@ -109,7 +109,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
 
                 dat_df <- merge(dat_df, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
 
-                dat_df$`Variant (GrCh38)` <- factor(dat_df$`Variant (GrCh38)`, levels = dat_df$`Variant (GrCh38)`)
+                dat_df$`AA change` <- factor(dat_df$`AA change`, levels = dat_df$`AA change`)
 
                 domain_annotations <- lapply(unique(dat_df$Domain), function(domain_name) {
                     domain_variants <- which(dat_df$Domain == domain_name)
@@ -142,7 +142,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                         fixedrange = TRUE
                     ),
                     yaxis = list(
-                        title = "Kinase activity",
+                        title = "Kinase activity (mean pRAB10/RAB10)",
                         fixedrange = TRUE
                     ),
                     margin = list(l = 100, r = 120, t = 20),

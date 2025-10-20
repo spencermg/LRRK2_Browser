@@ -110,7 +110,7 @@ colnames(cdna_variants) <- c("pos", "label", "color", "value")
 # =========================================================================
 
 server <- function(input, output, session) {
-    # Trigger alert once when the session starts
+    # Trigger disclaimer popup once when the session starts
     shinyalert(
         title = "Terms of Use",
         text = HTML("
