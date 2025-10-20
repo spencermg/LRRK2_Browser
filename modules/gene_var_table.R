@@ -7,12 +7,6 @@
 geneVarTableUI <- function(id) {
     ns <- NS(id)
     tagList(
-        # Disclaimer message
-        div(
-            "DISCLAIMER: Data displayed here should be interpreted with caution for research purposes only, and not used for official clinical guidelines.",
-            style = "color: red; font-style: italic; margin: 5px 0 15px 0;"
-        ),
-        
         # Row with ancestry dropdown + filter buttons
         fluidRow(
             column(

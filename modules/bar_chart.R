@@ -79,6 +79,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             )
 
             if (input$sort_order == "coord") {
+                # ---- Line + annotation at 1.4 ----
                 line_shape <- list(
                     type = "line",
                     xref = "paper",
@@ -89,7 +90,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     y1 = 1.4,
                     line = list(color = "#8c4e9f", width = 2, dash = "dash")
                 )
-                
+
                 line_annotation <- list(
                     xref = "paper",
                     x = 1.00,
@@ -100,9 +101,37 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     xanchor = "left",
                     yanchor = "middle"
                 )
+
+                exon_domain_map <- data.frame(
+                    Exon = 1:sum(c(17, 2, 9, 3, 3, 4, 5, 8)),
+                    Domain = rep(c("ARM", "ANK", "LRR", "ROC", "COR-A", "COR-B", "KIN", "WD-40"),
+                                times = c(17, 2, 9, 3, 3, 4, 5, 8))
+                )
+
+                dat_df <- merge(dat_df, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
+
+                dat_df$`Variant (GrCh38)` <- factor(dat_df$`Variant (GrCh38)`, levels = dat_df$`Variant (GrCh38)`)
+
+                domain_annotations <- lapply(unique(dat_df$Domain), function(domain_name) {
+                    domain_variants <- which(dat_df$Domain == domain_name)
+                    if (length(domain_variants) == 0) return(NULL)
+                    midpoint <- mean(domain_variants) - 1
+                    list(
+                        x = midpoint,
+                        y = max(dat_df$`Kinase activity (mean pRAB10/RAB10)`) * 1.05,
+                        text = domain_name,
+                        showarrow = FALSE,
+                        font = list(size = 14, color = "black"),
+                        xref = "x",
+                        yref = "y",
+                        xanchor = "center",
+                        yanchor = "bottom"
+                    )
+                })
             } else {
                 line_shape <- NULL
                 line_annotation <- NULL
+                domain_annotations <- NULL
             }
 
             p <- p %>%
@@ -117,10 +146,10 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                         title = "Kinase activity",
                         fixedrange = TRUE
                     ),
-                    margin = list(l = 100, r = 120),
+                    margin = list(l = 100, r = 120, t = 20),
                     showlegend = FALSE,
                     shapes = line_shape,
-                    annotations = line_annotation
+                    annotations = c(list(line_annotation), domain_annotations)
                 ) %>%
                 config(
                     displayModeBar = FALSE,
