@@ -151,6 +151,12 @@ diagramServer <- function(
                 showlegend = FALSE
             )
 
+            get_text_color <- function(hex) {
+                rgb <- col2rgb(hex) / 255
+                brightness <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
+                if (brightness > 0.5) "black" else "white"
+            }
+
             # Domain rectangles + labels
             for (i in seq_len(nrow(domains))) {
                 p <- plotly::add_trace(
@@ -161,10 +167,14 @@ diagramServer <- function(
                         domains$start_adj[i]
                     ),
                     y = c(-0.2, -0.2, 0.2, 0.2, -0.2),
-                    type = "scatter", mode = "lines",
-                    fill = "toself", fillcolor = domains$color[i],
+                    type = "scatter", 
+                    mode = "lines",
+                    fill = "toself", 
+                    fillcolor = domains$color[i],
                     line = list(color = "black"),
-                    text = domains$info[i], hoverinfo = "text", hoveron = "fills",
+                    text = domains$info[i], 
+                    hoverinfo = "text", 
+                    hoveron = "fills",
                     showlegend = FALSE
                 )
                 p <- plotly::add_annotations(
@@ -173,7 +183,7 @@ diagramServer <- function(
                     y = 0, 
                     text = if (mode == "protein") domains$label[i] else "",
                     showarrow = FALSE, 
-                    font = list(size = 14)
+                    font = list(size = 14, color = get_text_color(domains$color[i]))
                 )
             }
 

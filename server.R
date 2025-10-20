@@ -7,21 +7,31 @@
 # Length of line segment between protein subdomains and exons
 subdomain_gap <- 20
 
-# Mean pRAB10/RAB10 threshold to be considered kinase active
+# Thresholds for kinase activity, CADD deleteriousness, and conservation
 cadd_deleterious_threshold <- 20
 conservation_conserved_threshold <- 5
 kinase_activation_threshold <- 1.40
 
 # Define colors to use for each subdomain and exon
+# protein_domain_colors <- c(
+#     "#AEC6CF", 
+#     "#CBAACB", 
+#     "#FFB7B2", 
+#     "#FF6961", 
+#     "#FFB347", 
+#     "#FDFD96", 
+#     "#77DD77", 
+#     "#B2FFFF"
+# )
 protein_domain_colors <- c(
-    "#AEC6CF", 
-    "#CBAACB", 
-    "#FFB7B2", 
-    "#FF6961", 
-    "#FFB347", 
-    "#FDFD96", 
-    "#77DD77", 
-    "#B2FFFF"
+    "#035c81", #3383a7
+    "#e3e4e3",
+    "#0c8dc3", 
+    "#cccccc", 
+    "#4ba3c9", 
+    "#999999", 
+    "#86c1da", 
+    "#666666"
 )
 exon_colors <- c(
     rep(protein_domain_colors[1], 17), # 17 exons corresponding to the first subdomain
