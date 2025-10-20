@@ -10,6 +10,7 @@ pacman::p_load(
     shiny,
     shinydashboard,
     shinydashboardPlus,
+    shinyalert,
     DT,
     plotly,
     shinyWidgets,

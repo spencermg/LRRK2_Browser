@@ -110,6 +110,35 @@ colnames(cdna_variants) <- c("pos", "label", "color", "value")
 # =========================================================================
 
 server <- function(input, output, session) {
+    # Trigger alert once when the session starts
+    shinyalert(
+        title = "Terms of Use",
+        text = HTML("
+            <div style='color: black; text-align: justify;'>
+            <p style='color: black;'>By proceeding, I am agreeing to:</p>
+            <ul>
+                <li>Use the data for health, biomedical, and research ONLY</li>
+                <li>NOT attempt to identify, disclose, or contact research participants 
+                unless required by federal, state, or local laws</li>
+                <li>Report any data management issues incidents, but not limited to, 
+                inadvertent data release</li>
+                <li>Abide by all relevant laws and regulations regarding genomic data 
+                and their use</li>
+                <li>NOt bulk download data without explicit consent from the LRRK2 
+                Browser team </li>
+            </ul>
+            <p style='color: black;'>While data in this browser have undergone quality 
+            control, genomic data processing pipelines are inherently imperfect and 
+            rely on probabilistic processes such as variant calling, imputation, and 
+            short-read sequencing reads. As such, there may be errors within the data 
+            presented. I agree that the LRRK2 Browser team is not responsible for any 
+            incorrect data that may be present in the browser.</p>
+            </div>
+        "),
+        html = TRUE,
+        type = "info"
+    )
+    
     # General metadata about LRRK2
     geneOverviewServer("gene_overview")
 

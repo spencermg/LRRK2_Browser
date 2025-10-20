@@ -79,7 +79,6 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             )
 
             if (input$sort_order == "coord") {
-                # ---- Line + annotation at 1.4 ----
                 line_shape <- list(
                     type = "line",
                     xref = "paper",
@@ -95,7 +94,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     xref = "paper",
                     x = 1.00,
                     y = 1.4,
-                    text = "Kinase active",
+                    text = "Kinase activating",
                     showarrow = FALSE,
                     font = list(color = "#8c4e9f", size = 14),
                     xanchor = "left",
