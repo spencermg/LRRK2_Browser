@@ -30,9 +30,16 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     dat[, Ancestry := anc]
                     setcolorder(dat, c("Ancestry", setdiff(names(dat), "Ancestry")))
                     variant_details[[anc]] <- dat
+                } else {
+                    placeholder <- copy(all_tables_cleaned$Combined[`Variant (GrCh38)` == variant_id])
+                    placeholder$Ancestry <- anc
+                    placeholder$`PD frequency` <- 0
+                    placeholder$`Control frequency` <- 0
+                    variant_details[[anc]] <- placeholder
                 }
             }
-            variant_details <- do.call(rbind, variant_details)
+            variant_details <- rbindlist(variant_details, fill = TRUE)
+            print(variant_details)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
             variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "Gnomad allele frequency"), drop = FALSE]

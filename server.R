@@ -161,12 +161,8 @@ server <- function(input, output, session) {
     )
     barChartServer("bar_chart", all_tables_cleaned$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
 
-    # Reactive value to store clicked variant information
+    # Main variant table with popup
     clicked_variant <- reactiveVal(NULL)
-
-    # Main variant table
     geneVarTableServer("gene_var_table", all_tables_cleaned, clicked_variant)
-    
-    # Variant detail modal
     variantDetailServer("variant_detail", clicked_variant, all_tables_cleaned)
 }
