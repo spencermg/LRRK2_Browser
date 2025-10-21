@@ -130,7 +130,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     
                     # Full Data Table
                     tags$h3(
-                        "Complete Variant Data", 
+                        "Variant Frequencies by Ancestry", 
                         style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
                     ),
                     tags$div(

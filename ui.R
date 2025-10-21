@@ -45,6 +45,22 @@ ui <- dashboardPage(
             geneOverviewUI("gene_overview")
         ),
 
+        # Overview numbers for LRRK2
+        box(
+            title = tags$div(
+                "Other resources",
+                style = box_title_font_style
+            ),
+            closable = FALSE,
+            collapsible = TRUE,
+            collapsed = FALSE,
+            status = NULL,
+            width = 12,
+            solidHeader = FALSE,
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", metadata_box_color, "; padding: 10px;"),
+            otherResourcesUI("other_resources")
+        ),
+
         # Summary table for different variant functional annotation categories
         box(
             title = tags$div(

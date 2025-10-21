@@ -38,7 +38,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             # Subset only variants with kinase activity
             dat <- variant_data[
                 !is.na(variant_data[["Kinase activity (mean pRAB10/RAB10)"]]),
-                c("AA change", "Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #"),
+                c("Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #"),
                 with = FALSE
             ]
 

@@ -124,7 +124,7 @@ server <- function(input, output, session) {
                 inadvertent data release</li>
                 <li>Abide by all relevant laws and regulations regarding genomic data 
                 and their use</li>
-                <li>NOt bulk download data without explicit consent from the LRRK2 
+                <li>NOT bulk download data without explicit consent from the LRRK2 
                 Browser team </li>
             </ul>
             <p style='color: black;'>While data in this browser have undergone quality 
@@ -141,6 +141,9 @@ server <- function(input, output, session) {
     
     # General metadata about LRRK2
     geneOverviewServer("gene_overview")
+
+    # Links to other resources
+    otherResourcesServer("other_resources")
 
     # Counts of variants across functional annotation categories 
     annotationSummaryTableServer("annotation_summary_table", all_tables_cleaned)
