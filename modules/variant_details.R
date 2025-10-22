@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 # =========================================================================
 # UI FUNCTION
 # =========================================================================
@@ -55,7 +57,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             # Build the popup content
             popup_content <- if (nrow(variant_details) > 0) {
                 tagList(
-                    # Variant Overview (variant annotations, etc.)
+                    # Variant Annotations
                     tags$h3(
                         "Overview", 
                         style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
@@ -135,7 +137,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                         }
                     ),
                     
-                    # Full Data Table
+                    # Allele frequencies across each ancestry
                     tags$h3(
                         "Variant Frequencies by Ancestry", 
                         style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"

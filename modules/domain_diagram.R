@@ -1,6 +1,17 @@
 #!/usr/bin/env Rscript
 
 # =========================================================================
+# AUXILIARY FUNCTIONS
+# =========================================================================
+
+get_text_color <- function(hex) {
+    rgb <- col2rgb(hex) / 255
+    brightness <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
+    if (brightness > 0.5) "black" else "white"
+}
+
+
+# =========================================================================
 # UI FUNCTION
 # =========================================================================
 
@@ -22,11 +33,10 @@ diagramServer <- function(
     variants,
     mode,
     top_n,
-    max_labels = 6,          # Max num labels to stack on each other
-    min_label_sep_px = 50,   # Num pixel gap below which labels stack vertically
-    label_lift = 0.07,
-    label_offset = 1,
-    y_padding = 0.07
+    max_stack_size = 6,     # Max num labels to stack on each other
+    min_label_sep_px = 50,  # Num pixel gap below which labels stack vertically
+    label_lift = 0.07,      # Vertical lift per stacked label
+    label_offset = 1        # Additional vertical offset above lollipop for first label
 ) {
     # Map position to x-value accounting for connecting line segments
     map_pos_to_x <- function(pos_vec) {
@@ -35,15 +45,15 @@ diagramServer <- function(
     }
 
     moduleServer(id, function(input, output, session) {
-        # Full x-range and reactive current window
+        # Full x-range and interactive window
         x_full   <- c(
             min(domains$start), 
             max(domains$end)
         )
         x_window <- reactiveVal(x_full)
 
+        # Find all variants within the diagram and precompute their x/y coords
         v_all <- local({
-            # Keep only the variants that fit in the range of the diagram
             v <- variants[
                 is.finite(variants$pos) &
                 variants$pos >= min(domain_positions) &
@@ -52,13 +62,12 @@ diagramServer <- function(
             ]
             if (nrow(v) == 0) return(NULL)
 
-            # Precompute variant coords/heights upfront
             v$x <- map_pos_to_x(v$pos)
             v$y_top <- 0.6
             v
         })
 
-        # Recompute visible Top N variants whenever the window changes
+        # Recompute Top N variants dynamically based on current x-window
         v_visible <- reactive({
             if (is.null(v_all)) return(NULL)
             x_range <- x_window()
@@ -98,12 +107,12 @@ diagramServer <- function(
         }, ignoreInit = TRUE)
 
         output$diagram <- renderPlotly({
-            # Adjusted start/end for the boxes
+            # Start/end for the boxes, adjusted for connecting line segments
             domains$start_adj <- domains$start + subdomain_gap/2
             domains$end_adj   <- domains$end   - subdomain_gap/2
 
             # Find height of y-axis to fit all labels
-            y_max <- max(1, 0.6 + (label_offset + max(0, max_labels - 1)) * label_lift + y_padding)
+            y_max <- max(1, 0.6 + (label_offset + max(1, max_stack_size)) * label_lift)
 
             # Set up base plot
             p <- plotly::plot_ly(source = id) %>%
@@ -151,14 +160,9 @@ diagramServer <- function(
                 showlegend = FALSE
             )
 
-            get_text_color <- function(hex) {
-                rgb <- col2rgb(hex) / 255
-                brightness <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
-                if (brightness > 0.5) "black" else "white"
-            }
-
             # Domain rectangles + labels
             for (i in seq_len(nrow(domains))) {
+                # Add boxes for each domain
                 p <- plotly::add_trace(
                     p,
                     x = c(
@@ -177,6 +181,8 @@ diagramServer <- function(
                     hoveron = "fills",
                     showlegend = FALSE
                 )
+
+                # Add protein domain labels
                 p <- plotly::add_annotations(
                     p,
                     x = (domains$start_adj[i] + domains$end_adj[i]) / 2,
@@ -189,7 +195,6 @@ diagramServer <- function(
 
             # Add positional labels along the horizontal axis
             if (mode == "protein") {
-                # Add domain boundary tick labels
                 p <- plotly::add_annotations(
                     p, 
                     x = 1, 
@@ -228,11 +233,10 @@ diagramServer <- function(
                 }
             }
 
-
-            # Lollipops: only Top N within current window (with label collision avoidance)
+            # Add variant lollipops
             vv <- v_visible()
             if (!is.null(vv) && nrow(vv) > 0) {
-                # stems
+                # Stems
                 x_seg <- as.numeric(t(cbind(vv$x, vv$x, NA)))
                 y_seg <- as.numeric(t(cbind(rep(0.2, nrow(vv)), vv$y_top, NA)))
                 p <- plotly::add_trace(
@@ -245,7 +249,7 @@ diagramServer <- function(
                     hoverinfo = "none", 
                     showlegend = FALSE
                 )
-                # markers
+                # Markers
                 p <- plotly::add_trace(
                     p,
                     x = vv$x, 
@@ -259,7 +263,7 @@ diagramServer <- function(
                     showlegend = FALSE
                 )
 
-                # ---- Stacked labels (uses tunables above) ----
+                # Stack variants vertically if needed
                 out_id <- session$ns("diagram")
                 w_px <- session$clientData[[paste0("output_", out_id, "_width")]]
                 if (is.null(w_px) || w_px <= 0) w_px <- 800
@@ -267,24 +271,24 @@ diagramServer <- function(
                 thr_x <- (xr[2] - xr[1]) * (min_label_sep_px / w_px)
 
                 ord <- order(vv$x, vv$y_top)
-                last_x <- rep(-Inf, max_labels)
+                last_x <- rep(-Inf, max_stack_size)
                 labels  <- rep(NA_integer_, nrow(vv))
 
                 for (i in ord) {
-                    for (L in seq_len(max_labels)) {
+                    for (L in seq_len(max_stack_size)) {
                         if (vv$x[i] - last_x[L] >= thr_x) {
                             labels[i] <- L - 1
                             last_x[L] <- vv$x[i]
                             break
                         }
                     }
-                    # if not placed, label omitted
                 }
 
+                # Add labels for stacked variants
                 lab <- vv[!is.na(labels), , drop = FALSE]
                 if (nrow(lab) > 0) {
                     lab_y <- lab$y_top + (labels[!is.na(labels)] + label_offset) * label_lift
-                    lab_y <- pmin(y_max - y_padding/2, lab_y)  # clamp to top
+                    lab_y <- pmin(y_max - label_lift/2, lab_y)
 
                     p <- plotly::add_trace(
                         p,

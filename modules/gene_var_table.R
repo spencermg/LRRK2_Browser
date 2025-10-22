@@ -7,8 +7,8 @@
 geneVarTableUI <- function(id) {
     ns <- NS(id)
     tagList(
-        # Row with ancestry dropdown + filter buttons
         fluidRow(
+            # Add dropdown for ancestry selection
             column(
                 width = 3,
                 selectInput(
@@ -18,6 +18,7 @@ geneVarTableUI <- function(id) {
                     width    = "100%"
                 )
             ),
+            # Add buttons to vilter variants
             column(
                 width = 4,
                 shinyWidgets::checkboxGroupButtons(
@@ -36,7 +37,6 @@ geneVarTableUI <- function(id) {
             )
         ),
         
-        # Table
         fluidRow(
             column(
                 width = 12,
@@ -45,7 +45,6 @@ geneVarTableUI <- function(id) {
         )
     )
 }
-
 
 
 # =========================================================================

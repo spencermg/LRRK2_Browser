@@ -7,6 +7,7 @@
 barChartUI <- function(id) {
     ns <- NS(id)
     tagList(
+        # Sort order dropdown by either genomic coordinate or kinase activity
         div(
             style = "display: inline-block; vertical-align: middle; margin-left: 10px;",
             "Sort by:",
@@ -18,6 +19,7 @@ barChartUI <- function(id) {
                 width = "200px"
             )
         ),
+        # Bar chart output
         div(
             style = "overflow-x: auto; overflow-y: hidden; width: 100%;",
             plotlyOutput(ns("bar_chart"), height = "500px", width = "2000px")
@@ -35,49 +37,56 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
         output$bar_chart <- renderPlotly({
             req(variant_data)
 
-            # Subset only variants with kinase activity
+            # Subset only variants with kinase activity, keeping only necessary columns
             dat <- variant_data[
                 !is.na(variant_data[["Kinase activity (mean pRAB10/RAB10)"]]),
-                c("Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #"),
+                c("Kinase activity (mean pRAB10/RAB10)", "cDNA change", "AA change", "Exon #", "Variant (GrCh38)"),
                 with = FALSE
             ]
 
             # Sort based on dropdown selection
-            dat <- switch(input$sort_order,
-                coord    = dat,  # leave as-is (assumes already in genomic order)
+            dat <- switch(
+                input$sort_order,
+                coord    = dat,
                 activity = dat[order(-dat[["Kinase activity (mean pRAB10/RAB10)"]]), ]
             )
 
+            # Convert AA change column to factor for plotting on horizontal axis
             dat[, `AA change` := factor(`AA change`, levels = dat$`AA change`)]
             
             # Convert to data frame for plotly
-            dat_df <- as.data.frame(dat)
+            dat <- as.data.frame(dat)
 
-            custom_data <- lapply(1:nrow(dat_df), function(i) {
-                list(dat_df$`cDNA change`[i], dat_df$`AA change`[i])
-            })
-
+            # Define color palette based on sort order
+            # Keep consistent with domain diagrams if sorting by coordinate
+            # Use purple/green/gray scheme if sorting by kinase activity
             if (input$sort_order == "coord") {
-                color_palette <- domain_colors[dat_df$`Exon #`]
+                color_palette <- domain_colors[dat$`Exon #`]
             } else {
-                activity_vals <- dat_df$`Kinase activity (mean pRAB10/RAB10)`
+                activity_vals <- dat$`Kinase activity (mean pRAB10/RAB10)`
                 color_palette <- ifelse(
-                    activity_vals > kinase_activation_threshold, "#8c4e9f",
-                    ifelse(activity_vals < kinase_inactivation_threshold, "#34a270", "#e3e4e3")
+                    activity_vals > kinase_activation_threshold, "#8C4E9F",
+                    ifelse(activity_vals < kinase_inactivation_threshold, "#34A270", "#E3E3E3")
                 )
             }
 
+            # Store genomic and cDNA changes to include in tooltip
+            custom_data <- lapply(1:nrow(dat), function(i) {
+                list(dat$`Variant (GrCh38)`[i], dat$`cDNA change`[i])
+            })
+
             # Make the bar plot
             p <- plot_ly(
-                dat_df,
+                dat,
                 x = ~`AA change`,
                 y = ~`Kinase activity (mean pRAB10/RAB10)`,
                 type = "bar",
                 marker = list(color = color_palette),
                 customdata = custom_data,
-                hovertemplate = "%{x}<br>cDNA change: %{customdata[0]}<br>AA change: %{customdata[1]}<br>Kinase activity: %{y:.3f}<extra></extra>"
+                hovertemplate = "DNA change:    %{customdata[0]}<br>cDNA change:  %{customdata[1]}<br>AA change:       %{x}<br>Kinase activity: %{y:.3f}<extra></extra>"
             )
 
+            # Add kinase activation threshold line and domain annotations if sorting by genomic coordinate
             if (input$sort_order == "coord") {
                 line_shape <- list(
                     type = "line",
@@ -87,16 +96,15 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     yref = "y",
                     y0 = 1.4,
                     y1 = 1.4,
-                    line = list(color = "#8c4e9f", width = 2, dash = "dash")
+                    line = list(color = "#8C4E9F", width = 2, dash = "dash")
                 )
-
                 line_annotation <- list(
                     xref = "paper",
                     x = 1.00,
                     y = 1.4,
                     text = "Kinase activating",
                     showarrow = FALSE,
-                    font = list(color = "#8c4e9f", size = 14),
+                    font = list(color = "#8C4E9F", size = 14),
                     xanchor = "left",
                     yanchor = "middle"
                 )
@@ -106,18 +114,15 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     Domain = rep(c("ARM", "ANK", "LRR", "ROC", "COR-A", "COR-B", "KIN", "WD-40"),
                                 times = c(17, 2, 9, 3, 3, 4, 5, 8))
                 )
-
-                dat_df <- merge(dat_df, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
-
-                dat_df$`AA change` <- factor(dat_df$`AA change`, levels = dat_df$`AA change`)
-
-                domain_annotations <- lapply(unique(dat_df$Domain), function(domain_name) {
-                    domain_variants <- which(dat_df$Domain == domain_name)
+                dat <- merge(dat, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
+                dat$`AA change` <- factor(dat$`AA change`, levels = dat$`AA change`)
+                domain_annotations <- lapply(unique(dat$Domain), function(domain_name) {
+                    domain_variants <- which(dat$Domain == domain_name)
                     if (length(domain_variants) == 0) return(NULL)
                     midpoint <- mean(domain_variants) - 1
                     list(
                         x = midpoint,
-                        y = max(dat_df$`Kinase activity (mean pRAB10/RAB10)`) * 1.05,
+                        y = max(dat$`Kinase activity (mean pRAB10/RAB10)`) * 1.05,
                         text = domain_name,
                         showarrow = FALSE,
                         font = list(size = 14, color = "black"),
@@ -133,6 +138,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 domain_annotations <- NULL
             }
 
+            # Update plot layout
             p <- p %>%
                 layout(
                     title = NULL,

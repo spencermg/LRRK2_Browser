@@ -45,7 +45,7 @@ ui <- dashboardPage(
             geneOverviewUI("gene_overview")
         ),
 
-        # Overview numbers for LRRK2
+        # Links to external resources
         box(
             title = tags$div(
                 "Other resources",
