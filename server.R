@@ -45,12 +45,20 @@ exon_positions <- c(
     7463, 7585
 )
 
-
 # Store metadata for protein subdomains and exons
 num_protein_domains <- length(protein_domain_positions) - 1
 protein_domain_names <- c("ARM","ANK","LRR","ROC","COR-A","COR-B","KIN","WD-40")
 protein_domain_positions_adj <- protein_domain_positions + (0:num_protein_domains) * subdomain_gap
-protein_domain_tooltips <- rep("Protein subdomain", num_protein_domains)
+protein_domain_tooltips <- c(
+    "Armadillo repeats",
+    "Ankyrin repeats",
+    "Leucine-rich repeats",
+    "Ras of complex protein",
+    "C-terminal of ROC (A)",
+    "C-terminal of ROC (B)",
+    "Kinase",
+    "WD-40"
+)
 protein_domains <- data.frame(
     start = protein_domain_positions_adj[-(num_protein_domains + 1)],
     end   = protein_domain_positions_adj[-1],
@@ -89,7 +97,6 @@ all_tables_cleaned <- lapply(all_tables, function(x) clean_variant_table(
     kinase_activation_threshold
 ))
 
-### TODO: Update this with all variants and real values for variants
 # Variants to include in lollipops for domain diagrams
 variants <- data.frame(
     aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
