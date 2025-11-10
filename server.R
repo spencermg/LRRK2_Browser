@@ -15,13 +15,13 @@ kinase_inactivation_threshold <- 0.50
 
 # Define colors to use for each subdomain and exon
 protein_domain_colors <- c(
-    "#035c81",
-    "#e3e4e3",
-    "#0c8dc3", 
-    "#cccccc", 
-    "#4ba3c9", 
-    "#999999", 
-    "#86c1da", 
+    "#035C81",
+    "#E3E3E3",
+    "#0C8DC3",
+    "#CCCCCC",
+    "#4BA3C9",
+    "#999999",
+    "#86C1DA",
     "#666666"
 )
 exon_colors <- c(
@@ -84,18 +84,23 @@ exons <- data.frame(
 # =========================================================================
 
 # Load data for each ancestry separately and also combined
-df <- fread("lrrk2_data.tsv")
-ancestry_tables <- split(df, df$Ancestry)
-combined_table <- fread("lrrk2_grouped.tsv")
-all_tables <- c(list(Combined = combined_table), ancestry_tables)
+df <- fread("lrrk2_combined.tsv")
+# ancestry_tables <- split(df, df$Ancestry)
+# combined_table <- fread("lrrk2_grouped.tsv")
+# all_tables <- c(list(Combined = combined_table), ancestry_tables)
+all_tables <- split(df, df$Ancestry)
 
 # Process tables, keeping combined tables by default
-all_tables_cleaned <- lapply(all_tables, function(x) clean_variant_table(
-    x, 
-    cadd_deleterious_threshold,
-    conservation_conserved_threshold,
-    kinase_activation_threshold
-))
+all_tables_cleaned <- lapply(names(all_tables), function(name) {
+    clean_variant_table(
+        all_tables[[name]],
+        ancestry = name,
+        cadd_deleterious_threshold,
+        conservation_conserved_threshold,
+        kinase_activation_threshold
+    )
+})
+names(all_tables_cleaned) <- names(all_tables)
 
 # Variants to include in lollipops for domain diagrams
 variants <- data.frame(
