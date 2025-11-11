@@ -177,7 +177,14 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     fluidRow(
                         column(6, plotlyOutput(ns("pd_pie"), height = "300px")),
                         column(6, plotlyOutput(ns("control_pie"), height = "300px"))
-                    )
+                    ),
+
+                    # AAO Histogram
+                    tags$h3(
+                        "Age at Onset (AAO) Distribution",
+                        style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
+                    ),
+                    plotlyOutput(ns("aao_hist"), height = "300px")
                 )
             } else {
                 tags$p("No details available for this variant.")
@@ -205,7 +212,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     name = "PD",
                     hoverinfo = "label+percent"
                 ) %>% layout(
-                    title = "PD Family History",
+                    title = "PD Cases",
                     showlegend = TRUE
                 )
             })
@@ -222,9 +229,45 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     name = "Control",
                     hoverinfo = "label+percent"
                 ) %>% layout(
-                    title = "Control Family History",
+                    title = "Healthy Controls",
                     showlegend = TRUE
                 )
+            })
+
+
+            # Render AAO histogram
+            output$aao_hist <- renderPlotly({
+                # Extract the counts for each AAO bin
+                aao_cols <- c(
+                    "AAO (1-10)", "AAO (11-20)", "AAO (21-30)", "AAO (31-40)",
+                    "AAO (41-50)", "AAO (51-60)", "AAO (61-70)", "AAO (71-80)",
+                    "AAO (81-90)", "AAO (91-100)"
+                )
+                aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
+
+                # Clean up x-axis labels to show only the ranges
+                aao_labels <- gsub("AAO \\(|\\)", "", aao_cols)
+
+                # Create a data frame for plotting
+                aao_df <- data.frame(
+                    Range = factor(aao_labels, levels = aao_labels),
+                    Count = as.numeric(aao_counts)
+                )
+                
+                # Plotly bar chart
+                plot_ly(
+                    data = aao_df,
+                    x = ~Range,
+                    y = ~Count,
+                    type = "bar",
+                    marker = list(color = "#64B5F6"),
+                    hovertemplate = "Count: %{y}<extra></extra>"
+                ) %>%
+                    layout(
+                        xaxis = list(title = "Age at Onset Range"),
+                        yaxis = list(title = "Count"),
+                        bargap = 0.2
+                    )
             })
 
             # Show popup
