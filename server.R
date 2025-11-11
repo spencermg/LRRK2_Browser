@@ -85,9 +85,6 @@ exons <- data.frame(
 
 # Load data for each ancestry separately and also combined
 df <- fread("lrrk2_combined.tsv")
-# ancestry_tables <- split(df, df$Ancestry)
-# combined_table <- fread("lrrk2_grouped.tsv")
-# all_tables <- c(list(Combined = combined_table), ancestry_tables)
 all_tables <- split(df, df$Ancestry)
 
 # Process tables, keeping combined tables by default

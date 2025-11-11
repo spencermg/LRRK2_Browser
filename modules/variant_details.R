@@ -167,13 +167,67 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                                 })
                             )
                         )
+                    ),
+
+                    # Family History Pie Charts
+                    tags$h3(
+                        "Carrier Family History",
+                        style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
+                    ),
+                    fluidRow(
+                        column(6, plotlyOutput(ns("pd_pie"), height = "300px")),
+                        column(6, plotlyOutput(ns("control_pie"), height = "300px"))
                     )
                 )
             } else {
                 tags$p("No details available for this variant.")
             }
-            
-            # Show popup with variant details
+
+            # Prepare family history data for pie charts
+            pd_fh <- colSums(variant_details[, c("No family history (PD)", "Family history (PD)", "Unknown family history (PD)"), with = FALSE], na.rm = TRUE)
+            control_fh <- colSums(variant_details[, c("No family history (Control)", "Family history (Control)", "Unknown family history (Control)"), with = FALSE], na.rm = TRUE)
+            fh_labels <- c("No", "Yes", "Unknown")
+            fh_colors <- c("#E57373", "#81C784", "#BDBDBD")
+
+            # Keep zeros as NA to preserve order but hide from display
+            pd_fh_display <- ifelse(pd_fh == 0, NA, pd_fh)
+            control_fh_display <- ifelse(control_fh == 0, NA, control_fh)
+
+            # Render PD pie chart
+            output$pd_pie <- renderPlotly({
+                plot_ly(
+                    labels = fh_labels,
+                    values = pd_fh_display,
+                    type = "pie",
+                    sort = FALSE,
+                    direction = "counterclockwise",
+                    marker = list(colors = fh_colors),
+                    name = "PD",
+                    hoverinfo = "label+percent"
+                ) %>% layout(
+                    title = "PD Family History",
+                    showlegend = TRUE
+                )
+            })
+
+            # Render Control pie chart
+            output$control_pie <- renderPlotly({
+                plot_ly(
+                    labels = fh_labels,
+                    values = control_fh_display,
+                    type = "pie",
+                    sort = FALSE,
+                    direction = "counterclockwise",
+                    marker = list(colors = fh_colors),
+                    name = "Control",
+                    hoverinfo = "label+percent"
+                ) %>% layout(
+                    title = "Control Family History",
+                    showlegend = TRUE
+                )
+            })
+
+            # Show popup
             showModal(modalDialog(
                 title = tags$div(
                     style = "font-size: 24px; font-weight: bold; text-align: center;",

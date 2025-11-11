@@ -53,6 +53,25 @@ geneVarTableUI <- function(id) {
 
 geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
     moduleServer(id, function(input, output, session) {
+        cols_to_keep <- c(
+            "Variant (GrCh38)",
+            "PD frequency",
+            "Control frequency",
+            "Gnomad allele frequency",
+            "Region",
+            "Functional consequence",
+            "CADD",
+            "rsID",
+            "Clinical significance",
+            "Clinical disease name",
+            "Exon #",
+            "cDNA change",
+            "AA change",
+            "Protein domain",
+            "Conservation score",
+            "Kinase activity (mean pRAB10/RAB10)"
+        )
+
         ns <- session$ns
 
         # Initialize dataset selector
@@ -65,6 +84,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         # Apply selected filters
         dat_rx <- reactive({
             dat <- all_tables_cleaned[[ req(input$dataset) ]]
+            dat <- dat[, ..cols_to_keep]
             sel <- input$filters %||% character(0)
 
             if ("Deleterious" %in% sel) {
