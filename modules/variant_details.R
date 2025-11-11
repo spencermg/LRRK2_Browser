@@ -253,6 +253,12 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     Range = factor(aao_labels, levels = aao_labels),
                     Count = as.numeric(aao_counts)
                 )
+
+                # Get min/median/max from dat (combined ancestry)
+                dat_combined <- variant_details[Ancestry == "Combined"]
+                min_aao <- dat_combined$`Minimum AAO`[1]
+                med_aao <- round(dat_combined$`Median AAO`[1])
+                max_aao <- dat_combined$`Maximum AAO`[1]
                 
                 # Plotly bar chart
                 plot_ly(
@@ -264,7 +270,14 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     hovertemplate = "Count: %{y}<extra></extra>"
                 ) %>%
                     layout(
-                        xaxis = list(title = "Age at Onset Range"),
+                        xaxis = list(
+                            title = paste0(
+                                "Age at Onset Range<br>",
+                                "Min: ", min_aao, 
+                                ", Median: ", med_aao, 
+                                ", Max: ", max_aao
+                            )
+                        ),
                         yaxis = list(title = "Count"),
                         bargap = 0.2
                     )
