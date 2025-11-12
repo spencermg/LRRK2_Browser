@@ -31,15 +31,18 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         FIN = "gnomad41_genome_AF_fin",
         MDE = "gnomad41_genome_AF_mid",
         EUR = "gnomad41_genome_AF_nfe",
-        CAH = "gnomad41_genome_AF_remaining",
         SAS = "gnomad41_genome_AF_sas",
+        AAC = NA,
+        CAS = NA,
+        CAH = NA,
         Combined = "gnomad41_genome_AF"
     )
 
     # Use general gnomad frequency for missing ancestries
     gnomad_col <- ancestry_col_map[[ancestry]]
-    if (is.null(gnomad_col) || !(gnomad_col %in% names(table))) {
-        gnomad_col <- "gnomad41_genome_AF"
+    if (is.na(gnomad_col)) {
+        table[, "Gnomad allele frequency" := NA_real_]
+        gnomad_col <- "Gnomad allele frequency"
     }
 
     # Keep only relevant columns (including chosen gnomad col)

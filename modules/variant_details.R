@@ -41,7 +41,6 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
-            print(variant_details)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
             variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "Gnomad allele frequency"), drop = FALSE]
