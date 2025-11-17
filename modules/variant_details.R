@@ -177,7 +177,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
 
                     # Family History Pie Charts
                     tags$h3(
-                        "Carrier Family History",
+                        "Family History of Parkinson's Disease Among Carriers",
                         style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
                     ),
                     fluidRow(
@@ -187,7 +187,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
 
                     # AAO Histogram
                     tags$h3(
-                        "Age at Onset (AAO) Distribution",
+                        "Age at Onset (AAO) Distribution Among Carriers",
                         style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
                     ),
                     plotlyOutput(ns("aao_hist"), height = "300px")
@@ -200,7 +200,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             pd_fh <- colSums(variant_details[, c("No family history (PD)", "Family history (PD)", "Unknown family history (PD)"), with = FALSE], na.rm = TRUE)
             control_fh <- colSums(variant_details[, c("No family history (Control)", "Family history (Control)", "Unknown family history (Control)"), with = FALSE], na.rm = TRUE)
             fh_labels <- c("No", "Yes", "Unknown")
-            fh_colors <- c("#E57373", "#81C784", "#BDBDBD")
+            fh_colors <- c("#8C4E9F", "#4FC190", "#D3D3D3")
 
             # Keep zeros as NA to preserve order but hide from display
             pd_fh_display <- ifelse(pd_fh == 0, NA, pd_fh)
@@ -272,13 +272,13 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                     x = ~Range,
                     y = ~Count,
                     type = "bar",
-                    marker = list(color = "#64B5F6"),
+                    marker = list(color = "#0C8DC3"),
                     hovertemplate = "Count: %{y}<extra></extra>"
                 ) %>%
                     layout(
                         xaxis = list(
                             title = paste0(
-                                "Age at Onset Range<br>",
+                                "Age at Onset Range (years)<br>",
                                 "Min: ", min_aao, 
                                 ", Median: ", med_aao, 
                                 ", Max: ", max_aao
