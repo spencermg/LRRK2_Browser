@@ -67,7 +67,14 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                             tags$p(tags$strong("rsID: "), variant_details$rsID[1])
                         },
                         if ("Functional consequence" %in% colnames(variant_details)) {
-                            tags$p(tags$strong("Functional Consequence: "), variant_details$`Functional consequence`[1])
+                            tags$p(
+                                tags$strong("Functional Consequence: "), 
+                                ifelse(
+                                    !is.na(variant_details$`Functional consequence`[1]), 
+                                    round(variant_details$`Functional consequence`[1], 2), 
+                                    "N/A"
+                                )
+                            )
                         },
                         if ("Region" %in% colnames(variant_details)) {
                             tags$p(tags$strong("Region: "), variant_details$Region[1])
