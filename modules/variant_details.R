@@ -41,6 +41,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
+            print(variant_details)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
             variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "Gnomad allele frequency"), drop = FALSE]
@@ -71,7 +72,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                                 tags$strong("Functional Consequence: "), 
                                 ifelse(
                                     !is.na(variant_details$`Functional consequence`[1]), 
-                                    round(variant_details$`Functional consequence`[1], 2), 
+                                    variant_details$`Functional consequence`[1], 
                                     "N/A"
                                 )
                             )
@@ -208,6 +209,20 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
 
             # Render PD pie chart
             output$pd_pie <- renderPlotly({
+                # If there are no carriers, show a message instead of a chart
+                if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
+                    return(plotly_empty(type = "scatter") %>%
+                        layout(
+                            annotations = list(
+                                text = "No PD carrier data \navailable for this variant",
+                                x = 0.5, 
+                                y = 0.5, 
+                                showarrow = FALSE,
+                                font = list(size = 14, color = "#888")
+                            )
+                        )
+                    )
+                }
                 plot_ly(
                     labels = fh_labels,
                     values = pd_fh_display,
@@ -225,6 +240,20 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
 
             # Render Control pie chart
             output$control_pie <- renderPlotly({
+                # If there are no carriers, show a message instead of a chart
+                if (variant_details[Ancestry == "Combined", `Control frequency`][1] == 0) {
+                    return(plotly_empty(type = "scatter") %>%
+                        layout(
+                            annotations = list(
+                                text = "No healthy control carrier data \navailable for this variant",
+                                x = 0.5, 
+                                y = 0.5, 
+                                showarrow = FALSE,
+                                font = list(size = 14, color = "#888")
+                            )
+                        )
+                    )
+                }
                 plot_ly(
                     labels = fh_labels,
                     values = control_fh_display,
@@ -251,24 +280,37 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 )
                 aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
 
-                # Clean up x-axis labels to show only the ranges
-                aao_labels <- gsub("AAO \\(|\\)", "", aao_cols)
+                # If there are no carriers, show a message instead of a chart
+                if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
+                    return(plotly_empty(type = "scatter") %>%
+                        layout(
+                            annotations = list(
+                                text = "No PD carrier data \navailable for this variant",
+                                x = 0.5, 
+                                y = 0.5, 
+                                showarrow = FALSE,
+                                font = list(size = 14, color = "#888")
+                            )
+                        )
+                    )
+                }
 
-                # Create a data frame for plotting
-                aao_df <- data.frame(
+                # Prepare labels and data
+                aao_labels <- gsub("AAO \\(|\\)", "", aao_cols)
+                df_aao <- data.frame(
                     Range = factor(aao_labels, levels = aao_labels),
                     Count = as.numeric(aao_counts)
                 )
 
-                # Get min/median/max from dat (combined ancestry)
+                # Get min/median/max across all ancestries
                 dat_combined <- variant_details[Ancestry == "Combined"]
-                min_aao <- dat_combined$`Minimum AAO`[1]
-                med_aao <- round(dat_combined$`Median AAO`[1])
-                max_aao <- dat_combined$`Maximum AAO`[1]
-                
-                # Plotly bar chart
+                min_aao <- suppressWarnings(as.numeric(dat_combined$`Minimum AAO`[1]))
+                med_aao <- suppressWarnings(as.numeric(dat_combined$`Median AAO`[1]))
+                max_aao <- suppressWarnings(as.numeric(dat_combined$`Maximum AAO`[1]))
+
+                # Build the histogram
                 plot_ly(
-                    data = aao_df,
+                    data = df_aao,
                     x = ~Range,
                     y = ~Count,
                     type = "bar",
@@ -279,9 +321,9 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                         xaxis = list(
                             title = paste0(
                                 "Age at Onset Range (years)<br>",
-                                "Min: ", min_aao, 
-                                ", Median: ", med_aao, 
-                                ", Max: ", max_aao
+                                "Min: ", ifelse(is.na(min_aao), "N/A", min_aao),
+                                ", Median: ", ifelse(is.na(med_aao), "N/A", med_aao),
+                                ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao)
                             )
                         ),
                         yaxis = list(title = "Count"),
