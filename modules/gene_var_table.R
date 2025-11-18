@@ -8,6 +8,13 @@ geneVarTableUI <- function(id) {
     ns <- NS(id)
     tagList(
         fluidRow(
+            column(
+                width = 12,
+                tags$p(
+                    "*Some ancestries do not have reported allele frequencies through gnomAD, and are thus indicated as 'N/A'.",
+                    style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
+                )
+            ),
             # Add dropdown for ancestry selection
             column(
                 width = 3,
@@ -57,7 +64,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             "Variant (GrCh38)",
             "PD frequency",
             "Control frequency",
-            "Gnomad allele frequency",
+            "gnomAD allele frequency",
             "Region",
             "Functional consequence",
             "CADD",
@@ -119,7 +126,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             }
 
             # Columns to show in scientific notation
-            sci_cols    <- intersect(c("PD frequency", "Control frequency", "Gnomad allele frequency"), colnames(dat))
+            sci_cols    <- intersect(c("PD frequency", "Control frequency", "gnomAD allele frequency"), colnames(dat))
             sci_targets <- match(sci_cols, colnames(dat)) - 1L
 
             DT::datatable(

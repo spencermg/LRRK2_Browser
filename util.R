@@ -41,8 +41,8 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
     # Use general gnomad frequency for missing ancestries
     gnomad_col <- ancestry_col_map[[ancestry]]
     if (is.na(gnomad_col)) {
-        table[, "Gnomad allele frequency" := NA_real_]
-        gnomad_col <- "Gnomad allele frequency"
+        table[, "gnomAD allele frequency" := NA_real_]
+        gnomad_col <- "gnomAD allele frequency"
     }
 
     # Keep only relevant columns (including chosen gnomad col)
@@ -116,7 +116,7 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Variant (GrCh38)",
         "PD frequency",
         "Control frequency",
-        "Gnomad allele frequency",
+        "gnomAD allele frequency",
         "Region",
         "Functional consequence",
         "CADD",

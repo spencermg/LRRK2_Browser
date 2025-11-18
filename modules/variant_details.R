@@ -41,11 +41,10 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
-            print(variant_details)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
-            variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "Gnomad allele frequency"), drop = FALSE]
-            for (col in c("PD frequency", "Control frequency", "Gnomad allele frequency")) {
+            variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "gnomAD allele frequency"), drop = FALSE]
+            for (col in c("PD frequency", "Control frequency", "gnomAD allele frequency")) {
                 variant_display[[col]] <- ifelse(
                     is.na(variant_display[[col]]),
                     "N/A",
@@ -172,6 +171,10 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                                         })
                                     )
                                 })
+                            ),
+                            tags$p(
+                                "*Some ancestries do not have reported allele frequencies through gnomAD, and are thus indicated as 'N/A'.",
+                                style = "font-size: 11px; font-style: italic; color: #555; margin-top: 5px; text-align: center;"
                             )
                         )
                     ),
