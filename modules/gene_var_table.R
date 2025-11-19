@@ -39,7 +39,7 @@ geneVarTableUI <- function(id) {
                     checkIcon = list(
                         yes = icon("ok", lib = "glyphicon"),
                         no  = icon("remove", lib = "glyphicon")
-                  )
+                    )
                 )
             )
         ),

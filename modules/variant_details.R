@@ -214,7 +214,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             output$pd_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
                 if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
-                    return(plotly_empty(type = "scatter") %>%
+                    return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
                                 text = "No PD carrier data \navailable for this variant",
@@ -245,7 +245,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             output$control_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
                 if (variant_details[Ancestry == "Combined", `Control frequency`][1] == 0) {
-                    return(plotly_empty(type = "scatter") %>%
+                    return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
                                 text = "No healthy control carrier data \navailable for this variant",
@@ -285,7 +285,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
 
                 # If there are no carriers, show a message instead of a chart
                 if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
-                    return(plotly_empty(type = "scatter") %>%
+                    return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
                                 text = "No PD carrier data \navailable for this variant",
