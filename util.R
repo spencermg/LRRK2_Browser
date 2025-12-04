@@ -11,7 +11,7 @@ move_dt_column <- function(table, column_being_moved, column_before) {
 }
 
 # Define function to clean variant data table
-clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, conservation_conserved_threshold, kinase_activation_threshold) {
+clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, conservation_conserved_threshold, kinase_activation_threshold, modality) {
     table <- as.data.table(table)
 
     # Compute frequencies
@@ -114,8 +114,8 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
     # Rename columns
     colnames(table) <- c(
         "Variant (GrCh38)",
-        "PD frequency",
-        "Control frequency",
+        paste0("PD frequency (", modality, ")"),
+        paste0("Control frequency (", modality, ")"),
         "gnomAD allele frequency",
         "Region",
         "Functional consequence",

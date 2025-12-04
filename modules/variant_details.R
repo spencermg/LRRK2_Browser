@@ -35,16 +35,23 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 } else {
                     placeholder <- copy(all_tables_cleaned$Combined[`Variant (GrCh38)` == variant_id])
                     placeholder$Ancestry <- anc
-                    placeholder$`PD frequency` <- 0
-                    placeholder$`Control frequency` <- 0
+                    placeholder$`PD frequency (Imputed)` <- 0
+                    placeholder$`Control frequency (Imputed)` <- 0
                     variant_details[[anc]] <- placeholder
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
-            variant_display <- variant_details[, c("Ancestry", "PD frequency", "Control frequency", "gnomAD allele frequency"), drop = FALSE]
-            for (col in c("PD frequency", "Control frequency", "gnomAD allele frequency")) {
+            variant_display <- variant_details[, c(
+                "Ancestry", 
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
+                "PD frequency (WGS)", 
+                "Control frequency (WGS)", 
+                "gnomAD allele frequency"
+            ), drop = FALSE]
+            for (col in c("PD frequency (Imputed)", "Control frequency (Imputed)", "PD frequency (WGS)", "Control frequency (WGS)", "gnomAD allele frequency")) {
                 variant_display[[col]] <- ifelse(
                     is.na(variant_display[[col]]),
                     "N/A",
@@ -213,7 +220,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             # Render PD pie chart
             output$pd_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
+                if (variant_details[Ancestry == "Combined", `PD frequency (Imputed)`][1] == 0) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
@@ -244,7 +251,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
             # Render Control pie chart
             output$control_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `Control frequency`][1] == 0) {
+                if (variant_details[Ancestry == "Combined", `Control frequency (Imputed)`][1] == 0) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
@@ -284,7 +291,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                 aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
 
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `PD frequency`][1] == 0) {
+                if (variant_details[Ancestry == "Combined", `PD frequency (Imputed)`][1] == 0) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(

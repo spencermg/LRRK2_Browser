@@ -84,20 +84,77 @@ exons <- data.frame(
 # =========================================================================
 
 # Load data for each ancestry separately and also combined
-df <- fread("lrrk2_combined.tsv")
-all_tables <- split(df, df$Ancestry)
+df_imputed <- fread("lrrk2_combined_imputed.tsv")
+df_wgs <- fread("lrrk2_combined_wgs.tsv")
+all_tables_imputed <- split(df_imputed, df_imputed$Ancestry)
+all_tables_wgs <- split(df_wgs, df_wgs$Ancestry)
 
 # Process tables, keeping combined tables by default
-all_tables_cleaned <- lapply(names(all_tables), function(name) {
+all_tables_imputed_cleaned <- lapply(names(all_tables_imputed), function(name) {
     clean_variant_table(
-        all_tables[[name]],
+        all_tables_imputed[[name]],
         ancestry = name,
         cadd_deleterious_threshold,
         conservation_conserved_threshold,
-        kinase_activation_threshold
+        kinase_activation_threshold,
+        "Imputed"
     )
 })
-names(all_tables_cleaned) <- names(all_tables)
+all_tables_wgs_cleaned <- lapply(names(all_tables_wgs), function(name) {
+    clean_variant_table(
+        all_tables_wgs[[name]],
+        ancestry = name,
+        cadd_deleterious_threshold,
+        conservation_conserved_threshold,
+        kinase_activation_threshold,
+        "WGS"
+    )
+})
+names(all_tables_imputed_cleaned) <- names(all_tables_imputed)
+names(all_tables_wgs_cleaned) <- names(all_tables_wgs)
+
+# Merge imputed and WGS tables for each ancestry
+all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
+    imputed_table <- all_tables_imputed_cleaned[[name]]
+    wgs_table <- all_tables_wgs_cleaned[[name]]
+    
+    # Perform outer merge on "Variant (GrCh38)"
+    merged_table <- merge(
+        imputed_table, 
+        wgs_table, 
+        by = "Variant (GrCh38)", 
+        all = TRUE,
+        suffixes = c("", ".wgs")
+    )
+    
+    # Identify duplicate columns (excluding frequency columns)
+    duplicate_cols <- grep("\\.wgs$", names(merged_table), value = TRUE)
+    frequency_cols <- c(
+        "PD frequency (Imputed)", 
+        "Control frequency (Imputed)", 
+        "PD frequency (WGS)", 
+        "Control frequency (WGS)"
+    )
+    
+    # For non-frequency duplicate columns, use imputed value if available, otherwise use WGS value
+    cols_to_coalesce <- setdiff(duplicate_cols, paste0(frequency_cols, ".wgs"))
+    for (col in cols_to_coalesce) {
+        base_col <- gsub("\\.wgs$", "", col)
+        merged_table[[base_col]] <- fifelse(
+            is.na(merged_table[[base_col]]), 
+            merged_table[[col]], 
+            merged_table[[base_col]]
+        )
+        # Remove the .wgs column
+        merged_table[[col]] <- NULL
+    }
+    
+    # Remove any duplicate variants (shouldn't happen, but just in case)
+    merged_table <- unique(merged_table, by = "Variant (GrCh38)")
+    
+    return(merged_table)
+})
+names(all_tables_merged) <- names(all_tables_imputed_cleaned)
 
 # Variants to include in lollipops for domain diagrams
 variants <- data.frame(
@@ -155,7 +212,7 @@ server <- function(input, output, session) {
     otherResourcesServer("other_resources")
 
     # Counts of variants across functional annotation categories 
-    annotationSummaryTableServer("annotation_summary_table", all_tables_cleaned)
+    annotationSummaryTableServer("annotation_summary_table", all_tables_merged)
 
     # Protein domain diagram
     diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, protein_variants, "protein", 12)
@@ -168,10 +225,10 @@ server <- function(input, output, session) {
         rep(protein_domain_colors, times = c(17, 2, 9, 3, 3, 4, 5, 8)), 
         seq_len(length(exon_colors))
     )
-    barChartServer("bar_chart", all_tables_cleaned$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
+    barChartServer("bar_chart", all_tables_merged$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
 
     # Main variant table with popup
     clicked_variant <- reactiveVal(NULL)
-    geneVarTableServer("gene_var_table", all_tables_cleaned, clicked_variant)
-    variantDetailServer("variant_detail", clicked_variant, all_tables_cleaned)
+    geneVarTableServer("gene_var_table", all_tables_merged, clicked_variant)
+    variantDetailServer("variant_detail", clicked_variant, all_tables_merged)
 }

@@ -62,8 +62,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
     moduleServer(id, function(input, output, session) {
         cols_to_keep <- c(
             "Variant (GrCh38)",
-            "PD frequency",
-            "Control frequency",
+            "PD frequency (Imputed)",
+            "Control frequency (Imputed)",
+            "PD frequency (WGS)",
+            "Control frequency (WGS)",
             "gnomAD allele frequency",
             "Region",
             "Functional consequence",
@@ -126,7 +128,13 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             }
 
             # Columns to show in scientific notation
-            sci_cols    <- intersect(c("PD frequency", "Control frequency", "gnomAD allele frequency"), colnames(dat))
+            sci_cols    <- intersect(c(
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
+                "PD frequency (WGS)", 
+                "Control frequency (WGS)", 
+                "gnomAD allele frequency"
+            ), colnames(dat))
             sci_targets <- match(sci_cols, colnames(dat)) - 1L
 
             DT::datatable(
