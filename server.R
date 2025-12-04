@@ -118,6 +118,11 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
     imputed_table <- all_tables_imputed_cleaned[[name]]
     wgs_table <- all_tables_wgs_cleaned[[name]]
     
+    # Skip if both tables are empty
+    # if (nrow(imputed_table) == 0 && nrow(wgs_table) == 0) {
+    #     return(data.table())
+    # }
+    
     # Perform outer merge on "Variant (GrCh38)"
     merged_table <- merge(
         imputed_table, 
@@ -127,29 +132,28 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
         suffixes = c("", ".wgs")
     )
     
-    # Identify duplicate columns (excluding frequency columns)
-    duplicate_cols <- grep("\\.wgs$", names(merged_table), value = TRUE)
-    frequency_cols <- c(
-        "PD frequency (Imputed)", 
-        "Control frequency (Imputed)", 
-        "PD frequency (WGS)", 
-        "Control frequency (WGS)"
-    )
+    # Find the actual imputed PD frequency column name
+    pd_freq_col <- grep("PD frequency", names(merged_table), value = TRUE)[1]
     
-    # For non-frequency duplicate columns, use imputed value if available, otherwise use WGS value
-    cols_to_coalesce <- setdiff(duplicate_cols, paste0(frequency_cols, ".wgs"))
-    for (col in cols_to_coalesce) {
+    # Identify which variants came from imputed vs WGS only
+    # If the first PD frequency column is NA, the variant wasn't in imputed data
+    variants_only_in_wgs <- is.na(merged_table[[pd_freq_col]])
+    
+    # Get all duplicate columns and use it only if the variant was WGS-only
+    duplicate_cols <- grep("\\.wgs$", names(merged_table), value = TRUE)
+    for (col in duplicate_cols) {
         base_col <- gsub("\\.wgs$", "", col)
-        merged_table[[base_col]] <- fifelse(
-            is.na(merged_table[[base_col]]), 
-            merged_table[[col]], 
-            merged_table[[base_col]]
-        )
+        if (base_col %in% names(merged_table)) {
+            merged_table[[base_col]] <- fifelse(
+                variants_only_in_wgs, 
+                merged_table[[col]], 
+                merged_table[[base_col]]
+            )
+        }
         # Remove the .wgs column
         merged_table[[col]] <- NULL
     }
-    
-    # Remove any duplicate variants (shouldn't happen, but just in case)
+
     merged_table <- unique(merged_table, by = "Variant (GrCh38)")
     
     return(merged_table)

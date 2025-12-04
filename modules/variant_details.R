@@ -332,7 +332,7 @@ variantDetailServer <- function(id, variant_data, all_tables_cleaned) {
                             title = paste0(
                                 "Age at Onset Range (years)<br>",
                                 "Min: ", ifelse(is.na(min_aao), "N/A", min_aao),
-                                ", Median: ", ifelse(is.na(med_aao), "N/A", med_aao),
+                                ", Median: ", ifelse(is.na(med_aao), "N/A", round(med_aao, 2)),
                                 ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao)
                             )
                         ),
