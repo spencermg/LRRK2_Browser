@@ -93,7 +93,18 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         # Apply selected filters
         dat_rx <- reactive({
             dat <- all_tables_cleaned[[ req(input$dataset) ]]
-            dat <- dat[, ..cols_to_keep]
+
+            freq_cols <- c(
+                "PD frequency (Imputed)",
+                "Control frequency (Imputed)",
+                "PD frequency (WGS)",
+                "Control frequency (WGS)"
+            )
+            keep <- apply(dat[, ..freq_cols], 1, function(row) {
+                any(!is.na(row) & row != 0)
+            })
+            dat <- dat[keep, ]
+
             sel <- input$filters %||% character(0)
 
             if ("Deleterious" %in% sel) {
@@ -112,6 +123,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 dat <- dat[ keep, , drop = FALSE]
             }
 
+            dat <- dat[, ..cols_to_keep]
             dat
         })
 
@@ -128,7 +140,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             }
 
             # Columns to show in scientific notation
-            sci_cols    <- intersect(c(
+            sci_cols <- intersect(c(
                 "PD frequency (Imputed)", 
                 "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 

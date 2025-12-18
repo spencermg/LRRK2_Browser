@@ -118,11 +118,6 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
     imputed_table <- all_tables_imputed_cleaned[[name]]
     wgs_table <- all_tables_wgs_cleaned[[name]]
     
-    # Skip if both tables are empty
-    # if (nrow(imputed_table) == 0 && nrow(wgs_table) == 0) {
-    #     return(data.table())
-    # }
-    
     # Perform outer merge on "Variant (GrCh38)"
     merged_table <- merge(
         imputed_table, 
