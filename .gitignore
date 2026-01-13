@@ -4,10 +4,14 @@ reference_scripts/
 # Ignore raw data
 kinase_activity.tsv
 lrrk2_combined.tsv
-lrrk2_combined_wgs.tsv
 lrrk2_combined_imputed.tsv
+lrrk2_combined_wgs.tsv
+lrrk2_combined_raw.tsv
+lrrk2_combined_exome.tsv
 lrrk2_imputed.tsv
 lrrk2_wgs.tsv
+lrrk2_raw.tsv
+lrrk2_exome.tsv
 
 # Ignore DS Store
 .DS_Store

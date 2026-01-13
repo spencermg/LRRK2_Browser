@@ -52,7 +52,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             )
 
             # Convert AA change column to factor for plotting on horizontal axis
-            dat[, `AA change` := factor(`AA change`, levels = dat$`AA change`)]
+            dat[, `AA change` := factor(`AA change`, levels = unique(dat$`AA change`))]
             
             # Convert to data frame for plotly
             dat <- as.data.frame(dat)
@@ -115,7 +115,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                                 times = c(17, 2, 9, 3, 3, 4, 5, 8))
                 )
                 dat <- merge(dat, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
-                dat$`AA change` <- factor(dat$`AA change`, levels = dat$`AA change`)
+                dat$`AA change` <- factor(dat$`AA change`, levels = unique(dat$`AA change`))
                 domain_annotations <- lapply(unique(dat$Domain), function(domain_name) {
                     domain_variants <- which(dat$Domain == domain_name)
                     if (length(domain_variants) == 0) return(NULL)

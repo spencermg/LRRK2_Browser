@@ -3,7 +3,7 @@
 import pandas as pd
 
 # Read in combined data table
-for modality in ["imputed", "wgs"]:
+for modality in ["imputed", "wgs", "raw", "exome"]:
     df_orig = pd.read_csv(f"lrrk2_{modality}.tsv", low_memory=False, sep="\t")
     ancestry_groups = dict(tuple(df_orig.groupby("Ancestry")))
 

@@ -86,8 +86,12 @@ exons <- data.frame(
 # Load data for each ancestry separately and also combined
 df_imputed <- fread("lrrk2_combined_imputed.tsv")
 df_wgs <- fread("lrrk2_combined_wgs.tsv")
+df_raw <- fread("lrrk2_combined_raw.tsv")
+df_exome <- fread("lrrk2_combined_exome.tsv")
 all_tables_imputed <- split(df_imputed, df_imputed$Ancestry)
 all_tables_wgs <- split(df_wgs, df_wgs$Ancestry)
+all_tables_raw <- split(df_raw, df_raw$Ancestry)
+all_tables_exome <- split(df_exome, df_exome$Ancestry)
 
 # Process tables, keeping combined tables by default
 all_tables_imputed_cleaned <- lapply(names(all_tables_imputed), function(name) {
@@ -110,13 +114,37 @@ all_tables_wgs_cleaned <- lapply(names(all_tables_wgs), function(name) {
         "WGS"
     )
 })
+all_tables_raw_cleaned <- lapply(names(all_tables_raw), function(name) {
+    clean_variant_table(
+        all_tables_raw[[name]],
+        ancestry = name,
+        cadd_deleterious_threshold,
+        conservation_conserved_threshold,
+        kinase_activation_threshold,
+        "Raw genotyping"
+    )
+})
+all_tables_exome_cleaned <- lapply(names(all_tables_exome), function(name) {
+    clean_variant_table(
+        all_tables_exome[[name]],
+        ancestry = name,
+        cadd_deleterious_threshold,
+        conservation_conserved_threshold,
+        kinase_activation_threshold,
+        "Clinical exome"
+    )
+})
 names(all_tables_imputed_cleaned) <- names(all_tables_imputed)
 names(all_tables_wgs_cleaned) <- names(all_tables_wgs)
+names(all_tables_raw_cleaned) <- names(all_tables_raw)
+names(all_tables_exome_cleaned) <- names(all_tables_exome)
 
 # Merge imputed and WGS tables for each ancestry
 all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
     imputed_table <- all_tables_imputed_cleaned[[name]]
     wgs_table <- all_tables_wgs_cleaned[[name]]
+    raw_table <- all_tables_raw_cleaned[[name]]
+    exome_table <- all_tables_exome_cleaned[[name]]
     
     # Perform outer merge on "Variant (GrCh38)"
     merged_table <- merge(
@@ -126,28 +154,37 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
         all = TRUE,
         suffixes = c("", ".wgs")
     )
-    
-    # Find the actual imputed PD frequency column name
-    pd_freq_col <- grep("PD frequency", names(merged_table), value = TRUE)[1]
-    
-    # Identify which variants came from imputed vs WGS only
-    # If the first PD frequency column is NA, the variant wasn't in imputed data
-    variants_only_in_wgs <- is.na(merged_table[[pd_freq_col]])
-    
-    # Get all duplicate columns and use it only if the variant was WGS-only
-    duplicate_cols <- grep("\\.wgs$", names(merged_table), value = TRUE)
-    for (col in duplicate_cols) {
-        base_col <- gsub("\\.wgs$", "", col)
-        if (base_col %in% names(merged_table)) {
-            merged_table[[base_col]] <- fifelse(
-                variants_only_in_wgs, 
-                merged_table[[col]], 
-                merged_table[[base_col]]
-            )
+    merged_table <- merge(
+        merged_table, 
+        raw_table,
+        by = "Variant (GrCh38)", 
+        all = TRUE, 
+        suffixes = c("", ".raw")
+    )
+    merged_table <- merge(
+        merged_table, 
+        exome_table,
+        by = "Variant (GrCh38)", 
+        all = TRUE, 
+        suffixes = c("", ".exome")
+    )
+
+    # For each base column name (strip .wgs/.raw/.exome), coalesce in priority order
+    suffix_pat <- "(\\.wgs|\\.raw|\\.exome)$"
+    base_cols <- unique(gsub(suffix_pat, "", setdiff(names(merged_table), "Variant (GrCh38)")))
+
+    for (b in base_cols) {
+        # columns available for this base, in priority order
+        cand <- c(b, paste0(b, c(".wgs", ".raw", ".exome")))
+        cand <- cand[cand %in% names(merged_table)]
+        if (length(cand) >= 2) {
+            merged_table[, (b) := do.call(fcoalesce, .SD), .SDcols = cand]
         }
-        # Remove the .wgs column
-        merged_table[[col]] <- NULL
     }
+
+    # Drop the suffixed columns now that the base columns are filled
+    drop_cols <- grep(suffix_pat, names(merged_table), value = TRUE)
+    if (length(drop_cols)) merged_table[, (drop_cols) := NULL]
 
     merged_table <- unique(merged_table, by = "Variant (GrCh38)")
     
@@ -229,5 +266,5 @@ server <- function(input, output, session) {
     # Main variant table with popup
     clicked_variant <- reactiveVal(NULL)
     geneVarTableServer("gene_var_table", all_tables_merged, clicked_variant)
-    variantDetailServer("variant_detail", clicked_variant, all_tables_merged)
+    variantDetailServer("variant_detail", all_tables_merged, clicked_variant)
 }
