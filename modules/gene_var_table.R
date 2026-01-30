@@ -31,7 +31,7 @@ geneVarTableUI <- function(id) {
                 shinyWidgets::checkboxGroupButtons(
                     inputId   = ns("filters"),
                     label     = "Filters:",
-                    choices   = c("Deleterious", "Conserved", "Kinase active"),
+                    choices   = c("Exonic", "Deleterious", "Conserved", "Kinase active"),
                     selected  = NULL,
                     status    = "primary",
                     justified = FALSE,
@@ -115,6 +115,11 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
 
             sel <- input$filters %||% character(0)
 
+            if ("Exonic" %in% sel) {
+                region <- dat[["Region"]]
+                keep <- !is.na(region) & region == "exonic"
+                dat <- dat[ keep, , drop = FALSE]
+            }
             if ("Deleterious" %in% sel) {
                 deleterious <- dat[["Deleterious?"]]
                 keep <- !is.na(deleterious) & deleterious == "Yes"
