@@ -3,7 +3,9 @@
 import pandas as pd
 
 # Read in combined data table
-for modality in ["imputed", "wgs", "raw", "exome"]:
+df_metadata = []
+df_var_data = {}
+for modality in ["imputed", "wgs", "exome", "raw"]:
     df_orig = pd.read_csv(f"lrrk2_{modality}.tsv", low_memory=False, sep="\t")
     ancestry_groups = dict(tuple(df_orig.groupby("Ancestry")))
 
@@ -59,4 +61,26 @@ for modality in ["imputed", "wgs", "raw", "exome"]:
     df_final = pd.merge(df_final, df_annotations, on="variant", how="left")
     df_no_counts = df_final[(df_final["Ancestry"] == "Combined") & (df_final[["het_PD","hom_PD","het_HC","hom_HC"]].sum(axis=1) == 0)]
     df_final = df_final.loc[~df_final["variant"].isin(df_no_counts["variant"]), :]
+    #df_final.to_csv(f"lrrk2_combined_{modality}.tsv", sep="\t", index=False)
+
+    df_metadata.append(df_final[[
+        "variant", "suffix", "Chr", "Start", "End", "Ref", "Alt", "Func.refGene", "Gene.refGene", "GeneDetail.refGene", 
+        "ExonicFunc.refGene", "AAChange.refGene", "CADD_phred", "eQTLGen_snp_id", "CLNSIG", "CLNDN", "gnomad41_genome_AF", 
+        "gnomad41_genome_AF_afr", "gnomad41_genome_AF_ami", "gnomad41_genome_AF_amr", "gnomad41_genome_AF_asj", 
+        "gnomad41_genome_AF_eas", "gnomad41_genome_AF_fin", "gnomad41_genome_AF_mid", "gnomad41_genome_AF_nfe", 
+        "gnomad41_genome_AF_remaining", "gnomad41_genome_AF_sas", "gene", "transcript", "exon", "cDNA", "prot_change", 
+        "domain", "Variant", "Consurf_score", "Mean_pRAB10/RAB10", "SD", "Interpretation",
+    ]])
+    df_var_data[modality] = df_final[[
+        "variant", "het_PD", "hom_PD", "total_PD", "het_HC", "hom_HC", "total_HC", "FH_neg_PD", "FH_pos_PD", 
+        "FH_unk_PD", "FH_neg_HC", "FH_pos_HC", "FH_unk_HC", "Age_10", "Age_20", "Age_30", "Age_40", "Age_50", 
+        "Age_60", "Age_70", "Age_80", "Age_90", "Age_100", "Age_min", "Age_max", "Age_median", "Ancestry",
+    ]]
+
+df_metadata = pd.concat(df_metadata)
+df_metadata = df_metadata.drop_duplicates(subset=["variant"], keep="first")
+df_metadata = df_metadata.sort_values(by="variant")
+
+for modality in ["imputed", "wgs", "exome", "raw"]:
+    df_final = df_var_data[modality].merge(df_metadata, on="variant", how="left")
     df_final.to_csv(f"lrrk2_combined_{modality}.tsv", sep="\t", index=False)
