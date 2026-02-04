@@ -37,6 +37,12 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     placeholder$Ancestry <- anc
                     placeholder$`PD frequency (Imputed)` <- 0
                     placeholder$`Control frequency (Imputed)` <- 0
+                    placeholder$`PD frequency (WGS)` <- 0
+                    placeholder$`Control frequency (WGS)` <- 0
+                    placeholder$`PD frequency (Raw genotyping)` <- 0
+                    placeholder$`Control frequency (Raw genotyping)` <- 0
+                    placeholder$`PD frequency (Clinical exome)` <- 0
+                    placeholder$`Control frequency (Clinical exome)` <- 0
                     variant_details[[anc]] <- placeholder
                 }
             }
@@ -224,7 +230,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             # Render PD pie chart
             output$pd_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `PD frequency (Imputed)`][1] == 0) {
+                if (all(is.na(pd_fh_display))) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
@@ -255,7 +261,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             # Render Control pie chart
             output$control_pie <- renderPlotly({
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `Control frequency (Imputed)`][1] == 0) {
+                if (all(is.na(control_fh_display))) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
@@ -295,7 +301,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
 
                 # If there are no carriers, show a message instead of a chart
-                if (variant_details[Ancestry == "Combined", `PD frequency (Imputed)`][1] == 0) {
+                if (sum(aao_counts) == 0) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(

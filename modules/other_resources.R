@@ -17,7 +17,7 @@ otherResourcesServer <- function(id) {
         output$otherResources <- renderUI({
             fluidRow(
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.mdsgene.org/genes/PARK-LRRK2",
@@ -27,7 +27,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.omim.org/entry/609007",
@@ -37,7 +37,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000188906",
@@ -47,7 +47,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://gnomad.broadinstitute.org/gene/ENSG00000188906",
@@ -57,7 +57,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.ncbi.nlm.nih.gov/clinvar/?term=%22LRRK2%22%5BGENE%5D&redir=gene",
@@ -67,7 +67,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://gp2.broadinstitute.org/gene/ENSG00000188906",
@@ -77,7 +77,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://pdgenetics.shinyapps.io/GP2Browser/",
@@ -87,7 +87,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 3,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.ncbi.nlm.nih.gov/gene/120892",
@@ -97,7 +97,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 6,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.uniprot.org/uniprotkb/Q5S007/entry",
@@ -107,7 +107,7 @@ otherResourcesServer <- function(id) {
                     ),
                 ),
                 column(
-                    width = 6,
+                    width = 2,
                     align = "center",
                     tags$a(
                         href = "https://www.genecards.org/cgi-bin/carddisp.pl?gene=LRRK2",

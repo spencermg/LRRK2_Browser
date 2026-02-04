@@ -20,7 +20,7 @@ box_title_font_style       <- "font-weight: bold; font-size: 28px;"
 ui <- dashboardPage(
     title = "LRRK2 Browser",
     header = dashboardHeader(),
-    sidebar = dashboardSidebar(collapsed = TRUE),
+    sidebar = dashboardSidebar(disable = TRUE),
     body = dashboardBody(
         # Title banner
         h2("LRRK2 Browser", style = "text-align:center; font-weight:bold;"),
