@@ -44,8 +44,6 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 with = FALSE
             ]
 
-            print(variant_data[variant_data$`AA change` == "p.R1728H", ])
-
             # Aggregate by AA change, combining DNA/cDNA variants
             dat_aggregated <- dat[, .(
                 `Kinase activity (mean pRAB10/RAB10)` = mean(`Kinase activity (mean pRAB10/RAB10)`, na.rm = TRUE),
