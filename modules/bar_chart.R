@@ -44,26 +44,34 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 with = FALSE
             ]
 
+            print(variant_data[variant_data$`AA change` == "p.R1728H", ])
+
+            # Aggregate by AA change, combining DNA/cDNA variants
+            dat_aggregated <- dat[, .(
+                `Kinase activity (mean pRAB10/RAB10)` = mean(`Kinase activity (mean pRAB10/RAB10)`, na.rm = TRUE),
+                `cDNA change` = paste(unique(`cDNA change`), collapse = "<br>                         "),
+                `Variant (GrCh38)` = paste(unique(`Variant (GrCh38)`), collapse = "<br>                         "),
+                `Exon #` = first(`Exon #`)
+            ), by = `AA change`]
+
             # Sort based on dropdown selection
-            dat <- switch(
+            dat_aggregated <- switch(
                 input$sort_order,
-                coord    = dat,
-                activity = dat[order(-dat[["Kinase activity (mean pRAB10/RAB10)"]]), ]
+                coord    = dat_aggregated,
+                activity = dat_aggregated[order(-dat_aggregated[["Kinase activity (mean pRAB10/RAB10)"]]), ]
             )
 
             # Convert AA change column to factor for plotting on horizontal axis
-            dat[, `AA change` := factor(`AA change`, levels = unique(dat$`AA change`))]
+            dat_aggregated[, `AA change` := factor(`AA change`, levels = unique(dat_aggregated$`AA change`))]
             
             # Convert to data frame for plotly
-            dat <- as.data.frame(dat)
+            dat_aggregated <- as.data.frame(dat_aggregated)
 
             # Define color palette based on sort order
-            # Keep consistent with domain diagrams if sorting by coordinate
-            # Use purple/green/gray scheme if sorting by kinase activity
             if (input$sort_order == "coord") {
-                color_palette <- domain_colors[dat$`Exon #`]
+                color_palette <- domain_colors[dat_aggregated$`Exon #`]
             } else {
-                activity_vals <- dat$`Kinase activity (mean pRAB10/RAB10)`
+                activity_vals <- dat_aggregated$`Kinase activity (mean pRAB10/RAB10)`
                 color_palette <- ifelse(
                     activity_vals > kinase_activation_threshold, "#8C4E9F",
                     ifelse(activity_vals < kinase_inactivation_threshold, "#34A270", "#E3E3E3")
@@ -71,13 +79,13 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
             }
 
             # Store genomic and cDNA changes to include in tooltip
-            custom_data <- lapply(1:nrow(dat), function(i) {
-                list(dat$`Variant (GrCh38)`[i], dat$`cDNA change`[i])
+            custom_data <- lapply(1:nrow(dat_aggregated), function(i) {
+                list(dat_aggregated$`Variant (GrCh38)`[i], dat_aggregated$`cDNA change`[i])
             })
 
             # Make the bar plot
             p <- plot_ly(
-                dat,
+                dat_aggregated,
                 x = ~`AA change`,
                 y = ~`Kinase activity (mean pRAB10/RAB10)`,
                 type = "bar",
@@ -111,18 +119,20 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
 
                 exon_domain_map <- data.frame(
                     Exon = 1:sum(c(17, 2, 9, 3, 3, 4, 5, 8)),
-                    Domain = rep(c("ARM", "ANK", "LRR", "ROC", "COR-A", "COR-B", "KIN", "WD-40"),
-                                times = c(17, 2, 9, 3, 3, 4, 5, 8))
+                    Domain = rep(
+                        c("ARM", "ANK", "LRR", "ROC", "COR-A", "COR-B", "KIN", "WD-40"),
+                        times = c(17, 2, 9, 3, 3, 4, 5, 8)
+                    )
                 )
-                dat <- merge(dat, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
-                dat$`AA change` <- factor(dat$`AA change`, levels = unique(dat$`AA change`))
-                domain_annotations <- lapply(unique(dat$Domain), function(domain_name) {
-                    domain_variants <- which(dat$Domain == domain_name)
+                dat_aggregated <- merge(dat_aggregated, exon_domain_map, by.x = "Exon #", by.y = "Exon", all.x = TRUE, sort = FALSE)
+                dat_aggregated$`AA change` <- factor(dat_aggregated$`AA change`, levels = unique(dat_aggregated$`AA change`))
+                domain_annotations <- lapply(unique(dat_aggregated$Domain), function(domain_name) {
+                    domain_variants <- which(dat_aggregated$Domain == domain_name)
                     if (length(domain_variants) == 0) return(NULL)
                     midpoint <- mean(domain_variants) - 1
                     list(
                         x = midpoint,
-                        y = max(dat$`Kinase activity (mean pRAB10/RAB10)`) * 1.05,
+                        y = max(dat_aggregated$`Kinase activity (mean pRAB10/RAB10)`) * 1.05,
                         text = domain_name,
                         showarrow = FALSE,
                         font = list(size = 14, color = "black"),
