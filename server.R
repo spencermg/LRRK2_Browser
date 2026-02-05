@@ -192,6 +192,13 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
 })
 names(all_tables_merged) <- names(all_tables_imputed_cleaned)
 
+# Add a column indicating which variants are deemed pathogenic by GP2
+pathogenic_variants <- fread("pathogenic_variants.txt", header = FALSE)$V1
+all_tables_merged <- lapply(all_tables_merged, function(merged_table) {
+    merged_table[, Pathogenic := ifelse(`Variant (GrCh38)` %in% pathogenic_variants, 1, 0)]
+    return(merged_table)
+})
+
 # Variants to include in lollipops for domain diagrams
 variants <- data.frame(
     aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
