@@ -69,7 +69,6 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             "PD frequency (Raw genotyping)",
             "Control frequency (Raw genotyping)",
             "PD frequency (Clinical exome)",
-            "Control frequency (Clinical exome)",
             "gnomAD allele frequency",
             "Region",
             "Functional consequence",
@@ -105,8 +104,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "Control frequency (WGS)",
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)",
-                "PD frequency (Clinical exome)",
-                "Control frequency (Clinical exome)"
+                "PD frequency (Clinical exome)"
             )
             keep <- apply(dat[, ..freq_cols], 1, function(row) {
                 any(!is.na(row) & row != 0)
@@ -161,7 +159,6 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)",
                 "PD frequency (Clinical exome)",
-                "Control frequency (Clinical exome)",
                 "gnomAD allele frequency"
             ), colnames(dat))
             sci_targets <- match(sci_cols, colnames(dat)) - 1L

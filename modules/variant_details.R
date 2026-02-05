@@ -42,7 +42,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     placeholder$`PD frequency (Raw genotyping)` <- 0
                     placeholder$`Control frequency (Raw genotyping)` <- 0
                     placeholder$`PD frequency (Clinical exome)` <- 0
-                    placeholder$`Control frequency (Clinical exome)` <- 0
                     variant_details[[anc]] <- placeholder
                 }
             }
@@ -58,10 +57,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 "PD frequency (Raw genotyping)", 
                 "Control frequency (Raw genotyping)", 
                 "PD frequency (Clinical exome)", 
-                "Control frequency (Clinical exome)", 
                 "gnomAD allele frequency"
             ), drop = FALSE]
-            for (col in c("PD frequency (Imputed)", "Control frequency (Imputed)", "PD frequency (WGS)", "Control frequency (WGS)", "PD frequency (Raw genotyping)", "Control frequency (Raw genotyping)", "PD frequency (Clinical exome)", "Control frequency (Clinical exome)", "gnomAD allele frequency")) {
+            for (col in c("PD frequency (Imputed)", "Control frequency (Imputed)", "PD frequency (WGS)", "Control frequency (WGS)", "PD frequency (Raw genotyping)", "Control frequency (Raw genotyping)", "PD frequency (Clinical exome)", "gnomAD allele frequency")) {
                 variant_display[[col]] <- ifelse(
                     is.na(variant_display[[col]]),
                     "N/A",

@@ -83,6 +83,10 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Age_max",
         "Age_median"
     )
+    if (modality == "Clinical exome") {
+        keep_cols <- keep_cols[!keep_cols %in% c("Control Frequency")]
+    }
+
     table <- table[, intersect(keep_cols, names(table)), with = FALSE]
 
     # Replace "." with NA
@@ -112,7 +116,7 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
     }), .SDcols = c("CLNSIG","CLNDN")]
 
     # Rename columns
-    colnames(table) <- c(
+    new_col_names <- c(
         "Variant (GrCh38)",
         paste0("PD frequency (", modality, ")"),
         paste0("Control frequency (", modality, ")"),
@@ -149,6 +153,11 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Maximum AAO",
         "Median AAO"
     )
+    if (modality == "Clinical exome") {
+        new_col_names <- new_col_names[!new_col_names %in% c(paste0("Control frequency (", modality, ")"))]
+    }
+
+    colnames(table) <- new_col_names
 
     table[, `Deleterious?` := fifelse(CADD > cadd_deleterious_threshold, "Yes", "")]
     table[, `Conserved?` := fifelse(`Conservation score` > conservation_conserved_threshold, "Yes", "")]
