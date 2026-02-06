@@ -20,20 +20,10 @@ otherResourcesServer <- function(id) {
                     width = 2,
                     align = "center",
                     tags$a(
-                        href = "https://www.mdsgene.org/genes/PARK-LRRK2",
+                        href = "https://www.ncbi.nlm.nih.gov/clinvar/?term=%22LRRK2%22%5BGENE%5D&redir=gene",
                         target = "_blank",
                         style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "MDSGene"
-                    ),
-                ),
-                column(
-                    width = 2,
-                    align = "center",
-                    tags$a(
-                        href = "https://www.omim.org/entry/609007",
-                        target = "_blank",
-                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "OMIM"
+                        "Clinvar"
                     ),
                 ),
                 column(
@@ -50,30 +40,20 @@ otherResourcesServer <- function(id) {
                     width = 2,
                     align = "center",
                     tags$a(
+                        href = "https://www.genecards.org/cgi-bin/carddisp.pl?gene=LRRK2",
+                        target = "_blank",
+                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
+                        "GeneCards"
+                    ),
+                ),
+                column(
+                    width = 2,
+                    align = "center",
+                    tags$a(
                         href = "https://gnomad.broadinstitute.org/gene/ENSG00000188906",
                         target = "_blank",
                         style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
                         "gnomAD"
-                    ),
-                ),
-                column(
-                    width = 2,
-                    align = "center",
-                    tags$a(
-                        href = "https://www.ncbi.nlm.nih.gov/clinvar/?term=%22LRRK2%22%5BGENE%5D&redir=gene",
-                        target = "_blank",
-                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "Clinvar"
-                    ),
-                ),
-                column(
-                    width = 2,
-                    align = "center",
-                    tags$a(
-                        href = "https://gp2.broadinstitute.org/gene/ENSG00000188906",
-                        target = "_blank",
-                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "GP2 Variant Browser"
                     ),
                 ),
                 column(
@@ -90,6 +70,36 @@ otherResourcesServer <- function(id) {
                     width = 2,
                     align = "center",
                     tags$a(
+                        href = "https://gp2.broadinstitute.org/gene/ENSG00000188906",
+                        target = "_blank",
+                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
+                        "GP2 Variant Browser"
+                    ),
+                ),
+                column(
+                    width = 2,
+                    align = "center",
+                    tags$a(
+                        href = "https://ldlink.nih.gov/ldpair",
+                        target = "_blank",
+                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
+                        "LD Pair"
+                    ),
+                ),
+                column(
+                    width = 2,
+                    align = "center",
+                    tags$a(
+                        href = "https://www.mdsgene.org/genes/PARK-LRRK2",
+                        target = "_blank",
+                        style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
+                        "MDSGene"
+                    ),
+                ),
+                column(
+                    width = 2,
+                    align = "center",
+                    tags$a(
                         href = "https://www.ncbi.nlm.nih.gov/gene/120892",
                         target = "_blank",
                         style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
@@ -100,20 +110,20 @@ otherResourcesServer <- function(id) {
                     width = 2,
                     align = "center",
                     tags$a(
-                        href = "https://www.uniprot.org/uniprotkb/Q5S007/entry",
+                        href = "https://www.omim.org/entry/609007",
                         target = "_blank",
                         style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "UniProt"
+                        "OMIM"
                     ),
                 ),
                 column(
                     width = 2,
                     align = "center",
                     tags$a(
-                        href = "https://www.genecards.org/cgi-bin/carddisp.pl?gene=LRRK2",
+                        href = "https://www.uniprot.org/uniprotkb/Q5S007/entry",
                         target = "_blank",
                         style = "font-size:18px; font-weight:bold; color:#0C8DC3; text-decoration:none;",
-                        "GeneCards"
+                        "UniProt"
                     ),
                 ),
             )
