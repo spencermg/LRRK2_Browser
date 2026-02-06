@@ -17,7 +17,7 @@ geneVarTableUI <- function(id) {
             ),
             # Add dropdown for ancestry selection
             column(
-                width = 3,
+                width = 2,
                 selectInput(
                     inputId  = ns("dataset"),
                     label    = "Choose ancestry:",
@@ -27,16 +27,23 @@ geneVarTableUI <- function(id) {
             ),
             # Add buttons to vilter variants
             column(
-                width = 4,
+                width = 6,
                 shinyWidgets::checkboxGroupButtons(
-                    inputId   = ns("filters"),
-                    label     = "Filters:",
-                    choices   = c("Exonic", "Pathogenic", "Deleterious", "Conserved", "Kinase active"),
-                    selected  = NULL,
-                    status    = "primary",
-                    justified = FALSE,
-                    width     = "100%" ,
-                    checkIcon = list(
+                    inputId      = ns("filters"),
+                    label        = "Filters:",
+                    choiceNames  = list(
+                        tags$span(title = "Variants in exonic regions", "Exonic"),
+                        tags$span(title = "GP2-determined high-confidence variants (according to at least two of Clinvar, HGMD, and MDSGene)", "Pathogenic"),
+                        tags$span(title = "Predicted deleterious variants (CADD > 20)", "Deleterious"),
+                        tags$span(title = "Evolutionarily conserved variants (conservation score > 5)", "Conserved"),
+                        tags$span(title = "Kinase-active variants (mean pRAB10/RAB10 > 1.40)", "Kinase active")
+                    ),
+                    choiceValues = c("Exonic", "Pathogenic", "Deleterious", "Conserved", "Kinase active"),
+                    selected     = NULL,
+                    status       = "primary",
+                    justified    = FALSE,
+                    width        = "100%" ,
+                    checkIcon    = list(
                         yes = icon("ok", lib = "glyphicon"),
                         no  = icon("remove", lib = "glyphicon")
                     )
