@@ -55,8 +55,7 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "ExonicFunc.refGene",
         "CADD_phred",
         "eQTLGen_snp_id",
-        "CLNSIG",
-        "CLNDN",
+        "Clinvar_Pathogenic",
         "exon",
         "cDNA",
         "prot_change",
@@ -109,11 +108,11 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
     }
 
     # Clean up clinical significance
-    table[, (c("CLNSIG","CLNDN")) := lapply(.SD, function(x) {
+    table[, ("Clinvar_Pathogenic") := lapply(.SD, function(x) {
         x <- gsub("_", " ", x, fixed = TRUE)
         x <- gsub("|", ", ", x, fixed = TRUE)
         x
-    }), .SDcols = c("CLNSIG","CLNDN")]
+    }), .SDcols = "Clinvar_Pathogenic"]
 
     # Rename columns
     new_col_names <- c(
@@ -125,8 +124,7 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Functional consequence",
         "CADD",
         "rsID",
-        "Clinical significance",
-        "Clinical disease name",
+        "Clinvar Pathogenic",
         "Exon #",
         "cDNA change",
         "AA change",

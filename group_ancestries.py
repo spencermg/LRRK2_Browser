@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import pandas as pd
 
 # Read in combined data table
@@ -80,6 +81,7 @@ for modality in ["imputed", "wgs", "exome", "raw"]:
 df_metadata = pd.concat(df_metadata)
 df_metadata = df_metadata.drop_duplicates(subset=["variant"], keep="first")
 df_metadata = df_metadata.sort_values(by="variant")
+df_metadata["Clinvar_Pathogenic"] = np.where(df_metadata["CLNDN"].str.lower().str.contains("parkinson", na=False), df_metadata["CLNSIG"], "")
 
 for modality in ["imputed", "wgs", "exome", "raw"]:
     df_final = df_var_data[modality].merge(df_metadata, on="variant", how="left")
