@@ -74,6 +74,8 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             display_cols <- display_cols[display_cols %in% names(variant_details)]
             variant_display <- variant_details[, ..display_cols]
 
+            variant_display <- variant_display[, .SD, .SDcols = !sapply(variant_display, function(col) all(is.na(col)))]
+
             # Convert frequencies to scientific notation
             freq_cols <- c(
                 "PD frequency (Imputed)", 
@@ -220,6 +222,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                             ),
                             tags$p(
                                 "**Individual ancestry assignments are not present for clinical exome data, and are thus indicated as 'N/A'.",
+                                style = "font-size: 11px; font-style: italic; color: #555; margin-top: 5px; text-align: center;"
+                            ),
+                            tags$p(
+                                "***Some columns may be dropped from the data table if this variant is not present in the data for a given data modality.",
                                 style = "font-size: 11px; font-style: italic; color: #555; margin-top: 5px; text-align: center;"
                             )
                         )
