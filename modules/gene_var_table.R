@@ -69,10 +69,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
     moduleServer(id, function(input, output, session) {
         cols_to_keep <- c(
             "Variant (GrCh38)",
-            "PD frequency (Imputed)",
-            "Control frequency (Imputed)",
             "PD frequency (WGS)",
             "Control frequency (WGS)",
+            "PD frequency (Imputed)",
+            "Control frequency (Imputed)",
             "PD frequency (Raw genotyping)",
             "Control frequency (Raw genotyping)",
             "PD frequency (Clinical exome)",

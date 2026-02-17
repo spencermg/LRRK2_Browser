@@ -219,7 +219,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             pd_fh <- colSums(variant_details[, c("No family history (PD)", "Family history (PD)", "Unknown family history (PD)"), with = FALSE], na.rm = TRUE)
             control_fh <- colSums(variant_details[, c("No family history (Control)", "Family history (Control)", "Unknown family history (Control)"), with = FALSE], na.rm = TRUE)
             fh_labels <- c("No", "Yes", "Unknown")
-            fh_colors <- c("#8C4E9F", "#4FC190", "#D3D3D3")
+            fh_colors <- c("#8C4E9F", "#34A270", "#D3D3D3")
 
             # Keep zeros as NA to preserve order but hide from display
             pd_fh_display <- ifelse(pd_fh == 0, NA, pd_fh)
@@ -292,9 +292,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             output$aao_hist <- renderPlotly({
                 # Extract the counts for each AAO bin
                 aao_cols <- c(
-                    "AAO (1-10)", "AAO (11-20)", "AAO (21-30)", "AAO (31-40)",
-                    "AAO (41-50)", "AAO (51-60)", "AAO (61-70)", "AAO (71-80)",
-                    "AAO (81-90)", "AAO (91-100)"
+                    "AAO (11-20)", "AAO (21-30)", "AAO (31-40)", "AAO (41-50)", 
+                    "AAO (51-60)", "AAO (61-70)", "AAO (71-80)", "AAO (81-90)", 
+                    "AAO (91-100)"
                 )
                 aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
 
