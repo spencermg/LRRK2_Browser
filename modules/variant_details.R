@@ -327,7 +327,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     "AAO (51-60)", "AAO (61-70)", "AAO (71-80)", "AAO (81-90)", 
                     "AAO (91-100)"
                 )
-                aao_counts <- colSums(variant_details[, ..aao_cols], na.rm = TRUE)
+                aao_counts <- as.numeric(variant_details[Ancestry == "Combined", ..aao_cols])
 
                 # If there are no carriers, show a message instead of a chart
                 if (sum(aao_counts) == 0) {
