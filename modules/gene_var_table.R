@@ -11,7 +11,11 @@ geneVarTableUI <- function(id) {
             column(
                 width = 12,
                 tags$p(
-                    "*Some ancestries do not have reported allele frequencies through gnomAD, and are thus indicated as 'N/A'.",
+                    "*Some ancestries do not have reported allele frequencies through gnomAD, and are thus left empty.",
+                    style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
+                ),
+                tags$p(
+                    "**Individual ancestry assignments are not present for clinical exome data, and are thus excluded from ancestry-specific tables.",
                     style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
                 )
             ),
@@ -67,28 +71,42 @@ geneVarTableUI <- function(id) {
 
 geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
     moduleServer(id, function(input, output, session) {
-        cols_to_keep <- c(
-            "Variant (GrCh38)",
-            "PD frequency (WGS)",
-            "Control frequency (WGS)",
-            "PD frequency (Imputed)",
-            "Control frequency (Imputed)",
-            "PD frequency (Raw genotyping)",
-            "Control frequency (Raw genotyping)",
-            "PD frequency (Clinical exome)",
-            "gnomAD allele frequency",
-            "Region",
-            "Functional consequence",
-            "CADD",
-            "rsID",
-            "Clinvar Pathogenic",
-            "Exon #",
-            "cDNA change",
-            "AA change",
-            "Protein domain",
-            "Conservation score",
-            "Kinase activity (mean pRAB10/RAB10)"
-        )
+        # Make cols_to_keep reactive based on ancestry selection
+        cols_to_keep <- reactive({
+            base_cols <- c(
+                "Variant (GrCh38)",
+                "PD frequency (Imputed)",
+                "Control frequency (Imputed)",
+                "PD frequency (WGS)",
+                "Control frequency (WGS)",
+                "PD frequency (Raw genotyping)",
+                "Control frequency (Raw genotyping)"
+            )
+            
+            # Only include exome column for Combined ancestry
+            if (input$dataset == "Combined") {
+                base_cols <- c(base_cols, "PD frequency (Clinical exome)")
+            }
+            
+            # Add remaining columns
+            base_cols <- c(
+                base_cols,
+                "gnomAD allele frequency",
+                "Region",
+                "Functional consequence",
+                "CADD",
+                "rsID",
+                "Clinvar Pathogenic",
+                "Exon #",
+                "cDNA change",
+                "AA change",
+                "Protein domain",
+                "Conservation score",
+                "Kinase activity (mean pRAB10/RAB10)"
+            )
+            
+            base_cols
+        })
 
         ns <- session$ns
 
@@ -109,15 +127,23 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "PD frequency (WGS)",
                 "Control frequency (WGS)",
                 "PD frequency (Raw genotyping)",
-                "Control frequency (Raw genotyping)",
-                "PD frequency (Clinical exome)"
+                "Control frequency (Raw genotyping)"
             )
+            
+            # Only include exome in frequency check for Combined
+            if (input$dataset == "Combined") {
+                freq_cols <- c(freq_cols, "PD frequency (Clinical exome)")
+            }
+            
+            # Filter to only available columns
+            freq_cols <- freq_cols[freq_cols %in% names(dat)]
+            
             keep <- apply(dat[, ..freq_cols], 1, function(row) {
                 any(!is.na(row) & row != 0)
             })
             dat <- dat[keep, ]
 
-            sel <- input$filters %||% character(0)
+            sel <- if (is.null(input$filters)) character(0) else input$filters
 
             if ("Exonic" %in% sel) {
                 region <- dat[["Region"]]
@@ -145,7 +171,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 dat <- dat[ keep, , drop = FALSE]
             }
 
-            dat <- dat[, ..cols_to_keep]
+            # Only keep columns that exist in the data
+            cols <- cols_to_keep()
+            cols <- cols[cols %in% names(dat)]
+            dat <- dat[, ..cols]
             dat
         })
 
@@ -162,7 +191,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             }
 
             # Columns to show in scientific notation
-            sci_cols <- intersect(c(
+            sci_cols <- c(
                 "PD frequency (Imputed)", 
                 "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 
@@ -171,7 +200,8 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "Control frequency (Raw genotyping)",
                 "PD frequency (Clinical exome)",
                 "gnomAD allele frequency"
-            ), colnames(dat))
+            )
+            sci_cols <- intersect(sci_cols, colnames(dat))
             sci_targets <- match(sci_cols, colnames(dat)) - 1L
 
             DT::datatable(

@@ -41,15 +41,41 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     placeholder$`Control frequency (WGS)` <- 0
                     placeholder$`PD frequency (Raw genotyping)` <- 0
                     placeholder$`Control frequency (Raw genotyping)` <- 0
-                    placeholder$`PD frequency (Clinical exome)` <- 0
+                    
+                    # Only set exome column if it exists (for Combined ancestry)
+                    if ("PD frequency (Clinical exome)" %in% names(placeholder)) {
+                        placeholder$`PD frequency (Clinical exome)` <- 0
+                    }
+                    
                     variant_details[[anc]] <- placeholder
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
-            variant_display <- variant_details[, c(
+            display_cols <- c(
                 "Ancestry", 
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
+                "PD frequency (WGS)", 
+                "Control frequency (WGS)", 
+                "PD frequency (Raw genotyping)", 
+                "Control frequency (Raw genotyping)"
+            )
+
+            # Only include exome column if it exists
+            if ("PD frequency (Clinical exome)" %in% names(variant_details)) {
+                display_cols <- c(display_cols, "PD frequency (Clinical exome)")
+            }
+
+            display_cols <- c(display_cols, "gnomAD allele frequency")
+
+            # Only select columns that actually exist
+            display_cols <- display_cols[display_cols %in% names(variant_details)]
+            variant_display <- variant_details[, ..display_cols]
+
+            # Convert frequencies to scientific notation
+            freq_cols <- c(
                 "PD frequency (Imputed)", 
                 "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 
@@ -58,8 +84,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 "Control frequency (Raw genotyping)", 
                 "PD frequency (Clinical exome)", 
                 "gnomAD allele frequency"
-            ), drop = FALSE]
-            for (col in c("PD frequency (Imputed)", "Control frequency (Imputed)", "PD frequency (WGS)", "Control frequency (WGS)", "PD frequency (Raw genotyping)", "Control frequency (Raw genotyping)", "PD frequency (Clinical exome)", "gnomAD allele frequency")) {
+            )
+
+            for (col in intersect(freq_cols, names(variant_display))) {
                 variant_display[[col]] <- ifelse(
                     is.na(variant_display[[col]]),
                     "N/A",
@@ -189,6 +216,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                             ),
                             tags$p(
                                 "*Some ancestries do not have reported allele frequencies through gnomAD, and are thus indicated as 'N/A'.",
+                                style = "font-size: 11px; font-style: italic; color: #555; margin-top: 5px; text-align: center;"
+                            ),
+                            tags$p(
+                                "**Individual ancestry assignments are not present for clinical exome data, and are thus indicated as 'N/A'.",
                                 style = "font-size: 11px; font-style: italic; color: #555; margin-top: 5px; text-align: center;"
                             )
                         )

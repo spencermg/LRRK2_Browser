@@ -140,11 +140,15 @@ names(all_tables_raw_cleaned) <- names(all_tables_raw)
 names(all_tables_exome_cleaned) <- names(all_tables_exome)
 
 # Merge imputed and WGS tables for each ancestry
-all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
-    imputed_table <- all_tables_imputed_cleaned[[name]]
-    wgs_table <- all_tables_wgs_cleaned[[name]]
-    raw_table <- all_tables_raw_cleaned[[name]]
-    exome_table <- all_tables_exome_cleaned[[name]]
+all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(anc) {
+    imputed_table <- all_tables_imputed_cleaned[[anc]]
+    wgs_table <- all_tables_wgs_cleaned[[anc]]
+    raw_table <- all_tables_raw_cleaned[[anc]]
+    exome_table <- if (anc == "Combined" && "Combined" %in% names(all_tables_exome_cleaned)) {
+        all_tables_exome_cleaned[["Combined"]]
+    } else {
+        NULL
+    }
     
     # Perform outer merge on "Variant (GrCh38)"
     merged_table <- merge(
@@ -161,13 +165,15 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(name) {
         all = TRUE, 
         suffixes = c("", ".raw")
     )
-    merged_table <- merge(
-        merged_table, 
-        exome_table,
-        by = "Variant (GrCh38)", 
-        all = TRUE, 
-        suffixes = c("", ".exome")
-    )
+    if (!is.null(exome_table)) {
+        merged_table <- merge(
+            merged_table, 
+            exome_table,
+            by = "Variant (GrCh38)", 
+            all = TRUE, 
+            suffixes = c("", ".exome")
+        )
+    }
 
     # For each base column name (strip .wgs/.raw/.exome), coalesce in priority order
     suffix_pat <- "(\\.wgs|\\.raw|\\.exome)$"
