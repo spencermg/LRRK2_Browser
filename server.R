@@ -206,18 +206,19 @@ all_tables_merged <- lapply(all_tables_merged, function(merged_table) {
 })
 
 # Variants to include in lollipops for domain diagrams
-variants <- data.frame(
-    aa_pos = c(1067, 1437, 1437, 1441, 1441, 1441, 1441, 1628, 1795, 2019, 2020, 2385),
-    aa_label  = c("R1067Q","N1437H","N1437D","R1441S","R1441G","R1441C","R1441H","R1628P","L1795F","G2019S","I2020T","G2385R"),
-    cdna_pos = c(3200, 4309, 4309, 4321, 4321, 4321, 4322, 4883, 5385, 6055, 6059, 7153),
-    cdna_label  = c("C3200A","A4309C","A4309G","C4321A","C4321G","C4321T","G4322A","G4883C","G5385T","G6055A","T6059C","G7153A"),
-    color  = c("#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444","#444444"),
-    value  = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-)
-protein_variants <- variants[, c("aa_pos", "aa_label", "color", "value")]
-cdna_variants <- variants[, c("cdna_pos", "cdna_label", "color", "value")]
-colnames(protein_variants) <- c("pos", "label", "color", "value")
-colnames(cdna_variants) <- c("pos", "label", "color", "value")
+pathogenic_var_table <- all_tables_merged$Combined[Pathogenic == 1, .(
+    `AA position` = as.integer(gsub("[^0-9]", "", `AA change`)),
+    `AA change`,
+    `cDNA position` = as.integer(gsub("[^0-9]", "", `cDNA change`)),
+    `cDNA change`
+)]
+colnames(pathogenic_var_table) <- c("aa_pos", "aa_label", "cdna_pos", "cdna_label")
+pathogenic_var_table[, `color` := "#444444"]
+pathogenic_var_table[, `value` := 1]
+pathogenic_protein_variants <- pathogenic_var_table[, c("aa_pos", "aa_label", "color", "value")]
+pathogenic_cdna_variants <- pathogenic_var_table[, c("cdna_pos", "cdna_label", "color", "value")]
+colnames(pathogenic_protein_variants) <- c("pos", "label", "color", "value")
+colnames(pathogenic_cdna_variants) <- c("pos", "label", "color", "value")
 
 
 # =========================================================================
@@ -264,10 +265,10 @@ server <- function(input, output, session) {
     annotationSummaryTableServer("annotation_summary_table", all_tables_merged)
 
     # Protein domain diagram
-    diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, protein_variants, "protein", 12)
+    diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 12)
 
     # cDNA diagram
-    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, cdna_variants, "cDNA", 12)
+    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12)
 
     # Kinase activity bar chart
     exon_color_mapping <- setNames(
