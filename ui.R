@@ -20,8 +20,144 @@ box_title_font_style       <- "font-weight: bold; font-size: 28px;"
 ui <- dashboardPage(
     title = "LRRK2 Browser",
     header = dashboardHeader(),
-    sidebar = dashboardSidebar(disable = TRUE),
+    sidebar = dashboardSidebar(
+        width = 350,
+        sidebarMenu(
+            id = "sidebar"
+        ),
+        tags$div(
+            style = "padding: 20px; overflow-y: auto; height: calc(100vh - 100px);",
+            tags$h3("About the LRRK2 Browser", style = "color: #0C8DC3; margin-top: 0;"),
+            tags$hr(),
+            
+            tags$h4("Data Sources"),
+            tags$p("This browser contains genotyping data from participants within the Global Parkinson's Genetics Program (GP2) across several modalities:"),
+            tags$ul(
+                tags$li(tags$strong("Imputed genotyping")),
+                tags$li(tags$strong("Whole genome sequencing (WGS)")),
+                tags$li(tags$strong("Raw genotyping")),
+                tags$li(tags$strong("Clinical exome"))
+            ),
+            
+            tags$h4("Sample Information"),
+            tags$p("Total samples: #"),
+            tags$ul(
+                tags$li("Imputed genotyping: #"),
+                tags$li("WGS: #"),
+                tags$li("Raw genotyping: #"),
+                tags$li("Clinical exome: #")
+            ),
+            tags$p("Parkinson's Disease cases: #"),
+            tags$ul(
+                tags$li("Imputed genotyping: #"),
+                tags$li("WGS: #"),
+                tags$li("Raw genotyping: #"),
+                tags$li("Clinical exome: #")
+            ),
+            tags$p("Healthy controls: #"),
+            tags$ul(
+                tags$li("Imputed genotyping: #"),
+                tags$li("WGS: #"),
+                tags$li("Raw genotyping: #"),
+                tags$li("Clinical exome: #")
+            ),
+            
+            tags$h4("Annotations"),
+            tags$p("Variants are annotated with ANNOVAR using the following libraries:"),
+            tags$ul(
+                tags$li("CADD deleteriousness scores"),
+                tags$li("ClinVar pathogenicity"),
+                tags$li("Population frequencies (gnomAD v4.1)")
+            ),
+            tags$p("As well as conservation scores and kinase activity measurements from: _______"),
+            
+            tags$h4("Citation"),
+            tags$p("For more information, or if you use data from this browser, please refer to:"),
+            tags$p(
+                tags$em("Citation"),
+                style = "background-color: #f5f5f5; padding: 10px; border-left: 3px solid #0C8DC3;"
+            ),
+            
+            tags$h4("Contact"),
+            tags$p("For questions: ", tags$a(href = "mailto:example@example.com", "example@example.com")),
+            
+            tags$p(
+                style = "margin-top: 30px; font-size: 12px; color: #666;",
+                "Version 1.0 | Last updated: ", format(Sys.Date(), "%B %Y")
+            )
+        )
+    ),
     body = dashboardBody(
+        # CSS to fix sidebar colors and hide text when collapsed
+        tags$head(
+            tags$style(HTML("
+                /* Disable bounce/overscroll effect */
+                html, body {
+                    overscroll-behavior-y: none !important;
+                }
+                
+                /* When sidebar is open, shift navbar by 350px */
+                .main-header .navbar {
+                    margin-left: 350px !important;
+                    transition: margin-left 0.3s ease !important;
+                }
+                
+                /* When sidebar is collapsed, no margin */
+                .sidebar-collapse .main-header .navbar {
+                    margin-left: 0px !important;
+                }
+            
+                /* Style the toggle button */
+                .sidebar-toggle {
+                    color: white !important;
+                    padding-right: 15px !important;
+                }
+                
+                /* Add 'About the Data' label after the three lines */
+                .sidebar-toggle::after {
+                    content: 'About the Data';
+                    margin-left: 10px;
+                    font-size: 14px;              /* Adjust size */
+                    font-weight: bold;             /* or normal, 600, 700, etc. */
+                    font-family: 'Arial', sans-serif;  /* Change font family */
+                    font-style: normal;            /* or italic */
+                    letter-spacing: 0.5px;         /* Add spacing between letters */
+                    text-transform: none;          /* or uppercase, capitalize, lowercase */
+                    vertical-align: middle;
+                }
+                
+                /* Make entire sidebar background match header blue */
+                .main-sidebar {
+                    background-color: #367fa9 !important;
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    height: 100vh !important;
+                    overflow-y: auto !important;
+                }
+                
+                /* The content area inside sidebar should be white/light */
+                .main-sidebar .sidebar {
+                    background-color: #ffffff !important;
+                }
+                
+                /* Make all text dark/visible */
+                .sidebar h3, .sidebar h4, .sidebar p, .sidebar li, .sidebar a {
+                    color: #333333 !important;
+                }
+                
+                /* Hide text content when sidebar is collapsed */
+                .sidebar-collapse .main-sidebar .sidebar {
+                    display: none !important;
+                }
+                
+                /* Fix the header portion of sidebar to be blue */
+                .main-sidebar .sidebar-menu {
+                    background-color: #367fa9 !important;
+                }
+            "))
+        ),
+        
         # Title banner
         h2("LRRK2 Browser", style = "text-align:center; font-weight:bold;"),
 
@@ -141,5 +277,5 @@ ui <- dashboardPage(
             geneVarTableUI("gene_var_table")
         )
     ),
-    controlbar = dashboardControlbar()
+    controlbar = NULL
 )
