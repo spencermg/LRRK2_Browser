@@ -187,7 +187,7 @@ ui <- dashboardPage(
                 .content-wrapper {
                     display: none;
                 }
-        
+
                 .main-sidebar {
                     display: none;
                 }
@@ -207,12 +207,25 @@ ui <- dashboardPage(
                     background-color: rgba(255, 255, 255, 0.95) !important;
                 }
                 
-                /* When sidebar is open, shift navbar by 350px */
-                .main-header .navbar {
-                    margin-left: 350px !important;
-                    transition: margin-left 0.3s ease !important;
+                /* Make entire header uniformly blue - ALL parts */
+                .main-header {
+                    background-color: #367fa9 !important;
                 }
-            
+                
+                .main-header .logo {
+                    background-color: #367fa9 !important;
+                }
+                
+                .main-header .navbar {
+                    background-color: #367fa9 !important;
+                    margin-left: 350px !important;
+                }
+                
+                /* When sidebar is collapsed, no margin */
+                .sidebar-collapse .main-header .navbar {
+                    margin-left: 0px !important;
+                }
+
                 /* Style the toggle button */
                 .sidebar-toggle {
                     color: white !important;
@@ -223,12 +236,12 @@ ui <- dashboardPage(
                 .sidebar-toggle::after {
                     content: 'About the Data';
                     margin-left: 10px;
-                    font-size: 14px;              /* Adjust size */
-                    font-weight: bold;             /* or normal, 600, 700, etc. */
-                    font-family: 'Arial', sans-serif;  /* Change font family */
-                    font-style: normal;            /* or italic */
-                    letter-spacing: 0.5px;         /* Add spacing between letters */
-                    text-transform: none;          /* or uppercase, capitalize, lowercase */
+                    font-size: 14px;
+                    font-weight: bold;
+                    font-family: 'Arial', sans-serif;
+                    font-style: normal;
+                    letter-spacing: 0.5px;
+                    text-transform: none;
                     vertical-align: middle;
                 }
                 

@@ -16,3 +16,6 @@ pathogenic_variants.txt
 
 # Ignore DS Store
 .DS_Store
+
+# Ignore rsconnect
+rsconnect/
