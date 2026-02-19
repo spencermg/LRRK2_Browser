@@ -226,34 +226,63 @@ colnames(pathogenic_cdna_variants) <- c("pos", "label", "color", "value")
 # =========================================================================
 
 server <- function(input, output, session) {
-    # Trigger disclaimer popup once when the session starts
-    shinyalert(
-        title = "Terms of Use",
-        text = HTML("
-            <div style='color: black; text-align: justify;'>
-            <p style='color: black;'>By proceeding, I am agreeing to:</p>
-            <ul>
-                <li>Use the data for health, biomedical, and research ONLY</li>
-                <li>NOT attempt to identify, disclose, or contact research participants 
-                unless required by federal, state, or local laws</li>
-                <li>Report any data management issues incidents, but not limited to, 
-                inadvertent data release</li>
-                <li>Abide by all relevant laws and regulations regarding genomic data 
-                and their use</li>
-                <li>NOT bulk download data without explicit consent from the LRRK2 
-                Browser team </li>
-            </ul>
-            <p style='color: black;'>While data in this browser have undergone quality 
-            control, genomic data processing pipelines are inherently imperfect and 
-            rely on probabilistic processes such as variant calling, imputation, and 
-            short-read sequencing reads. As such, there may be errors within the data 
-            presented. I agree that the LRRK2 Browser team is not responsible for any 
-            incorrect data that may be present in the browser.</p>
-            </div>
-        "),
-        html = TRUE,
-        type = "info"
-    )
+    # Track authentication state
+    authenticated <- reactiveVal(FALSE)
+    
+    # Show password prompt immediately
+    showModal(modalDialog(
+        title = "Authentication Required",
+        tags$p("Please enter the password to access this browser."),
+        passwordInput("app_password", "Password:"),
+        footer = actionButton("submit_password", "Submit"),
+        easyClose = FALSE
+    ))
+    
+    # Check password
+    observeEvent(input$submit_password, {
+        if (input$app_password == "GP2<3OpenScience") {
+            removeModal()
+            authenticated(TRUE)
+            
+            # Show content and sidebar via JavaScript
+            session$sendCustomMessage(
+                type = "show_content",
+                message = list()
+            )
+            
+            # NOW show Terms of Use disclaimer
+            Sys.sleep(0.3)
+            shinyalert(
+                title = "Terms of Use",
+                text = HTML("
+                    <div style='color: black; text-align: justify;'>
+                    <p style='color: black;'>By proceeding, I am agreeing to:</p>
+                    <ul>
+                        <li>Use the data for health, biomedical, and research ONLY</li>
+                        <li>NOT attempt to identify, disclose, or contact research participants 
+                        unless required by federal, state, or local laws</li>
+                        <li>Report any data management issues incidents, but not limited to, 
+                        inadvertent data release</li>
+                        <li>Abide by all relevant laws and regulations regarding genomic data 
+                        and their use</li>
+                        <li>NOT bulk download data without explicit consent from the LRRK2 
+                        Browser team </li>
+                    </ul>
+                    <p style='color: black;'>While data in this browser have undergone quality 
+                    control, genomic data processing pipelines are inherently imperfect and 
+                    rely on probabilistic processes such as variant calling, imputation, and 
+                    short-read sequencing reads. As such, there may be errors within the data 
+                    presented. I agree that the LRRK2 Browser team is not responsible for any 
+                    incorrect data that may be present in the browser.</p>
+                    </div>
+                "),
+                html = TRUE,
+                type = "info"
+            )
+        } else {
+            showNotification("Incorrect password. Please try again.", type = "error", duration = 3)
+        }
+    })
     
     # General metadata about LRRK2
     geneOverviewServer("gene_overview")

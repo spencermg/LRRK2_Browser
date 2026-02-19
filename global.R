@@ -7,15 +7,17 @@ if (!requireNamespace("pacman", quietly = TRUE)) {
     install.packages("pacman")
 }
 pacman::p_load(
-    shiny,
-    shinydashboard,
-    shinydashboardPlus,
-    shinyalert,
+    bslib,
+    data.table,
     DT,
     plotly,
-    shinyWidgets,
-    data.table,
-    bslib
+    shiny,
+    shinyalert,
+    shinydashboard,
+    shinydashboardPlus,
+    shinyjs,
+    shinymanager,
+    shinyWidgets
 )
 
 # Source local files

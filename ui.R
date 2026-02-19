@@ -172,7 +172,10 @@ ui <- dashboardPage(
         )
     ),
     body = dashboardBody(
-        # CSS to fix sidebar colors and hide text when collapsed
+        # Initialize shinyjs
+        shinyjs::useShinyjs(),
+        
+        # CSS to fix sidebar colors and hide content initially
         tags$head(
             tags$style(HTML("
                 /* Disable bounce/overscroll effect */
@@ -180,15 +183,34 @@ ui <- dashboardPage(
                     overscroll-behavior-y: none !important;
                 }
                 
+                /* Hide content until authenticated */
+                .content-wrapper {
+                    display: none;
+                }
+        
+                .main-sidebar {
+                    display: none;
+                }
+                
+                /* Show when authenticated class is added */
+                .content-wrapper.authenticated {
+                    display: block !important;
+                }
+                
+                .main-sidebar.authenticated {
+                    display: block !important;
+                }
+                
+                /* Blur/white out background when modal showing */
+                .modal-backdrop {
+                    backdrop-filter: blur(10px);
+                    background-color: rgba(255, 255, 255, 0.95) !important;
+                }
+                
                 /* When sidebar is open, shift navbar by 350px */
                 .main-header .navbar {
                     margin-left: 350px !important;
                     transition: margin-left 0.3s ease !important;
-                }
-                
-                /* When sidebar is collapsed, no margin */
-                .sidebar-collapse .main-header .navbar {
-                    margin-left: 0px !important;
                 }
             
                 /* Style the toggle button */
@@ -239,6 +261,15 @@ ui <- dashboardPage(
                 .main-sidebar .sidebar-menu {
                     background-color: #367fa9 !important;
                 }
+            ")),
+    
+            tags$script(HTML("
+                Shiny.addCustomMessageHandler('show_content', function(message) {
+                    $('.content-wrapper').addClass('authenticated');
+                    $('.content-wrapper').css('display', 'block');
+                    $('.main-sidebar').addClass('authenticated');
+                    $('.main-sidebar').css('display', 'block');
+                });
             "))
         ),
         
