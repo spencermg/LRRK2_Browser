@@ -75,10 +75,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         cols_to_keep <- reactive({
             base_cols <- c(
                 "Variant (GrCh38)",
-                "PD frequency (Imputed)",
-                "Control frequency (Imputed)",
                 "PD frequency (WGS)",
                 "Control frequency (WGS)",
+                "PD frequency (Imputed)",
+                "Control frequency (Imputed)",
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)"
             )
@@ -122,10 +122,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             dat <- all_tables_cleaned[[ req(input$dataset) ]]
 
             freq_cols <- c(
-                "PD frequency (Imputed)",
-                "Control frequency (Imputed)",
                 "PD frequency (WGS)",
                 "Control frequency (WGS)",
+                "PD frequency (Imputed)",
+                "Control frequency (Imputed)",
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)"
             )
@@ -192,10 +192,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
 
             # Columns to show in scientific notation
             sci_cols <- c(
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 
                 "Control frequency (WGS)", 
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)",
                 "PD frequency (Clinical exome)",

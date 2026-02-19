@@ -55,10 +55,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             # Indicate columns to display in the table and convert frequencies to scientific notation
             display_cols <- c(
                 "Ancestry", 
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 
                 "Control frequency (WGS)", 
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
                 "PD frequency (Raw genotyping)", 
                 "Control frequency (Raw genotyping)"
             )
@@ -78,10 +78,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
 
             # Convert frequencies to scientific notation
             freq_cols <- c(
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
                 "PD frequency (WGS)", 
                 "Control frequency (WGS)", 
+                "PD frequency (Imputed)", 
+                "Control frequency (Imputed)", 
                 "PD frequency (Raw genotyping)", 
                 "Control frequency (Raw genotyping)", 
                 "PD frequency (Clinical exome)", 
