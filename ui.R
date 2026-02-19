@@ -40,36 +40,27 @@ ui <- dashboardPage(
             ),
             
             tags$h4("Sample Information"),
-            tags$p("Total samples: #"),
+            tags$p("Total samples: 101,678"),
             tags$ul(
-                tags$li("Imputed genotyping: #"),
-                tags$li("WGS: #"),
-                tags$li("Raw genotyping: #"),
-                tags$li("Clinical exome: #")
+                tags$li("Imputed genotyping: 84,654"),
+                tags$li("WGS: 25,904"),
+                tags$li("Raw genotyping: 84,654"),
+                tags$li("Clinical exome: 14,555")
             ),
-            tags$p("Parkinson's Disease cases: #"),
+            tags$p("Parkinson's Disease cases: 61,709"),
             tags$ul(
-                tags$li("Imputed genotyping: #"),
-                tags$li("WGS: #"),
-                tags$li("Raw genotyping: #"),
-                tags$li("Clinical exome: #")
+                tags$li("Imputed genotyping: 46,349"),
+                tags$li("WGS: 17,241"),
+                tags$li("Raw genotyping: 46,349"),
+                tags$li("Clinical exome: 14,555")
             ),
-            tags$p("Healthy controls: #"),
+            tags$p("Healthy controls: 39,969"),
             tags$ul(
-                tags$li("Imputed genotyping: #"),
-                tags$li("WGS: #"),
-                tags$li("Raw genotyping: #"),
-                tags$li("Clinical exome: #")
+                tags$li("Imputed genotyping: 38,305"),
+                tags$li("WGS: 8,663"),
+                tags$li("Raw genotyping: 38,305"),
+                tags$li("Clinical exome: 0")
             ),
-            
-            tags$h4("Annotations"),
-            tags$p("Variants are annotated with ANNOVAR using the following libraries:"),
-            tags$ul(
-                tags$li("CADD deleteriousness scores"),
-                tags$li("ClinVar pathogenicity"),
-                tags$li("Population frequencies (gnomAD v4.1)")
-            ),
-            tags$p("As well as conservation scores and kinase activity measurements from: _______"),
             
             tags$h4("Citation"),
             tags$p("For more information, or if you use data from this browser, please refer to:"),
@@ -79,11 +70,104 @@ ui <- dashboardPage(
             ),
             
             tags$h4("Contact"),
-            tags$p("For questions: ", tags$a(href = "mailto:example@example.com", "example@example.com")),
-            
+            tags$p("For questions, please contact:"),
             tags$p(
-                style = "margin-top: 30px; font-size: 12px; color: #666;",
-                "Version 1.0 | Last updated: ", format(Sys.Date(), "%B %Y")
+                tags$a(
+                    href = "mailto:lara.lange@nih.gov", "lara.lange@nih.gov",
+                    style = "color: #0C8DC3 !important;"
+                )
+            ),
+            tags$p(
+                tags$a(
+                    href = "mailto:spencer.grant@nih.gov", "spencer.grant@nih.gov",
+                    style = "color: #0C8DC3 !important;"
+                )
+            ),
+            tags$p(
+                tags$a(
+                    href = "mailto:vesna.van.midden@gmail.com", "vesna.van.midden@gmail.com",
+                    style = "color: #0C8DC3 !important;"
+                )
+            ),
+            
+
+            tags$h3("About GP2", style = "color: #0C8DC3; margin-top: 50px;"),
+            tags$hr(),
+
+            tags$h4("General info"),
+            tags$p(
+                "The ",
+                tags$a(
+                    href = "https://gp2.org/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "Global Parkinson's Genetics Program"
+                ),
+                "(GP2) is a resource program of the",
+                tags$a(
+                    href = "https://parkinsonsroadmap.org/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "Aligning Science Across Parkinson's"
+                ),
+                "(ASAP) initiative, which is managed by the",
+                tags$a(
+                    href = "https://www.aligningscience.com/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "Coalition for Aligning Science"
+                ),
+                "(CAS) and implemented by the ",
+                tags$a(
+                    href = "https://www.michaeljfox.org/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "Michael J. Fox Foundation"
+                ),
+                paste0(
+                    "(MJFF). GP2 serves as a central hub to generate genetic data from studies across the globe and ",
+                    "harmonize corresponding clinical data. Our goal is to genetically characterize over 250,000 volunteers ",
+                    "around the world to further understand the genetic architecture of Parkinson's disease (PD). For data ",
+                    "processing and QC pipelines, please visit our "
+                ),
+                tags$a(
+                    href = "https://github.com/GP2code/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "Github repository."
+                )
+            ),
+
+            tags$h4("GP2 member sites and investigators"),
+            tags$p(
+                "A full list of GP2 sites and principal investigators can be found",
+                tags$a(
+                    href = "https://zenodo.org/records/17753486", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "here."
+                )
+            ),
+
+            tags$h4("Acknowledgments"),
+            tags$p(paste0(
+                "We would like to thank the many tens of thousands of participants who generously contributed to our effort. ",
+                "In addition, we want to sincerely thank all the GP2 members who are involved in the program."
+            )),
+
+            
+            tags$h3("Terms of Use", style = "color: #0C8DC3; margin-top: 50px;"),
+            tags$hr(),
+
+            tags$p(
+                paste0(
+                    "This website is intended to provide summary-level results from high-throughput sequencing data generated as ",
+                    "part of GP2. Data and results are intended solely for educational and research purposes. The results, browser ",
+                    "content and allele frequencies are NOT for diagnostic, clinical, or commercial use and must not be used to attempt ",
+                    "to identify individual study participants.",
+                    "We encourage you to contact GP2 before embarking on any analyses using these data to check if your proposed analyses ",
+                    "overlap with work currently underway by GP2 members."
+                )
             )
         )
     ),
