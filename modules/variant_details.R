@@ -16,6 +16,12 @@ variantDetailUI <- function(id) {
 variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
+
+        # Observer to show charts when warning is acknowledged
+        observeEvent(input$acknowledge_warning, {
+            shinyjs::hide(id = "charts_warning_section")
+            shinyjs::show(id = "charts_section")
+        })
         
         # Observe when a variant is clicked
         observeEvent(variant_data(), {
@@ -99,6 +105,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
 
             # Build the popup content
             popup_content <- if (nrow(variant_details) > 0) {
+                is_pathogenic <- variant_details$Pathogenic[1]
+                show_warning <- is.na(is_pathogenic) || is_pathogenic == 0
+                
                 tagList(
                     # Variant Annotations
                     tags$h3(
@@ -231,22 +240,91 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                         )
                     ),
 
-                    # Family History Pie Charts
-                    tags$h3(
-                        "Family History of Parkinson's Disease Among Carriers",
-                        style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
-                    ),
-                    fluidRow(
-                        column(6, plotlyOutput(ns("pd_pie"), height = "300px")),
-                        column(6, plotlyOutput(ns("control_pie"), height = "300px"))
-                    ),
+                    # Conditionally show warning OR charts
+                    if (show_warning) {
+                        tags$div(
+                            id = ns("charts_warning_section"),
+                            # Family History section header
+                            tags$h3(
+                                "Family History of Parkinson's Disease Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            ),
+                            # Warning banner
+                            tags$div(
+                                style = paste0(
+                                    "background-color: #fff3cd; ",
+                                    "border: 3px solid #ffc107; ",
+                                    "border-radius: 10px; ",
+                                    "padding: 30px; ",
+                                    "margin: 20px 0; ",
+                                    "text-align: center;"
+                                ),
+                                tags$p(
+                                    style = "font-size: 15px; color: #856404; margin-bottom: 15px;",
+                                    tags$strong("⚠️ This variant is NOT classified as pathogenic according to GP2 criteria.")
+                                ),
+                                tags$p(
+                                    style = "font-size: 14px; color: #666; margin-bottom: 20px;",
+                                    "Family history and age-at-onset data for non-pathogenic variants should be ",
+                                    "interpreted with caution, as these may represent benign variation or variants ",
+                                    "of uncertain significance."
+                                ),
+                                actionButton(
+                                    ns("acknowledge_warning"),
+                                    "I Understand - Show Charts",
+                                    class = "btn-warning",
+                                    style = "font-size: 16px; padding: 10px 30px;"
+                                )
+                            ),
+                            # AAO section header (also behind warning)
+                            tags$h3(
+                                "Age at Onset (AAO) Distribution Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            ),
+                            tags$div(
+                                style = "text-align: center; padding: 40px; color: #999;",
+                                tags$p("Click 'I Understand' above to view these charts")
+                            )
+                        )
+                    } else {
+                        # For pathogenic variants OR already acknowledged, show charts directly
+                        tagList(
+                            tags$h3(
+                                "Family History of Parkinson's Disease Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
+                            ),
+                            fluidRow(
+                                column(6, plotlyOutput(ns("pd_pie"), height = "300px")),
+                                column(6, plotlyOutput(ns("control_pie"), height = "300px"))
+                            ),
+                            tags$h3(
+                                "Age at Onset (AAO) Distribution Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
+                            ),
+                            plotlyOutput(ns("aao_hist"), height = "300px")
+                        )
+                    },
 
-                    # AAO Histogram
-                    tags$h3(
-                        "Age at Onset (AAO) Distribution Among Carriers",
-                        style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
-                    ),
-                    plotlyOutput(ns("aao_hist"), height = "300px")
+                    # Hidden div for charts (shown after acknowledgment) - WITH HEADERS
+                    if (show_warning) {
+                        tags$div(
+                            id = ns("charts_section"),
+                            style = "display: none;",
+                            tags$h3(
+                                "Family History of Parkinson's Disease Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            ),
+                            fluidRow(
+                                column(6, plotlyOutput(ns("pd_pie"), height = "300px")),
+                                column(6, plotlyOutput(ns("control_pie"), height = "300px"))
+                            ),
+                            tags$h3(
+                                "Age at Onset (AAO) Distribution Among Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            ),
+                            plotlyOutput(ns("aao_hist"), height = "300px")
+                        )
+                    }
                 )
             } else {
                 tags$p("No details available for this variant.")
