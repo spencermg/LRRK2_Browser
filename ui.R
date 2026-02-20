@@ -33,8 +33,8 @@ ui <- dashboardPage(
             tags$h4("Data Sources"),
             tags$p("This browser contains genomic data from participants within the Global Parkinson's Genetics Program (GP2) across several modalities:"),
             tags$ul(
-                tags$li(tags$strong("Imputed genotyping")),
                 tags$li(tags$strong("Whole genome sequencing (WGS)")),
+                tags$li(tags$strong("Imputed genotyping")),
                 tags$li(tags$strong("Raw genotyping")),
                 tags$li(tags$strong("Clinical exome"))
             ),
