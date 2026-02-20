@@ -297,7 +297,7 @@ server <- function(input, output, session) {
     diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 12)
 
     # cDNA diagram
-    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12)
+    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12, min_label_sep_px = 75)
 
     # Kinase activity bar chart
     exon_color_mapping <- setNames(

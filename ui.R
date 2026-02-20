@@ -31,7 +31,7 @@ ui <- dashboardPage(
             tags$hr(),
             
             tags$h4("Data Sources"),
-            tags$p("This browser contains genotyping data from participants within the Global Parkinson's Genetics Program (GP2) across several modalities:"),
+            tags$p("This browser contains genomic data from participants within the Global Parkinson's Genetics Program (GP2) across several modalities:"),
             tags$ul(
                 tags$li(tags$strong("Imputed genotyping")),
                 tags$li(tags$strong("Whole genome sequencing (WGS)")),
@@ -42,22 +42,22 @@ ui <- dashboardPage(
             tags$h4("Sample Information"),
             tags$p("Total samples: 101,678"),
             tags$ul(
-                tags$li("Imputed genotyping: 84,654"),
                 tags$li("WGS: 25,904"),
+                tags$li("Imputed genotyping: 84,654"),
                 tags$li("Raw genotyping: 84,654"),
                 tags$li("Clinical exome: 14,555")
             ),
             tags$p("Parkinson's Disease cases: 61,709"),
             tags$ul(
-                tags$li("Imputed genotyping: 46,349"),
                 tags$li("WGS: 17,241"),
+                tags$li("Imputed genotyping: 46,349"),
                 tags$li("Raw genotyping: 46,349"),
                 tags$li("Clinical exome: 14,555")
             ),
             tags$p("Healthy controls: 39,969"),
             tags$ul(
-                tags$li("Imputed genotyping: 38,305"),
                 tags$li("WGS: 8,663"),
+                tags$li("Imputed genotyping: 38,305"),
                 tags$li("Raw genotyping: 38,305"),
                 tags$li("Clinical exome: 0")
             ),

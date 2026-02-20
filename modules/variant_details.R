@@ -359,9 +359,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
 
                 # Get min/median/max across all ancestries
                 dat_combined <- variant_details[Ancestry == "Combined"]
-                min_aao <- suppressWarnings(as.numeric(dat_combined$`Minimum AAO`[1]))
-                med_aao <- suppressWarnings(as.numeric(dat_combined$`Median AAO`[1]))
-                max_aao <- suppressWarnings(as.numeric(dat_combined$`Maximum AAO`[1]))
+                min_aao <- floor(suppressWarnings(as.numeric(dat_combined$`Minimum AAO`[1])))
+                med_aao <- floor(suppressWarnings(as.numeric(dat_combined$`Median AAO`[1])))
+                max_aao <- floor(suppressWarnings(as.numeric(dat_combined$`Maximum AAO`[1])))
 
                 # Build the histogram
                 plot_ly(
