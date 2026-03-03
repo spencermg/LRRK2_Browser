@@ -7,6 +7,13 @@
 barChartUI <- function(id) {
     ns <- NS(id)
     tagList(
+        column(
+            width = 12,
+            tags$p(
+                "More information about how kinase activity readings were measured can be found at __________.",
+                style = "font-size: 14px; color: #555; margin-top: 8px; text-align: center;"
+            )
+        ),
         # Sort order dropdown by either genomic coordinate or kinase activity
         div(
             style = "display: inline-block; vertical-align: middle; margin-left: 10px;",
