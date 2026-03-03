@@ -83,6 +83,8 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         cols_to_keep <- reactive({
             base_cols <- c(
                 "Variant (GrCh38)",
+                "cDNA change",
+                "AA change",
                 "PD frequency (WGS)",
                 "Control frequency (WGS)",
                 "PD frequency (Imputed)",
@@ -106,8 +108,6 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "rsID",
                 "Clinvar Pathogenic",
                 "Exon #",
-                "cDNA change",
-                "AA change",
                 "Protein domain",
                 "Conservation score",
                 "Kinase activity (mean pRAB10/RAB10)"
