@@ -331,8 +331,8 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
             }
 
             # Prepare family history data for pie charts
-            pd_fh <- colSums(variant_details[, c("No family history (PD)", "Family history (PD)", "Unknown family history (PD)"), with = FALSE], na.rm = TRUE)
-            control_fh <- colSums(variant_details[, c("No family history (Control)", "Family history (Control)", "Unknown family history (Control)"), with = FALSE], na.rm = TRUE)
+            pd_fh <- variant_details[Ancestry == "Combined", c("No family history (PD)", "Family history (PD)", "Unknown family history (PD)"), with = FALSE]
+            control_fh <- variant_details[Ancestry == "Combined", c("No family history (Control)", "Family history (Control)", "Unknown family history (Control)"), with = FALSE]
             fh_labels <- c("No", "Yes", "Unknown")
             fh_colors <- c("#8C4E9F", "#34A270", "#D3D3D3")
 
@@ -364,7 +364,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     direction = "counterclockwise",
                     marker = list(colors = fh_colors),
                     name = "PD",
-                    hoverinfo = "label+percent"
+                    hoverinfo = "label+value"
                 ) %>% layout(
                     title = "PD Cases",
                     showlegend = TRUE
@@ -395,7 +395,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     direction = "counterclockwise",
                     marker = list(colors = fh_colors),
                     name = "Control",
-                    hoverinfo = "label+percent"
+                    hoverinfo = "label+value"
                 ) %>% layout(
                     title = "Healthy Controls",
                     showlegend = TRUE
