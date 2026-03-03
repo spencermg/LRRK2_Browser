@@ -287,8 +287,10 @@ server <- function(input, output, session) {
     # General metadata about LRRK2
     geneOverviewServer("gene_overview")
 
-    # Links to other resources
-    otherResourcesServer("other_resources")
+    # Main variant table with popup
+    clicked_variant <- reactiveVal(NULL)
+    geneVarTableServer("gene_var_table", all_tables_merged, clicked_variant)
+    variantDetailServer("variant_detail", all_tables_merged, clicked_variant)
 
     # Counts of variants across functional annotation categories 
     annotationSummaryTableServer("annotation_summary_table", all_tables_merged)
@@ -306,8 +308,6 @@ server <- function(input, output, session) {
     )
     barChartServer("bar_chart", all_tables_merged$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
 
-    # Main variant table with popup
-    clicked_variant <- reactiveVal(NULL)
-    geneVarTableServer("gene_var_table", all_tables_merged, clicked_variant)
-    variantDetailServer("variant_detail", all_tables_merged, clicked_variant)
+    # Links to other resources
+    otherResourcesServer("other_resources")
 }

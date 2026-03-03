@@ -330,10 +330,10 @@ ui <- dashboardPage(
             geneOverviewUI("gene_overview")
         ),
 
-        # Links to external resources
+        # Main variant table
         box(
             title = tags$div(
-                "Other resources",
+                "Variant Table",
                 style = box_title_font_style
             ),
             closable = FALSE,
@@ -342,8 +342,8 @@ ui <- dashboardPage(
             status = NULL,
             width = 12,
             solidHeader = FALSE,
-            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", metadata_box_color, "; padding: 10px;"),
-            otherResourcesUI("other_resources")
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_table_color, "; padding: 10px;"),
+            geneVarTableUI("gene_var_table")
         ),
 
         # Summary table for different variant functional annotation categories
@@ -410,10 +410,10 @@ ui <- dashboardPage(
             barChartUI("bar_chart")
         ),
 
-        # Main variant table
+        # Links to external resources
         box(
             title = tags$div(
-                "Variant Table",
+                "Other resources",
                 style = box_title_font_style
             ),
             closable = FALSE,
@@ -422,8 +422,8 @@ ui <- dashboardPage(
             status = NULL,
             width = 12,
             solidHeader = FALSE,
-            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_table_color, "; padding: 10px;"),
-            geneVarTableUI("gene_var_table")
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", metadata_box_color, "; padding: 10px;"),
+            otherResourcesUI("other_resources")
         )
     ),
     controlbar = NULL
