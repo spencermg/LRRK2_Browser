@@ -289,6 +289,27 @@ ui <- dashboardPage(
         # Title banner
         h2("LRRK2 Browser", style = "text-align:center; font-weight:bold;"),
 
+        # Make collapse functionality more obvious
+        tags$head(
+            tags$style(HTML("
+                /* Add text before the icon, and some spacing */
+                .box .btn-box-tool[data-widget='collapse']::before {
+                content: 'Collapse ';
+                font-weight: bold;
+                }
+
+                /* When the box is collapsed, change the text to 'Expand' */
+                .box.collapsed-box .btn-box-tool[data-widget='collapse']::before {
+                content: 'Expand ';
+                }
+                
+                /* Optional: Adjust padding if the text feels too cramped */
+                .box .btn-box-tool {
+                padding: 5px 10px;
+                }
+            "))
+        ),
+
         # Overview numbers for LRRK2
         box(
             title = tags$div(
