@@ -52,6 +52,14 @@ geneVarTableUI <- function(id) {
                         no  = icon("remove", lib = "glyphicon")
                     )
                 )
+            ),
+            column(
+                width = 4,
+                textInput(
+                    inputId = ns("search"),
+                    label   = "Search:",
+                    placeholder = "e.g., 'G2019S' or 'Pathogenic'"
+                )
             )
         ),
         
@@ -170,6 +178,13 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 keep <- !is.na(kinase_active) & kinase_active == "Yes"
                 dat <- dat[ keep, , drop = FALSE]
             }
+            search_term <- trimws(input$search)
+            if (nzchar(search_term)) {
+                matches <- apply(dat, 1, function(row) {
+                    any(grepl(search_term, row, ignore.case = TRUE, fixed = FALSE))
+                })
+                dat <- dat[matches, ]
+            }
 
             # Only keep columns that exist in the data
             cols <- cols_to_keep()
@@ -211,10 +226,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 escape     = FALSE,
                 selection  = "none",
                 options    = list(
-                    dom          = "Blfrtip",
+                    dom          = "Blrtip",
                     buttons      = c("copy", "csv", "excel", "pdf", "print"),
                     paging       = TRUE,
-                    pageLength   = 25,
+                    pageLength   = 10,
                     lengthChange = TRUE,
                     lengthMenu   = list(c(10,25,50,100,500,-1), c("10","25","50","100","500","All")),
                     scrollX      = TRUE,
