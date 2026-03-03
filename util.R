@@ -24,17 +24,17 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
 
     # Identify correct gnomAD column to use
     ancestry_col_map <- list(
-        AFR = "gnomad41_genome_AF_afr",
-        AMR = "gnomad41_genome_AF_amr",
-        AJ = "gnomad41_genome_AF_asj",
-        EAS = "gnomad41_genome_AF_eas",
-        FIN = "gnomad41_genome_AF_fin",
-        MDE = "gnomad41_genome_AF_mid",
-        EUR = "gnomad41_genome_AF_nfe",
-        SAS = "gnomad41_genome_AF_sas",
-        AAC = NA,
-        CAS = NA,
-        CAH = NA,
+        `African (AFR)` = "gnomad41_genome_AF_afr",
+        `Admixed American (AMR)` = "gnomad41_genome_AF_amr",
+        `Ashkenazi Jewish (AJ)` = "gnomad41_genome_AF_asj",
+        `East Asian (EAS)` = "gnomad41_genome_AF_eas",
+        `Finnish (FIN)` = "gnomad41_genome_AF_fin",
+        `Middle Eastern (MDE)` = "gnomad41_genome_AF_mid",
+        `European (EUR)` = "gnomad41_genome_AF_nfe",
+        `South Asian (SAS)` = "gnomad41_genome_AF_sas",
+        `Admixed African (AAC)` = NA,
+        `Central Asian (CAS)` = NA,
+        `Complex Admixture (CAH)` = NA,
         Combined = "gnomad41_genome_AF"
     )
 

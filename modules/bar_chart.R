@@ -7,6 +7,7 @@
 barChartUI <- function(id) {
     ns <- NS(id)
     tagList(
+        # Show where users can find methods for how kinase activity data were measured
         column(
             width = 12,
             tags$p(

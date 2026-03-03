@@ -21,7 +21,7 @@ geneVarTableUI <- function(id) {
             ),
             # Add dropdown for ancestry selection
             column(
-                width = 2,
+                width = 3,
                 selectInput(
                     inputId  = ns("dataset"),
                     label    = "Choose ancestry:",
@@ -54,7 +54,7 @@ geneVarTableUI <- function(id) {
                 )
             ),
             column(
-                width = 4,
+                width = 3,
                 textInput(
                     inputId = ns("search"),
                     label   = "Search:",
