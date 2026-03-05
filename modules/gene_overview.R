@@ -45,7 +45,7 @@ geneOverviewServer <- function(id) {
                     width = 3,
                     align = "center",
                     descriptionBlock(
-                        header = tags$b("BP (T2T)"),
+                        header = tags$b("BP (CHM13)"),
                         text = "40177355 - 40321422",
                         rightBorder = TRUE,
                         marginBottom = FALSE
