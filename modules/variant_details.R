@@ -98,7 +98,15 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 variant_display[[col]] <- ifelse(
                     is.na(variant_display[[col]]),
                     "N/A",
-                    format(variant_display[[col]], scientific = TRUE, digits = 5)
+                    ifelse(
+                        variant_display[[col]] == 0,
+                        "0",
+                        ifelse(
+                            abs(variant_display[[col]]) < 0.001,
+                            format(variant_display[[col]], scientific = TRUE, digits = 3),
+                            format(variant_display[[col]], scientific = FALSE, digits = 5)
+                        )
+                    )
                 )
                 variant_display[[col]] <- gsub("^0e[\\+\\-]0+$", "0", variant_display[[col]])
             }

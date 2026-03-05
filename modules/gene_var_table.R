@@ -251,7 +251,11 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                                 "       return (type === 'display') ? '0' : 0;",
                                 "  }",
                                 "  if (type === 'display') {",
-                                "       return num.toExponential(3);",
+                                "       if (Math.abs(num) < 0.001) {",
+                                "            return num.toExponential(3);",
+                                "       } else {",
+                                "            return Math.round(num * 10000) / 10000;",
+                                "       }",
                                 "  }",
                                 "  return num;",
                                 "}"
