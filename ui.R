@@ -31,7 +31,16 @@ ui <- dashboardPage(
             tags$hr(),
             
             tags$h4("Data Sources"),
-            tags$p("This browser contains genomic data from participants within the Global Parkinson's Genetics Program (GP2) across several modalities:"),
+            tags$p(
+                "This browser contains genomic data for participants from the",
+                tags$a(
+                    href = "https://doi.org/10.5281/zenodo.17753486", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "11th data release"
+                ),
+                "of the Global Parkinson's Genetics Program (GP2). These data include several modalities:"
+            ),
             tags$ul(
                 tags$li(tags$strong("Whole genome sequencing (WGS)")),
                 tags$li(tags$strong("Imputed genotyping")),
