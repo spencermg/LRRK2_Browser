@@ -253,10 +253,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                         tags$div(
                             id = ns("charts_warning_section"),
                             # Family History section header
-                            tags$h3(
-                                "Family History of Parkinson's Disease Among Carriers",
-                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
-                            ),
+                            # tags$h3(
+                            #     "Family History of Parkinson's Disease Among Carriers",
+                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            # ),
                             # Warning banner
                             tags$div(
                                 style = paste0(
@@ -285,10 +285,15 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 )
                             ),
                             # AAO section header (also behind warning)
-                            tags$h3(
-                                "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
-                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
-                            ),
+                            # tags$h3(
+                            #     "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
+                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            # ),
+                            # Age section header (also behind warning)
+                            # tags$h3(
+                            #     "Age Distribution Among Healthy Control Carriers",
+                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            # ),
                             tags$div(
                                 style = "text-align: center; padding: 40px; color: #999;",
                                 tags$p("Click 'I Understand' above to view these charts")
@@ -309,7 +314,12 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
                                 style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
                             ),
-                            plotlyOutput(ns("aao_hist"), height = "300px")
+                            plotlyOutput(ns("aao_hist"), height = "300px"),
+                            tags$h3(
+                                "Age Distribution Among Healthy Control Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
+                            ),
+                            plotlyOutput(ns("age_hist"), height = "300px")
                         )
                     },
 
@@ -330,7 +340,12 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
                                 style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
                             ),
-                            plotlyOutput(ns("aao_hist"), height = "300px")
+                            plotlyOutput(ns("aao_hist"), height = "300px"),
+                            tags$h3(
+                                "Age Distribution Among Healthy Control Carriers",
+                                style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
+                            ),
+                            plotlyOutput(ns("age_hist"), height = "300px")
                         )
                     }
                 )
@@ -410,13 +425,13 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 )
             })
 
-            # Render AAO histogram
+            # Render AAO histogram for PD-affected carriers
             output$aao_hist <- renderPlotly({
                 # Extract the counts for each AAO bin
                 aao_cols <- c(
-                    "AAO (11-20)", "AAO (21-30)", "AAO (31-40)", "AAO (41-50)", 
-                    "AAO (51-60)", "AAO (61-70)", "AAO (71-80)", "AAO (81-90)", 
-                    "AAO (91-100)"
+                    "AAO (11-20)", "AAO (21-30)", "AAO (31-40)", 
+                    "AAO (41-50)", "AAO (51-60)", "AAO (61-70)", 
+                    "AAO (71-80)", "AAO (81-90)", "AAO (91-100)"
                 )
                 aao_counts <- as.numeric(variant_details[Ancestry == "Combined", ..aao_cols])
 
@@ -456,21 +471,85 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     type = "bar",
                     marker = list(color = "#0C8DC3"),
                     hovertemplate = "Count: %{y}<extra></extra>"
-                ) %>%
-                    layout(
-                        xaxis = list(
-                            title = paste0(
-                                "Age at Onset Range (years)<br>",
-                                "Min: ", ifelse(is.na(min_aao), "N/A", min_aao),
-                                ", Median: ", ifelse(is.na(med_aao), "N/A", round(med_aao, 2)),
-                                ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao), 
-                                "<br>",
-                                "*AAO data available for ", sum(aao_counts), " out of ", sum(unlist(pd_fh_display)), " PD-affected carriers"
+                ) %>% layout(
+                    xaxis = list(
+                        title = paste0(
+                            "Age at Onset Range (years)<br>",
+                            "Min: ", ifelse(is.na(min_aao), "N/A", min_aao),
+                            ", Median: ", ifelse(is.na(med_aao), "N/A", round(med_aao, 2)),
+                            ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao), 
+                            "<br>",
+                            "*AAO data available for ", sum(aao_counts), " out of ", sum(unlist(pd_fh_display)), " PD-affected carriers"
+                        )
+                    ),
+                    yaxis = list(title = "Count"),
+                    bargap = 0.2
+                )
+            })
+
+            # Render age histogram for healthy controls
+            output$age_hist <- renderPlotly({
+                # Extract the counts for each age bin
+                age_cols <- c(
+                    "Age (0-10)", "Age (11-20)", "Age (21-30)", "Age (31-40)", 
+                    "Age (41-50)", "Age (51-60)", "Age (61-70)", "Age (71-80)", 
+                    "Age (81-90)", "Age (91-100)", "Age (101-110)", "Age (111-120)"
+                )
+                age_counts <- as.numeric(variant_details[Ancestry == "Combined", ..age_cols])
+
+                # If there are no carriers, show a message instead of a chart
+                if (sum(age_counts) == 0) {
+                    return(plotly_empty(type = "scatter", mode = "text") %>%
+                        layout(
+                            annotations = list(
+                                text = "No healthy control data \navailable for this variant",
+                                x = 0.5, 
+                                y = 0.5, 
+                                showarrow = FALSE,
+                                font = list(size = 14, color = "#888")
                             )
-                        ),
-                        yaxis = list(title = "Count"),
-                        bargap = 0.2
+                        )
                     )
+                }
+
+                # Prepare labels and data
+                age_labels <- gsub("Age \\(|\\)", "", age_cols)
+                df_age <- data.frame(
+                    Range = factor(age_labels, levels = age_labels),
+                    Count = as.numeric(age_counts)
+                )
+
+                # Get min/median/max across all ancestries
+                dat_combined <- variant_details[Ancestry == "Combined"]
+                min_age <- floor(suppressWarnings(as.numeric(dat_combined$`Minimum Age`[1])))
+                med_age <- floor(suppressWarnings(as.numeric(dat_combined$`Median Age`[1])))
+                max_age <- floor(suppressWarnings(as.numeric(dat_combined$`Maximum Age`[1])))
+
+                print(control_fh_display)
+                print(pd_fh_display)
+
+                # Build the histogram
+                plot_ly(
+                    data = df_age,
+                    x = ~Range,
+                    y = ~Count,
+                    type = "bar",
+                    marker = list(color = "#0C8DC3"),
+                    hovertemplate = "Count: %{y}<extra></extra>"
+                ) %>% layout(
+                    xaxis = list(
+                        title = paste0(
+                            "Age Range (years)<br>",
+                            "Min: ", ifelse(is.na(min_age), "N/A", min_age),
+                            ", Median: ", ifelse(is.na(med_age), "N/A", round(med_age, 2)),
+                            ", Max: ", ifelse(is.na(max_age), "N/A", max_age), 
+                            "<br>",
+                            "*Age data available for ", sum(age_counts), " out of ", sum(unlist(control_fh_display), na.rm = TRUE), " healthy control carriers"
+                        )
+                    ),
+                    yaxis = list(title = "Count"),
+                    bargap = 0.2
+                )
             })
 
             # Show popup
