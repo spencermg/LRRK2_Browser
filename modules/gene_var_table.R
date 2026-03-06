@@ -90,6 +90,10 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
                 "Protein domain",
                 "Region",
                 "Functional consequence",
+                "CADD",
+                "Clinvar Pathogenic",
+                "Conservation score",
+                "Kinase activity (mean pRAB10/RAB10)",
                 "PD frequency (WGS)",
                 "Control frequency (WGS)",
                 "PD frequency (Imputed)",
@@ -106,11 +110,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             # Add remaining columns
             base_cols <- c(
                 base_cols,
-                "gnomAD allele frequency",
-                "CADD",
-                "Clinvar Pathogenic",
-                "Conservation score",
-                "Kinase activity (mean pRAB10/RAB10)"
+                "gnomAD allele frequency"
             )
             
             base_cols

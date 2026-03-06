@@ -11,8 +11,20 @@ barChartUI <- function(id) {
         column(
             width = 12,
             tags$p(
-                "More information about how kinase activity readings were measured can be found at __________.",
+                "More information about how kinase activity readings were measured can be found at",
+                tags$a(
+                    href = "https://pubmed.ncbi.nlm.nih.gov/35950872/", 
+                    target = "_blank",
+                    style = "color: #0C8DC3 !important;",
+                    "https://pubmed.ncbi.nlm.nih.gov/35950872/"
+                ),
                 style = "font-size: 14px; color: #555; margin-top: 8px; text-align: center;"
+            ),
+            tags$p(paste0(
+                    "*GP2-determined high-confidence variants (according to at least two ",
+                    "of Clinvar, HGMD, and MDSGene) are indicated with three asterisks (***)"
+                ),
+                style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
             )
         ),
         # Sort order dropdown by either genomic coordinate or kinase activity
@@ -160,8 +172,17 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                     title = NULL,
                     xaxis = list(
                         title = "Variant",
-                        tickangle = 45,
-                        fixedrange = TRUE
+                        tickangle = 60,
+                        fixedrange = TRUE,
+                        automargin = TRUE,
+                        tickmode = "array",
+                        tickvals = dat_aggregated$`AA change`,
+                        ticktext = ifelse(
+                            dat_aggregated$`AA change` %in% variant_data[!is.na(Pathogenic) & Pathogenic == 1, `AA change`],
+                            paste0(dat_aggregated$`AA change`, " ***"),
+                            as.character(dat_aggregated$`AA change`)
+                        ),
+                        tickfont = list(size = 9)
                     ),
                     yaxis = list(
                         title = "Kinase activity (mean pRAB10/RAB10)",
