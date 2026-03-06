@@ -286,7 +286,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                             ),
                             # AAO section header (also behind warning)
                             tags$h3(
-                                "Age at Onset (AAO) Distribution Among Carriers",
+                                "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
                                 style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
                             ),
                             tags$div(
@@ -306,14 +306,14 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 column(6, plotlyOutput(ns("control_pie"), height = "300px"))
                             ),
                             tags$h3(
-                                "Age at Onset (AAO) Distribution Among Carriers",
+                                "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
                                 style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center;"
                             ),
                             plotlyOutput(ns("aao_hist"), height = "300px")
                         )
                     },
 
-                    # Hidden div for charts (shown after acknowledgment) - WITH HEADERS
+                    # Hidden div for charts (shown after acknowledgment)
                     if (show_warning) {
                         tags$div(
                             id = ns("charts_section"),
@@ -327,7 +327,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 column(6, plotlyOutput(ns("control_pie"), height = "300px"))
                             ),
                             tags$h3(
-                                "Age at Onset (AAO) Distribution Among Carriers",
+                                "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
                                 style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
                             ),
                             plotlyOutput(ns("aao_hist"), height = "300px")
@@ -410,7 +410,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 )
             })
 
-
             # Render AAO histogram
             output$aao_hist <- renderPlotly({
                 # Extract the counts for each AAO bin
@@ -464,7 +463,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 "Age at Onset Range (years)<br>",
                                 "Min: ", ifelse(is.na(min_aao), "N/A", min_aao),
                                 ", Median: ", ifelse(is.na(med_aao), "N/A", round(med_aao, 2)),
-                                ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao)
+                                ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao), 
+                                "<br>",
+                                "*AAO data available for ", sum(aao_counts), " out of ", sum(unlist(pd_fh_display)), " PD-affected carriers"
                             )
                         ),
                         yaxis = list(title = "Count"),
