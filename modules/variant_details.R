@@ -124,6 +124,16 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     ),
                     tags$div(
                         style = "margin-bottom: 20px;",
+                        tags$p(
+                            style = "text-align: center;",
+                            tags$strong(
+                                ifelse(
+                                    is_pathogenic == 1, 
+                                    "This variant IS classified as pathogenic according to GP2 criteria", 
+                                    "This variant IS NOT classified as pathogenic according to GP2 criteria"
+                                )
+                            )
+                        ),
                         if ("rsID" %in% colnames(variant_details) && !is.na(variant_details$rsID[1])) {
                             tags$p(tags$strong("rsID: "), variant_details$rsID[1])
                         },
@@ -252,11 +262,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                     if (show_warning) {
                         tags$div(
                             id = ns("charts_warning_section"),
-                            # Family History section header
-                            # tags$h3(
-                            #     "Family History of Parkinson's Disease Among Carriers",
-                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
-                            # ),
                             # Warning banner
                             tags$div(
                                 style = paste0(
@@ -269,7 +274,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                 ),
                                 tags$p(
                                     style = "font-size: 15px; color: #856404; margin-bottom: 15px;",
-                                    tags$strong("⚠️ This variant is NOT classified as pathogenic according to GP2 criteria.")
+                                    tags$strong("⚠️ This variant IS NOT classified as pathogenic according to GP2 criteria.")
                                 ),
                                 tags$p(
                                     style = "font-size: 14px; color: #666; margin-bottom: 20px;",
@@ -284,16 +289,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                                     style = "font-size: 16px; padding: 10px 30px;"
                                 )
                             ),
-                            # AAO section header (also behind warning)
-                            # tags$h3(
-                            #     "Age at Onset (AAO) Distribution Among PD-Affected Carriers",
-                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
-                            # ),
-                            # Age section header (also behind warning)
-                            # tags$h3(
-                            #     "Age Distribution Among Healthy Control Carriers",
-                            #     style = "color: #0C8DC3; border-bottom: 2px solid #0C8DC3; padding-bottom: 5px; text-align: center; margin-top: 30px;"
-                            # ),
                             tags$div(
                                 style = "text-align: center; padding: 40px; color: #999;",
                                 tags$p("Click 'I Understand' above to view these charts")
