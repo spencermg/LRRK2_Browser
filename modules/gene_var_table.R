@@ -1,6 +1,33 @@
 #!/usr/bin/env Rscript
 
 # =========================================================================
+# DEFINE VARIABLES
+# =========================================================================
+header_tooltips <- c(
+    "Variant (GrCh38)" = "Genomic coordinates for variants (chromosome, position, reference allele, alternate allele)",
+    "rsID" = "",
+    "cDNA change" = "Based on reference transcript ENST00000298910.12",
+    "Exon #" = "Based on reference transcript ENST00000298910.12",
+    "AA change" = "",
+    "Protein domain" = "",
+    "Region" = "",
+    "Functional consequence" = "",
+    "CADD" = "",
+    "Clinvar Pathogenic" = "",
+    "Conservation score" = "",
+    "Kinase activity (mean pRAB10/RAB10)" = "",
+    "PD frequency (WGS)" = "",
+    "Control frequency (WGS)" = "",
+    "PD frequency (Imputed)" = "",
+    "Control frequency (Imputed)" = "",
+    "PD frequency (Raw genotyping)" = "",
+    "Control frequency (Raw genotyping)" = "",
+    "PD frequency (Clinical exome)" = "",
+    "gnomAD allele frequency" = ""
+)
+
+
+# =========================================================================
 # UI FUNCTION
 # =========================================================================
 
@@ -196,6 +223,22 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         output$table <- DT::renderDT({
             dat <- dat_rx()
 
+            # Add tooltips to column headers
+            make_tooltip_headers <- function(cols, tooltips) {
+                sapply(cols, function(col) {
+                    if (!is.null(tooltips[[col]])) {
+                        sprintf(
+                            '<span title="%s">%s</span>',
+                            htmltools::htmlEscape(tooltips[[col]]),
+                            htmltools::htmlEscape(col)
+                        )
+                    } else {
+                        htmltools::htmlEscape(col)
+                    }
+                }, USE.NAMES = FALSE)
+            }
+            headers <- make_tooltip_headers(colnames(dat), header_tooltips)
+
             # Make first column (variant ID) clickable
             if (nrow(dat) > 0) {
                 dat[[1]] <- paste0(
@@ -221,6 +264,7 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
 
             DT::datatable(
                 dat,
+                colnames = headers,
                 extensions = "Buttons",
                 rownames   = FALSE,
                 escape     = FALSE,
