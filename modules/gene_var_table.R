@@ -23,7 +23,7 @@ header_tooltips <- c(
     "PD frequency (Raw genotyping)" = "",
     "Control frequency (Raw genotyping)" = "",
     "PD frequency (Clinical exome)" = "",
-    "gnomAD allele frequency" = ""
+    "gnomAD allele frequency" = "Using whole-genome data from the gnomAD v4 dataset (76,215 genomes across all ancestries)"
 )
 
 
