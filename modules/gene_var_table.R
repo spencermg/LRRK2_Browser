@@ -16,13 +16,13 @@ header_tooltips <- c(
     "Clinvar Pathogenic" = "",
     "Conservation score" = "",
     "Kinase activity (mean pRAB10/RAB10)" = "",
-    "PD frequency (WGS)" = "",
-    "Control frequency (WGS)" = "",
-    "PD frequency (Imputed)" = "",
-    "Control frequency (Imputed)" = "",
-    "PD frequency (Raw genotyping)" = "",
-    "Control frequency (Raw genotyping)" = "",
-    "PD frequency (Clinical exome)" = "",
+    "PD frequency (WGS)" = "Frequency (0-1) for each variant in whole-genome sequencing data from PD-affected samples in GP2 Release 11",
+    "Control frequency (WGS)" = "Frequency (0-1) for each variant in whole-genome sequencing data from healthy control samples in GP2 Release 11",
+    "PD frequency (Imputed)" = "Frequency (0-1) for each variant in imputed genotyping data from PD-affected samples in GP2 Release 11",
+    "Control frequency (Imputed)" = "Frequency (0-1) for each variant in imputed genotyping data from healthy control samples in GP2 Release 11",
+    "PD frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from PD-affected samples in GP2 Release 11",
+    "Control frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from healthy control samples in GP2 Release 11",
+    "PD frequency (Clinical exome)" = "Frequency (0-1) for each variant in whole-exome sequencing data from PD-affected samples in GP2 Release 11",
     "gnomAD allele frequency" = "Using whole-genome data from the gnomAD v4 dataset (76,215 genomes across all ancestries)"
 )
 
