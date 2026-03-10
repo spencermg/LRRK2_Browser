@@ -13,9 +13,13 @@ variantDetailUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
+variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
+
+        variant_data <- reactive({
+            variant_bus$variant()
+        })
 
         # Observer to show charts when warning is acknowledged
         observeEvent(input$acknowledge_warning, {
@@ -24,10 +28,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
         })
         
         # Observe when a variant is clicked
-        observeEvent(variant_data(), {
-            req(variant_data())
-            
-            variant_id <- variant_data()$variant_id
+        observeEvent(variant_bus$variant(), {
+            variant <- variant_data()
+            req(variant)
+            variant_id <- variant$variant_id
 
             # Create one data table with data from each ancestry and combined
             variant_details <- list()
@@ -519,9 +523,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_data) {
                 min_age <- floor(suppressWarnings(as.numeric(dat_combined$`Minimum Age`[1])))
                 med_age <- floor(suppressWarnings(as.numeric(dat_combined$`Median Age`[1])))
                 max_age <- floor(suppressWarnings(as.numeric(dat_combined$`Maximum Age`[1])))
-
-                print(control_fh_display)
-                print(pd_fh_display)
 
                 # Build the histogram
                 plot_ly(

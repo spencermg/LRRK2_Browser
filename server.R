@@ -220,6 +220,25 @@ pathogenic_cdna_variants <- pathogenic_var_table[, c("cdna_pos", "cdna_label", "
 colnames(pathogenic_protein_variants) <- c("pos", "label", "color", "value")
 colnames(pathogenic_cdna_variants) <- c("pos", "label", "color", "value")
 
+# Handle when users click on variants in the table or domain diagrams
+createVariantBus <- function() {
+    rv <- reactiveValues(
+        variant = NULL,
+        nonce = 0
+    )
+    list(
+        publish = function(variant) {
+            rv$nonce <- rv$nonce + 1
+            rv$variant <- list(
+                variant_id = variant$variant_id,
+                nonce = rv$nonce
+            )
+        },
+        variant = reactive({
+            rv$variant
+        })
+    )
+}
 
 # =========================================================================
 # SERVER FUNCTION
@@ -287,19 +306,23 @@ server <- function(input, output, session) {
     # General metadata about LRRK2
     geneOverviewServer("gene_overview")
 
-    # Main variant table with popup
-    clicked_variant <- reactiveVal(NULL)
-    geneVarTableServer("gene_var_table", all_tables_merged, clicked_variant)
-    variantDetailServer("variant_detail", all_tables_merged, clicked_variant)
+    # Track which variant is clicked
+    variant_bus <- createVariantBus()
+
+    # Main variant table
+    geneVarTableServer("gene_var_table", all_tables_merged, variant_bus)
+
+    # Protein domain diagram
+    diagramServer("protein_diagram", all_tables_merged$Combined, protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 12, variant_bus)
+
+    # cDNA diagram
+    diagramServer("cdna_diagram", all_tables_merged$Combined, exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12, variant_bus, min_label_sep_px = 75)
+
+    # Respond to click events with the variant_detail popup
+    variantDetailServer("variant_detail", all_tables_merged, variant_bus)
 
     # Counts of variants across functional annotation categories 
     annotationSummaryTableServer("annotation_summary_table", all_tables_merged)
-
-    # Protein domain diagram
-    diagramServer("protein_diagram", protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 12)
-
-    # cDNA diagram
-    diagramServer("cdna_diagram", exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12, min_label_sep_px = 75)
 
     # Kinase activity bar chart
     exon_color_mapping <- setNames(

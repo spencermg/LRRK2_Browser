@@ -27,12 +27,14 @@ diagramUI <- function(id) {
 
 diagramServer <- function(
     id,
+    variant_data,
     domains,
     domain_positions,
     subdomain_gap,
     variants,
     mode,
     top_n,
+    variant_bus,
     max_stack_size = 6,     # Max num labels to stack on each other
     min_label_sep_px = 50,  # Num pixel gap below which labels stack vertically
     label_lift = 0.07,      # Vertical lift per stacked label
@@ -42,6 +44,16 @@ diagramServer <- function(
     map_pos_to_x <- function(pos_vec) {
         subdomain_idx <- findInterval(pos_vec, domain_positions, left.open = TRUE)
         pos_vec + (subdomain_idx - 0.5) * subdomain_gap
+    }
+
+    find_variant_ids <- function(change, type) {
+        if (type == "cDNA") {
+            match_row <- variant_data[`cDNA change` == change]
+        } else {
+            match_row <- variant_data[`AA change` == change]
+        }
+        if (nrow(match_row) == 0) return(NULL)
+        match_row$`Variant (GrCh38)`
     }
 
     moduleServer(id, function(input, output, session) {
@@ -105,6 +117,47 @@ diagramServer <- function(
         observeEvent(plotly::event_data("plotly_doubleclick", source = id), {
             x_window(x_full)
         }, ignoreInit = TRUE)
+
+
+
+        observeEvent(
+            plotly::event_data("plotly_click", source = id, priority = "event"),
+            ignoreInit = TRUE,
+            {
+                click_data <- plotly::event_data("plotly_click", source = id, priority = "event")
+                req(click_data$customdata)
+
+                ids <- find_variant_ids(click_data$customdata, type = mode)
+                if (is.null(ids)) return()
+
+                if (length(ids) == 1) {
+                    variant_bus$publish(list(variant_id = ids[1]))
+                } else {
+                    showModal(
+                        modalDialog(
+                            title = "Multiple genomic variants found",
+                            selectInput(
+                                session$ns("variant_choice"),
+                                "Select variant:",
+                                choices = ids
+                            ),
+                            footer = tagList(
+                                modalButton("Cancel"),
+                                actionButton(session$ns("confirm_variant"), "Show Variant")
+                            )
+                        )
+                    )
+                }
+            }
+        )
+
+        observeEvent(input$confirm_variant, {
+            req(input$variant_choice)
+            removeModal()
+            variant_bus$publish(
+                list(variant_id = input$variant_choice)
+            )
+        })
 
         output$diagram <- renderPlotly({
             # Start/end for the boxes, adjusted for connecting line segments
@@ -257,9 +310,9 @@ diagramServer <- function(
                     type = "scatter", 
                     mode = "markers",
                     marker = list(size = 9, color = vv$color, line = list(color = "black", width = 0.5)),
-                    hovertemplate = "%{text}<br>Pos: %{customdata}<extra></extra>",
                     text = vv$label, 
-                    customdata = vv$pos,
+                    customdata = vv$label,
+                    hovertemplate = "%{text}<extra></extra>",
                     showlegend = FALSE
                 )
 

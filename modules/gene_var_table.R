@@ -104,7 +104,7 @@ geneVarTableUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
+geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
     moduleServer(id, function(input, output, session) {
         # Make cols_to_keep reactive based on ancestry selection
         cols_to_keep <- reactive({
@@ -148,13 +148,13 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
         # Initialize dataset selector
         updateSelectInput(
             session, "dataset",
-            choices  = names(all_tables_cleaned),
-            selected = if ("Combined" %in% names(all_tables_cleaned)) "Combined" else names(all_tables_cleaned)[1]
+            choices  = names(all_tables_merged),
+            selected = if ("Combined" %in% names(all_tables_merged)) "Combined" else names(all_tables_merged)[1]
         )
 
         # Apply selected filters
         dat_rx <- reactive({
-            dat <- all_tables_cleaned[[ req(input$dataset) ]]
+            dat <- all_tables_merged[[ req(input$dataset) ]]
 
             freq_cols <- c(
                 "PD frequency (WGS)",
@@ -315,20 +315,13 @@ geneVarTableServer <- function(id, all_tables_cleaned, clicked_variant = NULL) {
             )
         })
 
-        # Capture clicks on variant links
         observeEvent(input$table_cell_clicked, {
             info <- input$table_cell_clicked
-            dat <- dat_rx()
-
-            # Only trigger on first column (variant ID)
-            if (!is.null(info$col) && info$col == 0 && !is.null(clicked_variant)) {
-                variant_id <- dat[[1]][info$row]
-                ancestry <- input$dataset
-                clicked_variant(list(
-                    variant_id = variant_id,
-                    ancestry = ancestry,
-                    counter = Sys.time()
-                ))
+            dat  <- dat_rx()
+            if (!is.null(info$col) && info$col == 0) {
+                variant_html <- dat[[1]][info$row]
+                variant_id <- gsub("<.*?>", "", variant_html)
+                variant_bus$publish(list(variant_id = variant_id))
             }
         })
     })
