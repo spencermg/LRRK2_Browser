@@ -118,8 +118,6 @@ diagramServer <- function(
             x_window(x_full)
         }, ignoreInit = TRUE)
 
-
-
         observeEvent(
             plotly::event_data("plotly_click", source = id, priority = "event"),
             ignoreInit = TRUE,

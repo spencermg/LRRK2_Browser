@@ -329,7 +329,7 @@ server <- function(input, output, session) {
         rep(protein_domain_colors, times = c(17, 2, 9, 3, 3, 4, 5, 8)), 
         seq_len(length(exon_colors))
     )
-    barChartServer("bar_chart", all_tables_merged$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping)
+    barChartServer("bar_chart", all_tables_merged$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping, variant_bus)
 
     # Links to other resources
     otherResourcesServer("other_resources")

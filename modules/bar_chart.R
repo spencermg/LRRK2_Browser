@@ -52,8 +52,27 @@ barChartUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase_inactivation_threshold, domain_colors) {
+barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase_inactivation_threshold, domain_colors, variant_bus) {
     moduleServer(id, function(input, output, session) {
+        observeEvent(
+            plotly::event_data("plotly_click", source = session$ns("bar_chart")),
+            ignoreInit = TRUE,
+            {
+                click_data <- plotly::event_data("plotly_click", source = session$ns("bar_chart"))
+                req(click_data$customdata)
+                variant <- unlist(strsplit(click_data$customdata[[1]], "<br>\\s*"))[1]
+                variant_bus$publish(list(variant_id = variant))
+            }
+        )
+
+        observeEvent(input$confirm_variant, {
+            req(input$variant_choice)
+            removeModal()
+            variant_bus$publish(
+                list(variant_id = input$variant_choice)
+            )
+        })
+
         output$bar_chart <- renderPlotly({
             req(variant_data)
 
@@ -109,6 +128,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 type = "bar",
                 marker = list(color = color_palette),
                 customdata = custom_data,
+                source = session$ns("bar_chart"),
                 hovertemplate = "DNA change:    %{customdata[0]}<br>cDNA change:  %{customdata[1]}<br>AA change:       %{x}<br>Kinase activity: %{y:.3f}<extra></extra>"
             )
 
