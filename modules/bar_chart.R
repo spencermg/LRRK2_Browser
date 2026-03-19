@@ -55,10 +55,10 @@ barChartUI <- function(id) {
 barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase_inactivation_threshold, domain_colors, variant_bus) {
     moduleServer(id, function(input, output, session) {
         observeEvent(
-            plotly::event_data("plotly_click", source = session$ns("bar_chart")),
+            plotly::event_data("plotly_click", source = session$ns("bar_chart"), priority = "event"),
             ignoreInit = TRUE,
             {
-                click_data <- plotly::event_data("plotly_click", source = session$ns("bar_chart"))
+                click_data <- plotly::event_data("plotly_click", source = session$ns("bar_chart"), priority = "event")
                 req(click_data$customdata)
                 variant <- unlist(strsplit(click_data$customdata[[1]], "<br>\\s*"))[1]
                 variant_bus$publish(list(variant_id = variant))
