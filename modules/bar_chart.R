@@ -20,10 +20,11 @@ barChartUI <- function(id) {
                 ),
                 style = "font-size: 14px; color: #555; margin-top: 8px; text-align: center;"
             ),
-            tags$p(paste0(
-                    "*GP2-determined high-confidence variants (according to at least two ",
-                    "of Clinvar, HGMD, and MDSGene) are indicated with three asterisks (***)"
-                ),
+            tags$p(
+                HTML(paste0(
+                    "*GP2-determined high-confidence variants (according to at least two of Clinvar, ",
+                    "HGMD, and MDSGene) are indicated <b>in boldface</b> with three asterisks (***)"
+                )),
                 style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
             )
         ),
@@ -117,7 +118,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
 
             # Store genomic and cDNA changes to include in tooltip
             custom_data <- lapply(1:nrow(dat_aggregated), function(i) {
-                list(dat_aggregated$`Variant (GrCh38)`[i], dat_aggregated$`cDNA change`[i])
+                list(dat_aggregated$`Variant (GrCh38)`[i], dat_aggregated$`cDNA change`[i], dat_aggregated$`AA change`[i])
             })
 
             # Make the bar plot
@@ -129,7 +130,7 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                 marker = list(color = color_palette),
                 customdata = custom_data,
                 source = session$ns("bar_chart"),
-                hovertemplate = "DNA change:    %{customdata[0]}<br>cDNA change:  %{customdata[1]}<br>AA change:       %{x}<br>Kinase activity: %{y:.3f}<extra></extra>"
+                hovertemplate = "DNA change:    %{customdata[0]}<br>cDNA change:  %{customdata[1]}<br>AA change:       %{customdata[2]}<br>Kinase activity: %{y:.3f}<extra></extra>"
             )
 
             # Add kinase activation threshold line and domain annotations if sorting by genomic coordinate
@@ -199,8 +200,8 @@ barChartServer <- function(id, variant_data, kinase_activation_threshold, kinase
                         tickvals = dat_aggregated$`AA change`,
                         ticktext = ifelse(
                             dat_aggregated$`AA change` %in% variant_data[!is.na(Pathogenic) & Pathogenic == 1, `AA change`],
-                            paste0(dat_aggregated$`AA change`, " ***"),
-                            as.character(dat_aggregated$`AA change`)
+                            paste0("<b>", dat_aggregated$`AA change`, " ***</b>"),
+                            paste0(dat_aggregated$`AA change`)
                         ),
                         tickfont = list(size = 9)
                     ),
