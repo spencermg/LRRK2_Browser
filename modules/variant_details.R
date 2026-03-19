@@ -478,7 +478,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                             ", Median: ", ifelse(is.na(med_aao), "N/A", round(med_aao, 2)),
                             ", Max: ", ifelse(is.na(max_aao), "N/A", max_aao), 
                             "<br>",
-                            "*AAO data available for ", sum(aao_counts), " out of ", sum(unlist(pd_fh_display)), " PD-affected carriers"
+                            "*AAO data available for ", sum(aao_counts), " out of ", sum(unlist(pd_fh_display), na.rm = TRUE), " PD-affected carriers"
                         )
                     ),
                     yaxis = list(title = "Count"),
@@ -501,7 +501,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                     return(plotly_empty(type = "scatter", mode = "text") %>%
                         layout(
                             annotations = list(
-                                text = "No healthy control data \navailable for this variant",
+                                text = "No healthy control carrier data \navailable for this variant",
                                 x = 0.5, 
                                 y = 0.5, 
                                 showarrow = FALSE,
