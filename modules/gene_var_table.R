@@ -56,9 +56,18 @@ geneVarTableUI <- function(id) {
                     width    = "100%"
                 )
             ),
+            # Add manual search bar
+            column(
+                width = 9,
+                textInput(
+                    inputId = ns("search"),
+                    label   = "Search:",
+                    placeholder = "e.g., 'G2019S', 'pathogenic AND (exonic OR splicing)', 'Exon #:\"3\"', 'CADD:>30'"
+                )
+            ),
             # Add buttons to vilter variants
             column(
-                width = 6,
+                width = 12,
                 shinyWidgets::checkboxGroupButtons(
                     inputId      = ns("filters"),
                     label        = "Filters:",
@@ -78,14 +87,6 @@ geneVarTableUI <- function(id) {
                         yes = icon("ok", lib = "glyphicon"),
                         no  = icon("remove", lib = "glyphicon")
                     )
-                )
-            ),
-            column(
-                width = 3,
-                textInput(
-                    inputId = ns("search"),
-                    label   = "Search:",
-                    placeholder = "e.g., 'G2019S' or 'Pathogenic'"
                 )
             )
         ),
@@ -205,11 +206,113 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
                 keep <- !is.na(kinase_active) & kinase_active == "Yes"
                 dat <- dat[ keep, , drop = FALSE]
             }
+
             search_term <- trimws(input$search)
             if (nzchar(search_term)) {
-                matches <- apply(dat, 1, function(row) {
-                    any(grepl(search_term, row, ignore.case = TRUE, fixed = FALSE))
-                })
+                # Collapse row into one string per row (used for global search)
+                row_text <- do.call(paste, c(dat, sep = " "))
+
+                # Split by parentheses
+                split_top_level <- function(expr, op) {
+                    parts <- c()
+                    depth <- 0
+                    start <- 1
+                    i <- 1
+                    while (i <= nchar(expr)) {
+                        char <- substr(expr, i, i)
+                        if (char == "(") depth <- depth + 1
+                        if (char == ")") depth <- depth - 1
+                        if (depth == 0) {
+                            # Look ahead for operator
+                            op_len <- nchar(op)
+                            if (toupper(substr(expr, i, i + op_len + 1)) == paste0(" ", op, " ")) {
+                                parts <- c(parts, substr(expr, start, i - 1))
+                                start <- i + op_len + 2
+                                i <- start - 1
+                            }
+                        }
+                        i <- i + 1
+                    }
+
+                    parts <- c(parts, substr(expr, start, nchar(expr)))
+                    trimws(parts)
+                }
+
+                # Vectorized table filtering
+                match_condition_vec <- function(term) {
+                    term <- trimws(term)
+
+                    # Check for exact term match
+                    if (grepl('^".*"$', term)) {
+                        val <- gsub('^"|"$', "", term)
+                        return(grepl(paste0("^", val, "$"), row_text, ignore.case = TRUE))
+                    }
+
+                    # Check in specific columns if indicated by the user
+                    if (grepl(":", term)) {
+                        parts <- strsplit(term, ":", fixed = TRUE)[[1]]
+                        col <- trimws(parts[1])
+                        val <- trimws(parts[2])
+
+                        # Make sure indicated column matches one of the table columns
+                        if (!(col %in% names(dat))) return(rep(FALSE, nrow(dat)))
+
+                        col_vec <- as.character(dat[[col]])
+
+                        # Check for 'greater than' operator
+                        if (grepl("^>", val)) {
+                            num <- suppressWarnings(as.numeric(sub("^>", "", val)))
+                            return(suppressWarnings(as.numeric(col_vec)) > num)
+                        }
+                        # Check for 'less than' operator
+                        if (grepl("^<", val)) {
+                            num <- suppressWarnings(as.numeric(sub("^<", "", val)))
+                            return(suppressWarnings(as.numeric(col_vec)) < num)
+                        }
+                        # Check for literal quotes
+                        if (grepl('^".*"$', val)) {
+                            val <- gsub('^"|"$', "", val)
+                            return(tolower(col_vec) == tolower(val))
+                        }
+
+                        return(grepl(val, col_vec, ignore.case = TRUE))
+                    }
+
+                    # Default: search entire row
+                    grepl(term, row_text, ignore.case = TRUE)
+                }
+
+                # Recursively filter
+                eval_query_vec <- function(expr) {
+                    expr <- trimws(expr)
+
+                    # Remove parentheses
+                    if (startsWith(expr, "(") && endsWith(expr, ")")) {
+                        return(eval_query_vec(substr(expr, 2, nchar(expr) - 1)))
+                    }
+
+                    # Handle 'OR' operators
+                    or_parts <- split_top_level(expr, "OR")
+                    if (length(or_parts) > 1) {
+                        return(Reduce(`|`, lapply(or_parts, eval_query_vec)))
+                    }
+
+                    # Handle 'AND' operators
+                    and_parts <- split_top_level(expr, "AND")
+                    if (length(and_parts) > 1) {
+                        return(Reduce(`&`, lapply(and_parts, eval_query_vec)))
+                    }
+
+                    # Base condition
+                    match_condition_vec(expr)
+                }
+
+                # Perform filtering on initial search term
+                matches <- tryCatch(
+                    eval_query_vec(search_term),
+                    error = function(e) rep(TRUE, nrow(dat))
+                )
+
                 dat <- dat[matches, ]
             }
 

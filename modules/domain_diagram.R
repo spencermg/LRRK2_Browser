@@ -375,7 +375,7 @@ diagramServer <- function(
                 label_level <- rep(NA_integer_, nrow(label_rows))
                 for (i in seq_len(nrow(label_rows))) {
                     for (L in seq_len(max_levels)) {
-                        if (label_rows$x[i] - last_x[L] >= thr_x) {
+                        if (label_rows$x[i] - last_x[L] >= x_spacing) {
                             label_level[i] <- L - 1
                             last_x[L] <- label_rows$x[i]
                             break
