@@ -46,6 +46,7 @@ diagramServer <- function(
         pos_vec + (subdomain_idx - 0.5) * subdomain_gap
     }
 
+    # Find variant(s) associated with a given AA/cDNA change
     find_variant_ids <- function(change, type) {
         if (type == "cDNA") {
             match_row <- variant_data[`cDNA change` == change]
@@ -80,7 +81,7 @@ diagramServer <- function(
         })
 
         # Recompute Top N variants dynamically based on current x-window
-        v_visible <- reactive({
+        visible_variants <- reactive({
             if (is.null(v_all)) return(NULL)
             x_range <- x_window()
             v <- v_all[v_all$x >= x_range[1] & v_all$x <= x_range[2], , drop = FALSE]
@@ -118,16 +119,20 @@ diagramServer <- function(
             x_window(x_full)
         }, ignoreInit = TRUE)
 
+        # Respond to users clicking on a variant
         observeEvent(
             plotly::event_data("plotly_click", source = id, priority = "event"),
             ignoreInit = TRUE,
             {
-                click_data <- plotly::event_data("plotly_click", source = id, priority = "event")
+                click_data <- plotly::event_data("plotly_click", source = id)
                 req(click_data$customdata)
 
-                ids <- find_variant_ids(click_data$customdata, type = mode)
-                if (is.null(ids)) return()
+                # Find all genomic variants at the position clicked by the user
+                clicked_pos <- as.numeric(unlist(click_data$customdata)[1])
+                rows <- variant_data[pos == clicked_pos]
+                ids <- rows$`Variant (GrCh38)`
 
+                # Prompt user to select which variant to show in the popup if more than one option
                 if (length(ids) == 1) {
                     variant_bus$publish(list(variant_id = ids[1]))
                 } else {
@@ -148,7 +153,6 @@ diagramServer <- function(
                 }
             }
         )
-
         observeEvent(input$confirm_variant, {
             req(input$variant_choice)
             removeModal()
@@ -284,77 +288,128 @@ diagramServer <- function(
                 }
             }
 
-            # Add variant lollipops
-            vv <- v_visible()
-            if (!is.null(vv) && nrow(vv) > 0) {
-                # Stems
-                x_seg <- as.numeric(t(cbind(vv$x, vv$x, NA)))
-                y_seg <- as.numeric(t(cbind(rep(0.2, nrow(vv)), vv$y_top, NA)))
-                p <- plotly::add_trace(
-                    p, 
-                    x = x_seg, 
-                    y = y_seg,
-                    type = "scatter", 
-                    mode = "lines",
+            # Add variant lollipops (grouped by position)
+            v_visible <- visible_variants()
+
+            if (!is.null(v_visible) && nrow(v_visible) > 0) {
+                # Create new columns converting cDNA/AA IDs to positions
+                if (mode == "protein" && !"aa_pos" %in% names(variant_data)) {
+                    variant_data[, pos := as.integer(gsub("[^0-9]", "", `AA change`))]
+                }
+                else if (mode == "cDNA" && !"cdna_pos" %in% names(variant_data)) {
+                    variant_data[, pos := as.integer(gsub("[^0-9]", "", `cDNA change`))]
+                }
+
+                # Aggregate visible variants by position
+                v_grouped <- v_visible[, .(
+                    count = .N
+                ), by = .(pos, x)]
+                v_grouped$y_top <- 0.6
+
+                # Define tooltip
+                tooltip <- vapply(v_grouped$pos, function(p) {
+                    rows <- variant_data[pos == p]
+                    paste0(
+                        "<b>", nrow(rows), " variant", if (nrow(rows) != 1) "s" else "", " at position ", p, "</b><br><br>",
+                        paste(
+                            apply(rows, 1, function(r) {
+                                paste0(
+                                    "<b>DNA:</b> ", r[["Variant (GrCh38)"]], "<br>",
+                                    "<b>cDNA:</b> ", r[["cDNA change"]], "<br>",
+                                    "<b>AA:</b> ", r[["AA change"]]
+                                )
+                            }),
+                            collapse = "<br><br>"
+                        )
+                    )
+                }, FUN.VALUE = character(1))
+
+                # Add line segments for the lollipop stems
+                p <- plotly::add_segments(
+                    p,
+                    x = v_grouped$x, xend = v_grouped$x,
+                    y = 0.2, yend = v_grouped$y_top,
                     line = list(color = "#444444", width = 1),
-                    hoverinfo = "none", 
+                    hoverinfo = "none",
                     showlegend = FALSE
                 )
-                # Markers
+
+                # Include both position and tooltip into customdata
+                custom_data <- Map(function(pos, txt) {
+                    list(pos, txt)
+                }, v_grouped$pos, tooltip)
+
+                # Add markers at the top of the lollipops
                 p <- plotly::add_trace(
                     p,
-                    x = vv$x, 
-                    y = vv$y_top,
-                    type = "scatter", 
+                    x = v_grouped$x,
+                    y = v_grouped$y_top,
+                    type = "scatter",
                     mode = "markers",
-                    marker = list(size = 9, color = vv$color, line = list(color = "black", width = 0.5)),
-                    text = vv$label, 
-                    customdata = vv$label,
-                    hovertemplate = "%{text}<extra></extra>",
+                    marker = list(
+                        size = 9 + 2 * log1p(v_grouped$count),
+                        color = "#444444",
+                        line = list(color = "black", width = 0.5)
+                    ),
+                    customdata = custom_data,
+                    hovertemplate = "%{customdata[1]}<extra></extra>",
                     showlegend = FALSE
                 )
 
-                # Stack variants vertically if needed
+                # Build labels grouped by position
+                label_rows <- v_grouped[, {
+                    labs <- unique(v_visible[pos == .BY$pos]$label)
+                    .(label = labs)
+                }, by = .(pos, x)][order(x)]
+
+                # Find minimum soacing between labels in coordinate units
                 out_id <- session$ns("diagram")
-                w_px <- session$clientData[[paste0("output_", out_id, "_width")]]
-                if (is.null(w_px) || w_px <= 0) w_px <- 800
-                xr <- x_window()
-                thr_x <- (xr[2] - xr[1]) * (min_label_sep_px / w_px)
+                plot_width_px <- session$clientData[[paste0("output_", out_id, "_width")]]
+                if (is.null(plot_width_px) || plot_width_px <= 0) plot_width_px <- 800
+                x_range <- x_window()
+                x_spacing <- (x_range[2] - x_range[1]) * (min_label_sep_px / plot_width_px)
 
-                ord <- order(vv$x, vv$y_top)
-                last_x <- rep(-Inf, max_stack_size)
-                labels  <- rep(NA_integer_, nrow(vv))
-
-                for (i in ord) {
-                    for (L in seq_len(max_stack_size)) {
-                        if (vv$x[i] - last_x[L] >= thr_x) {
-                            labels[i] <- L - 1
-                            last_x[L] <- vv$x[i]
+                # Assign each label to the "level" it will be at vertically
+                max_levels <- max_stack_size
+                last_x <- rep(-Inf, max_levels)
+                label_level <- rep(NA_integer_, nrow(label_rows))
+                for (i in seq_len(nrow(label_rows))) {
+                    for (L in seq_len(max_levels)) {
+                        if (label_rows$x[i] - last_x[L] >= thr_x) {
+                            label_level[i] <- L - 1
+                            last_x[L] <- label_rows$x[i]
                             break
                         }
                     }
                 }
 
-                # Add labels for stacked variants
-                lab <- vv[!is.na(labels), , drop = FALSE]
-                if (nrow(lab) > 0) {
-                    lab_y <- lab$y_top + (labels[!is.na(labels)] + label_offset) * label_lift
-                    lab_y <- pmin(y_max - label_lift/2, lab_y)
+                # Remove labels that couldn't be placed
+                label_rows <- label_rows[!is.na(label_level)]
 
-                    p <- plotly::add_trace(
-                        p,
-                        x = lab$x, 
-                        y = lab_y,
-                        type = "scatter",
-                        mode = "text",
-                        text = lab$label, 
-                        textposition = "middle center",
-                        textfont = list(size = 12),
-                        hoverinfo = "skip",
-                        showlegend = FALSE,
-                        cliponaxis = FALSE
-                    )
-                }
+                # Compute y positions
+                label_rows$y <- 0.6 + (label_level + label_offset) * label_lift
+
+                # Set maximum number of variant labels to stack vertically
+                max_labels_per_pos <- max(v_grouped$count)
+                y_max <<- max(1, 0.6 + (label_offset + max_labels_per_pos) * label_lift)
+
+                # Prevent overflow
+                label_rows$y <- pmin(y_max - 0.02, label_rows$y)
+
+                # Add labels
+                p <- plotly::add_trace(
+                    p,
+                    x = label_rows$x,
+                    y = label_rows$y,
+                    type = "scatter",
+                    mode = "text",
+                    text = label_rows$label,
+                    textposition = "middle center",
+                    textfont = list(size = 12),
+                    hoverinfo = "skip",
+                    showlegend = FALSE,
+                    cliponaxis = FALSE
+                )
             }
 
             p
