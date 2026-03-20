@@ -58,6 +58,14 @@ diagramServer <- function(
     }
 
     moduleServer(id, function(input, output, session) {
+        # Create new columns converting cDNA/AA IDs to positions
+        if (!"aa_pos" %in% names(variant_data)) {
+            variant_data[, aa_pos := as.integer(gsub("[^0-9]", "", `AA change`))]
+        }
+        if (!"cdna_pos" %in% names(variant_data)) {
+            variant_data[, cdna_pos := as.integer(gsub("[^0-9]", "", `cDNA change`))]
+        }
+
         # Full x-range and interactive window
         x_full   <- c(
             min(domains$start), 
@@ -129,7 +137,11 @@ diagramServer <- function(
 
                 # Find all genomic variants at the position clicked by the user
                 clicked_pos <- as.numeric(unlist(click_data$customdata)[1])
-                rows <- variant_data[pos == clicked_pos]
+                rows <- if (mode == "protein") {
+                    variant_data[aa_pos == clicked_pos]
+                } else {
+                    variant_data[cdna_pos == clicked_pos]
+                }
                 ids <- rows$`Variant (GrCh38)`
 
                 # Prompt user to select which variant to show in the popup if more than one option
@@ -292,14 +304,6 @@ diagramServer <- function(
             v_visible <- visible_variants()
 
             if (!is.null(v_visible) && nrow(v_visible) > 0) {
-                # Create new columns converting cDNA/AA IDs to positions
-                if (mode == "protein" && !"aa_pos" %in% names(variant_data)) {
-                    variant_data[, pos := as.integer(gsub("[^0-9]", "", `AA change`))]
-                }
-                else if (mode == "cDNA" && !"cdna_pos" %in% names(variant_data)) {
-                    variant_data[, pos := as.integer(gsub("[^0-9]", "", `cDNA change`))]
-                }
-
                 # Aggregate visible variants by position
                 v_grouped <- v_visible[, .(
                     count = .N
@@ -308,7 +312,11 @@ diagramServer <- function(
 
                 # Define tooltip
                 tooltip <- vapply(v_grouped$pos, function(p) {
-                    rows <- variant_data[pos == p]
+                    if (mode == "protein"){
+                        rows <- variant_data[aa_pos == p]
+                    } else {
+                        rows <- variant_data[cdna_pos == p]
+                    }
                     paste0(
                         "<b>", nrow(rows), " variant", if (nrow(rows) != 1) "s" else "", " at position ", p, "</b><br><br>",
                         paste(
