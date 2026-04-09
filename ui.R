@@ -45,7 +45,7 @@ ui <- dashboardPage(
                 tags$li(tags$strong("Whole genome sequencing (WGS)")),
                 tags$li(tags$strong("Imputed genotyping")),
                 tags$li(tags$strong("Raw genotyping")),
-                tags$li(tags$strong("Clinical exome"))
+                tags$li(tags$strong("Clinical exome sequencing (CES)"))
             ),
             
             tags$h4("Sample Information"),
@@ -54,21 +54,21 @@ ui <- dashboardPage(
                 tags$li("WGS: 25,904"),
                 tags$li("Imputed genotyping: 84,654"),
                 tags$li("Raw genotyping: 84,654"),
-                tags$li("Clinical exome: 14,555")
+                tags$li("CES: 14,555")
             ),
             tags$p("Parkinson's Disease cases: 61,709"),
             tags$ul(
                 tags$li("WGS: 17,241"),
                 tags$li("Imputed genotyping: 46,349"),
                 tags$li("Raw genotyping: 46,349"),
-                tags$li("Clinical exome: 14,555")
+                tags$li("CES: 14,555")
             ),
             tags$p("Healthy controls: 39,969"),
             tags$ul(
                 tags$li("WGS: 8,663"),
                 tags$li("Imputed genotyping: 38,305"),
                 tags$li("Raw genotyping: 38,305"),
-                tags$li("Clinical exome: 0")
+                tags$li("CES: 0")
             ),
             
             tags$h4("Citation"),

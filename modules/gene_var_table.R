@@ -22,7 +22,7 @@ header_tooltips <- c(
     "Control frequency (Imputed)" = "Frequency (0-1) for each variant in imputed genotyping data from healthy control samples in GP2 Release 11",
     "PD frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from PD-affected samples in GP2 Release 11",
     "Control frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from healthy control samples in GP2 Release 11",
-    "PD frequency (Clinical exome)" = "Frequency (0-1) for each variant in whole-exome sequencing data from PD-affected samples in GP2 Release 11",
+    "PD frequency (CES)" = "Frequency (0-1) for each variant in whole-exome sequencing data from PD-affected samples in GP2 Release 11",
     "gnomAD allele frequency" = "Using whole-genome data from the gnomAD v4 dataset (76,215 genomes across all ancestries)"
 )
 
@@ -132,7 +132,7 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
             
             # Only include exome column for Combined ancestry
             if (input$dataset == "Combined") {
-                base_cols <- c(base_cols, "PD frequency (Clinical exome)")
+                base_cols <- c(base_cols, "PD frequency (CES)")
             }
             
             # Add remaining columns
@@ -168,7 +168,7 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
             
             # Only include exome in frequency check for Combined
             if (input$dataset == "Combined") {
-                freq_cols <- c(freq_cols, "PD frequency (Clinical exome)")
+                freq_cols <- c(freq_cols, "PD frequency (CES)")
             }
             
             # Filter to only available columns
@@ -359,7 +359,7 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
                 "Control frequency (Imputed)", 
                 "PD frequency (Raw genotyping)",
                 "Control frequency (Raw genotyping)",
-                "PD frequency (Clinical exome)",
+                "PD frequency (CES)",
                 "gnomAD allele frequency"
             )
             sci_cols <- intersect(sci_cols, colnames(dat))
