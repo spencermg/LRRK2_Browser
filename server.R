@@ -131,7 +131,7 @@ all_tables_exome_cleaned <- lapply(names(all_tables_exome), function(name) {
         cadd_deleterious_threshold,
         conservation_conserved_threshold,
         kinase_activation_threshold,
-        "Clinical exome"
+        "CES"
     )
 })
 names(all_tables_imputed_cleaned) <- names(all_tables_imputed)

@@ -16,14 +16,14 @@ header_tooltips <- c(
     "Clinvar Pathogenic" = "",
     "Conservation score" = "",
     "Kinase activity (mean pRAB10/RAB10)" = "",
-    "PD frequency (WGS)" = "Frequency (0-1) for each variant in whole-genome sequencing data from PD-affected samples in GP2 Release 11",
-    "Control frequency (WGS)" = "Frequency (0-1) for each variant in whole-genome sequencing data from healthy control samples in GP2 Release 11",
-    "PD frequency (Imputed)" = "Frequency (0-1) for each variant in imputed genotyping data from PD-affected samples in GP2 Release 11",
-    "Control frequency (Imputed)" = "Frequency (0-1) for each variant in imputed genotyping data from healthy control samples in GP2 Release 11",
-    "PD frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from PD-affected samples in GP2 Release 11",
-    "Control frequency (Raw genotyping)" = "Frequency (0-1) for each variant in raw genotyping data from healthy control samples in GP2 Release 11",
-    "PD frequency (CES)" = "Frequency (0-1) for each variant in whole-exome sequencing data from PD-affected samples in GP2 Release 11",
-    "gnomAD allele frequency" = "Using whole-genome data from the gnomAD v4 dataset (76,215 genomes across all ancestries)"
+    "PD allele frequency (WGS)" = "Allele frequency (0-1) for each variant in whole-genome sequencing data from PD-affected samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "Control allele frequency (WGS)" = "Allele frequency (0-1) for each variant in whole-genome sequencing data from healthy control samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "PD allele frequency (Imputed)" = "Allele frequency (0-1) for each variant in imputed genotyping data from PD-affected samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "Control allele frequency (Imputed)" = "Allele frequency (0-1) for each variant in imputed genotyping data from healthy control samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "PD allele frequency (Raw genotyping)" = "Allele frequency (0-1) for each variant in raw genotyping data from PD-affected samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "Control allele frequency (Raw genotyping)" = "Allele frequency (0-1) for each variant in raw genotyping data from healthy control samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "PD allele frequency (CES)" = "Allele frequency (0-1) for each variant in whole-exome sequencing data from PD-affected samples in GP2 Release 11. Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers",
+    "gnomAD allele frequency" = "Using whole-genome data from the gnomAD v4 dataset (76,215 genomes across all ancestries). Note: This counts the total frequency of each allele across all samples rather than the fraction of samples who are carriers"
 )
 
 
@@ -122,17 +122,17 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
                 "Clinvar Pathogenic",
                 "Conservation score",
                 "Kinase activity (mean pRAB10/RAB10)",
-                "PD frequency (WGS)",
-                "Control frequency (WGS)",
-                "PD frequency (Imputed)",
-                "Control frequency (Imputed)",
-                "PD frequency (Raw genotyping)",
-                "Control frequency (Raw genotyping)"
+                "PD allele frequency (WGS)",
+                "Control allele frequency (WGS)",
+                "PD allele frequency (Imputed)",
+                "Control allele frequency (Imputed)",
+                "PD allele frequency (Raw genotyping)",
+                "Control allele frequency (Raw genotyping)"
             )
             
             # Only include exome column for Combined ancestry
             if (input$dataset == "Combined") {
-                base_cols <- c(base_cols, "PD frequency (CES)")
+                base_cols <- c(base_cols, "PD allele frequency (CES)")
             }
             
             # Add remaining columns
@@ -158,17 +158,17 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
             dat <- all_tables_merged[[ req(input$dataset) ]]
 
             freq_cols <- c(
-                "PD frequency (WGS)",
-                "Control frequency (WGS)",
-                "PD frequency (Imputed)",
-                "Control frequency (Imputed)",
-                "PD frequency (Raw genotyping)",
-                "Control frequency (Raw genotyping)"
+                "PD allele frequency (WGS)",
+                "Control allele frequency (WGS)",
+                "PD allele frequency (Imputed)",
+                "Control allele frequency (Imputed)",
+                "PD allele frequency (Raw genotyping)",
+                "Control allele frequency (Raw genotyping)"
             )
             
-            # Only include exome in frequency check for Combined
+            # Only include exome in allele frequency check for Combined
             if (input$dataset == "Combined") {
-                freq_cols <- c(freq_cols, "PD frequency (CES)")
+                freq_cols <- c(freq_cols, "PD allele frequency (CES)")
             }
             
             # Filter to only available columns
@@ -353,13 +353,13 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
 
             # Columns to show in scientific notation
             sci_cols <- c(
-                "PD frequency (WGS)", 
-                "Control frequency (WGS)", 
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
-                "PD frequency (Raw genotyping)",
-                "Control frequency (Raw genotyping)",
-                "PD frequency (CES)",
+                "PD allele frequency (WGS)", 
+                "Control allele frequency (WGS)", 
+                "PD allele frequency (Imputed)", 
+                "Control allele frequency (Imputed)", 
+                "PD allele frequency (Raw genotyping)",
+                "Control allele frequency (Raw genotyping)",
+                "PD allele frequency (CES)",
                 "gnomAD allele frequency"
             )
             sci_cols <- intersect(sci_cols, colnames(dat))

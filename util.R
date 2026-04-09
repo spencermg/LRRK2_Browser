@@ -96,7 +96,7 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Age_max",
         "Age_median"
     )
-    if (modality == "Clinical exome") {
+    if (modality == "CES") {
         keep_cols <- keep_cols[!keep_cols %in% c("Control Frequency")]
     }
 
@@ -131,8 +131,8 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
     # Rename columns
     new_col_names <- c(
         "Variant (GrCh38)",
-        paste0("PD frequency (", modality, ")"),
-        paste0("Control frequency (", modality, ")"),
+        paste0("PD allele frequency (", modality, ")"),
+        paste0("Control allele frequency (", modality, ")"),
         "gnomAD allele frequency",
         "Region",
         "Functional consequence",
@@ -179,8 +179,8 @@ clean_variant_table <- function(table, ancestry, cadd_deleterious_threshold, con
         "Maximum Age",
         "Median Age"
     )
-    if (modality == "Clinical exome") {
-        new_col_names <- new_col_names[!new_col_names %in% c(paste0("Control frequency (", modality, ")"))]
+    if (modality == "CES") {
+        new_col_names <- new_col_names[!new_col_names %in% c(paste0("Control allele frequency (", modality, ")"))]
     }
 
     colnames(table) <- new_col_names

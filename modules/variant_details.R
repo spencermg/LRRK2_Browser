@@ -45,16 +45,16 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                 } else {
                     placeholder <- copy(all_tables_cleaned$Combined[`Variant (GrCh38)` == variant_id])
                     placeholder$Ancestry <- anc
-                    placeholder$`PD frequency (Imputed)` <- 0
-                    placeholder$`Control frequency (Imputed)` <- 0
-                    placeholder$`PD frequency (WGS)` <- 0
-                    placeholder$`Control frequency (WGS)` <- 0
-                    placeholder$`PD frequency (Raw genotyping)` <- 0
-                    placeholder$`Control frequency (Raw genotyping)` <- 0
+                    placeholder$`PD allele frequency (Imputed)` <- 0
+                    placeholder$`Control allele frequency (Imputed)` <- 0
+                    placeholder$`PD allele frequency (WGS)` <- 0
+                    placeholder$`Control allele frequency (WGS)` <- 0
+                    placeholder$`PD allele frequency (Raw genotyping)` <- 0
+                    placeholder$`Control allele frequency (Raw genotyping)` <- 0
                     
                     # Only set exome column if it exists (for Combined ancestry)
-                    if ("PD frequency (Clinical exome)" %in% names(placeholder)) {
-                        placeholder$`PD frequency (Clinical exome)` <- 0
+                    if ("PD allele frequency (CES)" %in% names(placeholder)) {
+                        placeholder$`PD allele frequency (CES)` <- 0
                     }
                     
                     variant_details[[anc]] <- placeholder
@@ -65,17 +65,17 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
             # Indicate columns to display in the table and convert frequencies to scientific notation
             display_cols <- c(
                 "Ancestry", 
-                "PD frequency (WGS)", 
-                "Control frequency (WGS)", 
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
-                "PD frequency (Raw genotyping)", 
-                "Control frequency (Raw genotyping)"
+                "PD allele frequency (WGS)", 
+                "Control allele frequency (WGS)", 
+                "PD allele frequency (Imputed)", 
+                "Control allele frequency (Imputed)", 
+                "PD allele frequency (Raw genotyping)", 
+                "Control allele frequency (Raw genotyping)"
             )
 
             # Only include exome column if it exists
-            if ("PD frequency (Clinical exome)" %in% names(variant_details)) {
-                display_cols <- c(display_cols, "PD frequency (Clinical exome)")
+            if ("PD allele frequency (CES)" %in% names(variant_details)) {
+                display_cols <- c(display_cols, "PD allele frequency (CES)")
             }
 
             display_cols <- c(display_cols, "gnomAD allele frequency")
@@ -88,13 +88,13 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
 
             # Convert frequencies to scientific notation
             freq_cols <- c(
-                "PD frequency (WGS)", 
-                "Control frequency (WGS)", 
-                "PD frequency (Imputed)", 
-                "Control frequency (Imputed)", 
-                "PD frequency (Raw genotyping)", 
-                "Control frequency (Raw genotyping)", 
-                "PD frequency (Clinical exome)", 
+                "PD allele frequency (WGS)", 
+                "Control allele frequency (WGS)", 
+                "PD allele frequency (Imputed)", 
+                "Control allele frequency (Imputed)", 
+                "PD allele frequency (Raw genotyping)", 
+                "Control allele frequency (Raw genotyping)", 
+                "PD allele frequency (CES)", 
                 "gnomAD allele frequency"
             )
 
