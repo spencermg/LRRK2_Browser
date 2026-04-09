@@ -108,7 +108,7 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                         ifelse(
                             abs(variant_display[[col]]) < 0.001,
                             format(variant_display[[col]], scientific = TRUE, digits = 3),
-                            format(variant_display[[col]], scientific = FALSE, digits = 5)
+                            as.character(round(variant_display[[col]], 4))
                         )
                     )
                 )

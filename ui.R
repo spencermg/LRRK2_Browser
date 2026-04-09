@@ -170,10 +170,10 @@ ui <- dashboardPage(
 
             tags$p(
                 paste0(
-                    "This website is intended to provide summary-level results from high-throughput sequencing data generated as ",
-                    "part of GP2. Data and results are intended solely for educational and research purposes. The results, browser ",
-                    "content and allele frequencies are NOT for diagnostic, clinical, or commercial use and must not be used to attempt ",
-                    "to identify individual study participants.",
+                    "This website is intended to provide summary-level results from high-throughput sequencing and genotyping data ",
+                    "generated as part of GP2. Data and results are intended solely for educational and research purposes. The results, ",
+                    "browser content and allele frequencies are NOT for diagnostic, clinical, or commercial use and must not be used to ",
+                    "attempt to identify individual study participants.",
                     "We encourage you to contact GP2 before embarking on any analyses using these data to check if your proposed analyses ",
                     "overlap with work currently underway by GP2 members."
                 )
