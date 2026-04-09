@@ -119,6 +119,8 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
             popup_content <- if (nrow(variant_details) > 0) {
                 is_pathogenic <- variant_details$Pathogenic[1]
                 show_warning <- is.na(is_pathogenic) || is_pathogenic == 0
+
+                ########## variant_details$`AA change`[1]
                 
                 tagList(
                     # Variant Annotations
@@ -132,9 +134,13 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                             style = "text-align: center;",
                             tags$strong(
                                 ifelse(
-                                    is_pathogenic == 1, 
-                                    "This variant IS classified as pathogenic according to GP2 criteria", 
-                                    "This variant IS NOT classified as pathogenic according to GP2 criteria"
+                                    variant_details$`AA change`[1] %in% c("p.R1628P", "p.G2385R"),
+                                    "This variant IS classified as risk-associated according to GP2 criteria",
+                                    ifelse(
+                                        is_pathogenic == 1, 
+                                        "This variant IS classified as pathogenic according to GP2 criteria", 
+                                        "This variant IS NOT classified as pathogenic according to GP2 criteria"
+                                    )
                                 )
                             )
                         ),

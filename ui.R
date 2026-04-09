@@ -294,6 +294,12 @@ ui <- dashboardPage(
                 });
             "))
         ),
+    
+        # Add GP2 banner image
+        tags$div(
+            style = "text-align: center; margin-top: 20px; margin-bottom: 20px;",
+            tags$img(src = "icons/gp2.png", height = "100px")
+        ),
         
         # Title banner
         h2("LRRK2 Browser", style = "text-align:center; font-weight:bold;"),
