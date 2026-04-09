@@ -45,10 +45,10 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                 } else {
                     placeholder <- copy(all_tables_cleaned$Combined[`Variant (GrCh38)` == variant_id])
                     placeholder$Ancestry <- anc
-                    placeholder$`PD allele frequency (Imputed)` <- 0
-                    placeholder$`Control allele frequency (Imputed)` <- 0
                     placeholder$`PD allele frequency (WGS)` <- 0
                     placeholder$`Control allele frequency (WGS)` <- 0
+                    placeholder$`PD allele frequency (Imputed)` <- 0
+                    placeholder$`Control allele frequency (Imputed)` <- 0
                     placeholder$`PD allele frequency (Raw genotyping)` <- 0
                     placeholder$`Control allele frequency (Raw genotyping)` <- 0
                     

@@ -353,6 +353,7 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
 
             # Columns to show in scientific notation
             sci_cols <- c(
+                "Kinase activity (mean pRAB10/RAB10)",
                 "PD allele frequency (WGS)", 
                 "Control allele frequency (WGS)", 
                 "PD allele frequency (Imputed)", 
