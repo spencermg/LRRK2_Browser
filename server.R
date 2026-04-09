@@ -36,7 +36,7 @@ exon_colors <- c(
 )
 
 # Start positions for each protein subdomain and exon
-protein_domain_positions <- c(1, 705, 800, 1335, 1511, 1674, 1879, 2142, 2498)
+protein_domain_positions <- c(1, 705, 800, 1335, 1511, 1674, 1879, 2142, 2527)
 exon_positions <- c(
     1, 152, 238, 348, 437, 572, 707, 839, 959, 1102, 1182, 1289, 1419, 1544, 
     1657, 1802, 1942, 2071, 2242, 2501, 2690, 2809, 2879, 3097, 3348, 3497, 
