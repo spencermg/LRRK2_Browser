@@ -358,7 +358,7 @@ ui <- dashboardPage(
         # Summary table for different variant functional annotation categories
         box(
             title = tags$div(
-                "Variant function summary",
+                "Variant Function Summary",
                 style = box_title_font_style
             ),
             closable = FALSE,
@@ -422,7 +422,7 @@ ui <- dashboardPage(
         # Links to external resources
         box(
             title = tags$div(
-                "Other resources",
+                "Other Resources",
                 style = box_title_font_style
             ),
             closable = FALSE,

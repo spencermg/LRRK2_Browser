@@ -10,7 +10,7 @@ subdomain_gap <- 20
 # Thresholds for kinase activity, CADD deleteriousness, and conservation
 cadd_deleterious_threshold <- 20
 conservation_conserved_threshold <- 5
-kinase_activation_threshold <- 1.40
+kinase_activation_threshold <- 1.44
 kinase_inactivation_threshold <- 0.50
 
 # Define colors to use for each subdomain and exon
