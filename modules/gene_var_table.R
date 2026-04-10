@@ -78,7 +78,7 @@ geneVarTableUI <- function(id) {
                         tags$span(title = "Evolutionarily conserved variants (conservation score > 5)", "Conserved"),
                         tags$span(title = "Kinase-active variants (mean pRAB10/RAB10 > 1.40)", "Kinase active")
                     ),
-                    choiceValues = c("Exonic", "Pathogenic", "Deleterious", "Conserved", "Kinase active"),
+                    choiceValues = c("Exonic", "Disease-related", "Deleterious", "Conserved", "Kinase active"),
                     selected     = NULL,
                     status       = "primary",
                     justified    = FALSE,
@@ -255,7 +255,7 @@ geneVarTableServer <- function(id, all_tables_merged, variant_bus) {
                         val <- trimws(parts[2])
 
                         # Make sure indicated column matches one of the table columns
-                        if (!(col %in% names(dat))) return(rep(FALSE, nrow(dat)))
+                        if (!(col %in% names(dat))) return(grepl(term, row_text, ignore.case = TRUE))
 
                         col_vec <- as.character(dat[[col]])
 
