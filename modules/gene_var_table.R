@@ -73,7 +73,7 @@ geneVarTableUI <- function(id) {
                     label        = "Filters:",
                     choiceNames  = list(
                         tags$span(title = "Variants in exonic regions", "Exonic"),
-                        tags$span(title = "GP2-determined disease-related (pathogenic or risk-associated) variants (according to at least two of Clinvar, HGMD, and MDSGene)", "Disease-related"),
+                        tags$span(title = "GP2-determined disease-related (pathogenic or risk-associated) variants (according Clinvar, HGMD, MDSGene, and/or extensive literature support)", "Disease-related"),
                         tags$span(title = "Predicted deleterious variants (CADD > 20)", "Deleterious"),
                         tags$span(title = "Evolutionarily conserved variants (conservation score > 5)", "Conserved"),
                         tags$span(title = "Kinase-active variants (mean pRAB10/RAB10 > 1.40)", "Kinase active")

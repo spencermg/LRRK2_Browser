@@ -12,7 +12,7 @@ lrrk2_imputed.tsv
 lrrk2_wgs.tsv
 lrrk2_raw.tsv
 lrrk2_exome.tsv
-pathogenic_variants.txt
+pathogenicity_sources.tsv
 
 # Ignore DS Store
 .DS_Store

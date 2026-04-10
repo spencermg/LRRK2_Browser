@@ -13,7 +13,7 @@ variantDetailUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
+variantDetailServer <- function(id, all_tables_cleaned, variant_bus, pathogenicity_sources) {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
 
@@ -61,6 +61,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                 }
             }
             variant_details <- rbindlist(variant_details, fill = TRUE)
+
+            source_row  <- pathogenicity_sources[Variant == variant_details$`AA change`[1]]
+            source_text <- if (nrow(source_row) > 0 && nzchar(source_row$Source[1])) source_row$Source[1] else NULL
 
             # Indicate columns to display in the table and convert frequencies to scientific notation
             display_cols <- c(
@@ -119,9 +122,6 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
             popup_content <- if (nrow(variant_details) > 0) {
                 is_pathogenic <- variant_details$Pathogenic[1]
                 show_warning <- is.na(is_pathogenic) || is_pathogenic == 0
-
-                ########## variant_details$`AA change`[1]
-                
                 tagList(
                     # Variant Annotations
                     tags$h3(
@@ -221,6 +221,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus) {
                         },
                         if ("Protein domain" %in% colnames(variant_details) && variant_details$Region[1] == "exonic") {
                             tags$p(tags$strong("Protein Domain: "), variant_details$`Protein domain`[1])
+                        },
+                        if (!is.null(source_text)) {
+                            tags$p(tags$strong("Source(s) of disease-causing classification: "), source_text)
                         }
                     ),
                     
