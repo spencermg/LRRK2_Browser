@@ -36,7 +36,7 @@ diagramServer <- function(
     top_n,
     variant_bus,
     max_stack_size = 6,     # Max num labels to stack on each other
-    min_label_sep_px = 50,  # Num pixel gap below which labels stack vertically
+    min_label_sep_px = 70,  # Num pixel gap below which labels stack vertically
     label_lift = 0.07,      # Vertical lift per stacked label
     label_offset = 1        # Additional vertical offset above lollipop for first label
 ) {

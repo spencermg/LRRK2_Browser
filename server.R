@@ -313,10 +313,10 @@ server <- function(input, output, session) {
     geneVarTableServer("gene_var_table", all_tables_merged, variant_bus)
 
     # Protein domain diagram
-    diagramServer("protein_diagram", all_tables_merged$Combined, protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 12, variant_bus)
+    diagramServer("protein_diagram", all_tables_merged$Combined, protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 20, variant_bus)
 
     # cDNA diagram
-    diagramServer("cdna_diagram", all_tables_merged$Combined, exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 12, variant_bus, min_label_sep_px = 75)
+    diagramServer("cdna_diagram", all_tables_merged$Combined, exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 20, variant_bus, min_label_sep_px = 75)
 
     # Respond to click events with the variant_detail popup
     variantDetailServer("variant_detail", all_tables_merged, variant_bus)
