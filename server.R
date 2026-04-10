@@ -205,7 +205,6 @@ all_tables_merged <- lapply(all_tables_merged, function(merged_table) {
     merged_table[, Pathogenic := ifelse(`AA change` %in% pathogenicity_sources$Variant, 1, 0)]
     return(merged_table)
 })
-print(sum(all_tables_merged$Combined$Pathogenic, na.rm = TRUE))
 
 # Variants to include in lollipops for domain diagrams
 pathogenic_var_table <- all_tables_merged$Combined[Pathogenic == 1, .(
