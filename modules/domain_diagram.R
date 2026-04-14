@@ -16,8 +16,25 @@ get_text_color <- function(hex) {
 # =========================================================================
 
 diagramUI <- function(id) {
-  ns <- NS(id)
-  plotlyOutput(ns("diagram"))
+    ns <- NS(id)
+    tagList(
+        div(
+            style = "display: inline-block; vertical-align: middle; margin-left: 10px; margin-bottom: 10px;",
+            "Show variants:",
+            selectInput(
+                ns("variant_filter"),
+                label = NULL,
+                choices = c(
+                    "Disease-related"                  = "pathogenic",
+                    "Kinase active"                    = "kinase_active",
+                    "Disease-related or kinase active" = "union"
+                ),
+                selected = "union",
+                width = "270px"
+            )
+        ),
+        plotlyOutput(ns("diagram"))
+    )
 }
 
 
@@ -35,9 +52,9 @@ diagramServer <- function(
     mode,
     top_n,
     variant_bus,
-    max_stack_size = 6,     # Max num labels to stack on each other
+    max_stack_size = 12,     # Max num labels to stack on each other
     min_label_sep_px = 70,  # Num pixel gap below which labels stack vertically
-    label_lift = 0.07,      # Vertical lift per stacked label
+    label_lift = 0.1,      # Vertical lift per stacked label
     label_offset = 1        # Additional vertical offset above lollipop for first label
 ) {
     # Map position to x-value accounting for connecting line segments
@@ -74,29 +91,54 @@ diagramServer <- function(
         x_window <- reactiveVal(x_full)
 
         # Find all variants within the diagram and precompute their x/y coords
-        v_all <- local({
-            v <- variants[
-                is.finite(variants$pos) &
-                variants$pos >= min(domain_positions) &
-                variants$pos <= max(domain_positions),
+        v_all <- reactive({
+            v <- switch(input$variant_filter,
+                pathogenic    = variants[variants$is_pathogenic    == TRUE, , drop = FALSE],
+                kinase_active = variants[variants$is_kinase_active == TRUE, , drop = FALSE],
+                union         = variants
+            )
+            v <- v[
+                is.finite(v$pos) &
+                v$pos >= min(domain_positions) &
+                v$pos <= max(domain_positions),
                 , drop = FALSE
             ]
             if (nrow(v) == 0) return(NULL)
-
-            v$x <- map_pos_to_x(v$pos)
+            v$x     <- map_pos_to_x(v$pos)
             v$y_top <- 0.6
             v
         })
+        # v_all <- local({
+        #     v <- variants[
+        #         is.finite(variants$pos) &
+        #         variants$pos >= min(domain_positions) &
+        #         variants$pos <= max(domain_positions),
+        #         , drop = FALSE
+        #     ]
+        #     if (nrow(v) == 0) return(NULL)
+
+        #     v$x <- map_pos_to_x(v$pos)
+        #     v$y_top <- 0.6
+        #     v
+        # })
 
         # Recompute Top N variants dynamically based on current x-window
         visible_variants <- reactive({
-            if (is.null(v_all)) return(NULL)
+            if (is.null(v_all())) return(NULL)
             x_range <- x_window()
-            v <- v_all[v_all$x >= x_range[1] & v_all$x <= x_range[2], , drop = FALSE]
+            v <- v_all()[v_all()$x >= x_range[1] & v_all()$x <= x_range[2], , drop = FALSE]
             if (nrow(v) == 0) return(v)
             v <- v[order(-ifelse(is.finite(v$value), v$value, -Inf), v$pos), , drop = FALSE]
             head(v, top_n)
         })
+        # visible_variants <- reactive({
+        #     if (is.null(v_all)) return(NULL)
+        #     x_range <- x_window()
+        #     v <- v_all[v_all$x >= x_range[1] & v_all$x <= x_range[2], , drop = FALSE]
+        #     if (nrow(v) == 0) return(v)
+        #     v <- v[order(-ifelse(is.finite(v$value), v$value, -Inf), v$pos), , drop = FALSE]
+        #     head(v, top_n)
+        # })
 
         # Track zoom/pan/autoscale/double-click to update x-window
         observeEvent(plotly::event_data("plotly_relayout", source = id), {
@@ -148,13 +190,15 @@ diagramServer <- function(
                 if (length(ids) == 1) {
                     variant_bus$publish(list(variant_id = ids[1]))
                 } else {
+                    choice_labels <- if (mode == "protein") rows$`AA change` else rows$`cDNA change`
+                    choices <- setNames(ids, choice_labels)
                     showModal(
                         modalDialog(
-                            title = "Multiple genomic variants found",
+                            title = "Multiple variants found at this position",
                             selectInput(
                                 session$ns("variant_choice"),
                                 "Select variant:",
-                                choices = ids
+                                choices = choices
                             ),
                             footer = tagList(
                                 modalButton("Cancel"),
@@ -303,7 +347,8 @@ diagramServer <- function(
             # Add variant lollipops (grouped by position)
             v_visible <- visible_variants()
 
-            if (!is.null(v_visible) && nrow(v_visible) > 0) {
+            # if (!is.null(v_visible) && nrow(v_visible) > 0) {
+            if (!is.null(v_all()) && nrow(v_all()) > 0) {
                 # Aggregate visible variants by position
                 v_grouped <- v_visible[, .(
                     count = .N

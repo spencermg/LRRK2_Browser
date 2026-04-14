@@ -199,7 +199,6 @@ all_tables_merged <- lapply(names(all_tables_imputed_cleaned), function(anc) {
 names(all_tables_merged) <- names(all_tables_imputed_cleaned)
 
 # Add a column indicating which variants are deemed pathogenic by GP2
-# pathogenic_variants <- fread("pathogenic_variants.txt", header = FALSE)$V1
 pathogenicity_sources <- fread("pathogenicity_sources.tsv")
 all_tables_merged <- lapply(all_tables_merged, function(merged_table) {
     merged_table[, Pathogenic := ifelse(`AA change` %in% pathogenicity_sources$Variant, 1, 0)]
@@ -207,20 +206,22 @@ all_tables_merged <- lapply(all_tables_merged, function(merged_table) {
 })
 
 # Variants to include in lollipops for domain diagrams
-pathogenic_var_table <- all_tables_merged$Combined[Pathogenic == 1, .(
-    `AA position` = as.integer(gsub("[^0-9]", "", `AA change`)),
-    `AA change`,
-    `cDNA position` = as.integer(gsub("[^0-9]", "", `cDNA change`)),
-    `cDNA change`
+domain_diagram_variants <- all_tables_merged$Combined[Pathogenic == 1 | `Kinase active?` == "Yes", .(
+    aa_pos          = as.integer(gsub("[^0-9]", "", `AA change`)),
+    aa_label        = `AA change`,
+    cdna_pos        = as.integer(gsub("[^0-9]", "", `cDNA change`)),
+    cdna_label      = `cDNA change`,
+    is_pathogenic   = (Pathogenic == 1),
+    is_kinase_active = (`Kinase active?` == "Yes")
 )]
-colnames(pathogenic_var_table) <- c("aa_pos", "aa_label", "cdna_pos", "cdna_label")
-print(pathogenic_var_table)
-pathogenic_var_table[, `color` := "#444444"]
-pathogenic_var_table[, `value` := 1]
-pathogenic_protein_variants <- pathogenic_var_table[, c("aa_pos", "aa_label", "color", "value")]
-pathogenic_cdna_variants <- pathogenic_var_table[, c("cdna_pos", "cdna_label", "color", "value")]
-colnames(pathogenic_protein_variants) <- c("pos", "label", "color", "value")
-colnames(pathogenic_cdna_variants) <- c("pos", "label", "color", "value")
+domain_diagram_variants[, `color` := "#444444"]
+domain_diagram_variants[, `value` := 1]
+protein_diagram_variants <- domain_diagram_variants[, .(
+    pos = aa_pos, label = aa_label, color, value, is_pathogenic, is_kinase_active
+)]
+cdna_diagram_variants <- domain_diagram_variants[, .(
+    pos = cdna_pos, label = cdna_label, color, value, is_pathogenic, is_kinase_active
+)]
 
 # Handle when users click on variants in the table or domain diagrams
 createVariantBus <- function() {
@@ -315,10 +316,10 @@ server <- function(input, output, session) {
     geneVarTableServer("gene_var_table", all_tables_merged, variant_bus)
 
     # Protein domain diagram
-    diagramServer("protein_diagram", all_tables_merged$Combined, protein_domains, protein_domain_positions, subdomain_gap, pathogenic_protein_variants, "protein", 50, variant_bus)
+    diagramServer("protein_diagram", all_tables_merged$Combined, protein_domains, protein_domain_positions, subdomain_gap, protein_diagram_variants, "protein", 50, variant_bus)
 
     # cDNA diagram
-    diagramServer("cdna_diagram", all_tables_merged$Combined, exons, exon_positions, subdomain_gap, pathogenic_cdna_variants, "cDNA", 50, variant_bus, min_label_sep_px = 75)
+    diagramServer("cdna_diagram", all_tables_merged$Combined, exons, exon_positions, subdomain_gap, cdna_diagram_variants, "cDNA", 50, variant_bus, min_label_sep_px = 75)
 
     # Respond to click events with the variant_detail popup
     variantDetailServer("variant_detail", all_tables_merged, variant_bus, pathogenicity_sources)
