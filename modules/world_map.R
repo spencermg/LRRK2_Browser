@@ -14,7 +14,7 @@ worldMapUI <- function(id) {
                     "World map with proportions of LRRK2 disease-related variants per ancestry illustrated",
                     "in donut charts. Numbers in brackets indicate the total number of individuals carrying",
                     "LRRK2 disease-related variants per ancestry, and colors reflect protein domains in which",
-                    "variants are located."
+                    "variants are located, according to the protein diagram above."
                 ),
                 style = "font-size: 14px; color: #555; margin-top: 8px; text-align: center;"
             )

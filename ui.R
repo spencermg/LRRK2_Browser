@@ -77,7 +77,7 @@ ui <- dashboardPage(
             tags$h4("Citation"),
             tags$p("For more information, or if you use data from this browser, please refer to:"),
             tags$p(
-                tags$em("Citation"),
+                tags$em("Citation forthcoming..."),
                 style = "background-color: #f5f5f5; padding: 10px; border-left: 3px solid #0C8DC3;"
             ),
             
