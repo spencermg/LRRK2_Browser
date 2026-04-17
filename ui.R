@@ -5,10 +5,13 @@
 # =========================================================================
 
 metadata_box_color         <- "#0C8DC3" # GP2 dark blue
-variant_function_box_color <- "#D8EAF8" # GP2 light blue
-protein_diagram_box_color  <- "#EAF4FF" # GP2 light grey
+variant_table_box_color    <- "#D8EAF8" # GP2 light blue
+variant_function_box_color <- "#EAF4FF" # GP2 light grey
+protein_diagram_box_color  <- "#CF2FB3" # GP2 pink
 cdna_diagram_box_color     <- "#8C4E9F" # GP2 purple
-variant_table_color        <- "#CF2FB3" # GP2 pink
+kinase_activity_box_color  <- "#0C8DC3" # GP2 dark blue
+world_map_box_color        <- "#D8EAF8" # GP2 light blue
+other_resources_box_color  <- "#EAF4FF" # GP2 light grey
 box_outline_color          <- "#D3D3D3" # Light grey
 box_title_font_style       <- "font-weight: bold; font-size: 28px;"
 
@@ -357,7 +360,7 @@ ui <- dashboardPage(
             status = NULL,
             width = 12,
             solidHeader = FALSE,
-            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_table_color, "; padding: 10px;"),
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", variant_table_box_color, "; padding: 10px;"),
             geneVarTableUI("gene_var_table")
         ),
 
@@ -409,7 +412,7 @@ ui <- dashboardPage(
             diagramUI("cdna_diagram")
         ),
 
-        # cDNA diagram
+        # Kinase activity bar plot
         box(
             title = tags$div(
                 "Kinase Activity by Variant",
@@ -421,8 +424,24 @@ ui <- dashboardPage(
             status = NULL,
             width = 12,
             solidHeader = FALSE,
-            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", cdna_diagram_box_color, "; padding: 10px;"),
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", kinase_activity_box_color, "; padding: 10px;"),
             barChartUI("bar_chart")
+        ),
+
+        # World map of disease-related variant carriers per ancestry
+        box(
+            title = tags$div(
+                "World Map of Disease-Related Variants",
+                style = box_title_font_style
+            ),
+            closable = FALSE,
+            collapsible = TRUE,
+            collapsed = FALSE,
+            status = NULL,
+            width = 12,
+            solidHeader = FALSE,
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", world_map_box_color, "; padding: 10px;"),
+            worldMapUI("world_map")
         ),
 
         # Links to external resources
@@ -437,7 +456,7 @@ ui <- dashboardPage(
             status = NULL,
             width = 12,
             solidHeader = FALSE,
-            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", metadata_box_color, "; padding: 10px;"),
+            style = paste0("border: 1px solid ", box_outline_color, "; border-top: 3px solid ", other_resources_box_color, "; padding: 10px;"),
             otherResourcesUI("other_resources")
         )
     ),

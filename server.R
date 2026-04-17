@@ -338,6 +338,9 @@ server <- function(input, output, session) {
     )
     barChartServer("bar_chart", all_tables_merged$Combined, kinase_activation_threshold, kinase_inactivation_threshold, exon_color_mapping, variant_bus)
 
+    # World map with donut charts of LRRK2 variants in each ancestry
+    worldMapServer("world_map")
+
     # Links to other resources
     otherResourcesServer("other_resources")
 }
