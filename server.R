@@ -243,6 +243,7 @@ createVariantBus <- function() {
     )
 }
 
+
 # =========================================================================
 # SERVER FUNCTION
 # =========================================================================
@@ -272,10 +273,10 @@ server <- function(input, output, session) {
                 message = list()
             )
             
-            # NOW show Terms of Use disclaimer
+            # Show Terms of Use / Caveats disclaimer
             Sys.sleep(0.3)
             shinyalert(
-                title = "Terms of Use",
+                title = "Terms of Use and Caveats",
                 text = HTML("
                     <div style='color: black; text-align: justify;'>
                     <p style='color: black;'>By proceeding, I am agreeing to:</p>
@@ -294,8 +295,11 @@ server <- function(input, output, session) {
                     control, genomic data processing pipelines are inherently imperfect and 
                     rely on probabilistic processes such as variant calling, imputation, and 
                     short-read sequencing reads. As such, there may be errors within the data 
-                    presented. I agree that the LRRK2 Browser team is not responsible for any 
-                    incorrect data that may be present in the browser.</p>
+                    presented, especially for genotyping data mostly lacking validation. These 
+                    data should not be used in isolation (e.g., to evaluate variant pathogenicity), 
+                    but must be interpreted in the context of additional factors. I agree that 
+                    the LRRK2 Browser team is not responsible for any incorrect data that may 
+                    be present in the browser.</p>
                     </div>
                 "),
                 html = TRUE,
