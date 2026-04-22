@@ -23,7 +23,7 @@ barChartUI <- function(id) {
             tags$p(
                 HTML(paste0(
                     "*GP2-determined disease-related (pathogenic or risk-associated) variants ",
-                    "(aaccording Clinvar, HGMD, MDSGene, and/or extensive literature support) ",
+                    "(according to Clinvar, HGMD, MDSGene, and/or extensive literature support) ",
                     "are indicated <b>in boldface</b> with three asterisks (***)"
                 )),
                 style = "font-size: 11px; font-style: italic; color: #555; margin-top: 8px; text-align: center;"
