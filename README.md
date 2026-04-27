@@ -81,6 +81,10 @@ THIS_REPO
 | util.R                             | Utility functions                                                     |
 | www/*                              | .png image files                                                      |
 
+Note: kinase_activity.tsv, pathogenicity_sources.tsv, and lrrk2_combined_[exome/imputed/raw/wgs].tsv are required for the browser but are not hosted in this repository to protect sensitive data. For more details about these files...
+- ***kinase_activity.tsv*** includes the columns "Conservation_Score" (Integer between 1-10), "Variant" (ie, A123W), "Mean_pRAB10/RAB10" (Kinase activity measurement), "SD" (Standard deviation), and "Interpretation" ("activating" if that variant is kinase-active, otherwise blank).
+- ***pathogenicity_sources.tsv*** includes the columns "Variant" (ie, p.A123W) and "Source" (comma-separated list of resources used to determine disease-association).
+- ***lrrk2_combined_[exome/imputed/raw/wgs].tsv*** are each produced by running fetch_data.ipynb with the GP2 datasets.
 
 ---
 
