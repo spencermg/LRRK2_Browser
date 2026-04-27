@@ -14,9 +14,7 @@ annotationSummaryTableUI <- function(id) {
 # SERVER FUNCTION
 # =========================================================================
 
-annotationSummaryTableServer <- function(id, all_tables_cleaned) {
-    variantTable <- all_tables_cleaned$Combined
-
+annotationSummaryTableServer <- function(id, variantTable) {
     # Define exonic variant annotation summary table to display in the UI
     variantTable_exonic <- variantTable[variantTable$Region == "exonic"]
     variantTable_exonic.counts <- variantTable_exonic[, .N, by = `Functional consequence`]
@@ -51,11 +49,10 @@ annotationSummaryTableServer <- function(id, all_tables_cleaned) {
                                     dom = 't'
                                 )
                             ) %>% formatStyle(
-                                columns = "Count",
-                                valueColumns = "Exonic variant functional consequence",
-                                target = 'cell',
+                                columns = "Exonic variant functional consequence", 
+                                backgroundColor = "white", 
                                 color = "black"
-                            ) %>% formatStyle(columns="Exonic variant functional consequence", backgroundColor = "white", color = "black")
+                            )
                         })
                     ),
                     # Right table for noncoding variants

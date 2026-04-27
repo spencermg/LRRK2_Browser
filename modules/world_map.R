@@ -44,7 +44,7 @@ worldMapServer <- function(id) {
         output$worldMap <- renderUI({
             tags$div(
                 tags$img(
-                    src = "icons/world_map.png",
+                    src = "world_map.png",
                     style = "width: 75%; height: auto; display: block; margin: 0 auto;"
                 )
             )

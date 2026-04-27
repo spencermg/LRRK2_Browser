@@ -329,7 +329,7 @@ server <- function(input, output, session) {
     variantDetailServer("variant_detail", all_tables_merged, variant_bus, pathogenicity_sources)
 
     # Counts of variants across functional annotation categories 
-    annotationSummaryTableServer("annotation_summary_table", all_tables_merged)
+    annotationSummaryTableServer("annotation_summary_table", all_tables_merged$Combined)
 
     # Kinase activity bar chart
     exon_color_mapping <- setNames(

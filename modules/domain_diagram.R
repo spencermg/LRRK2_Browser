@@ -108,19 +108,6 @@ diagramServer <- function(
             v$y_top <- 0.6
             v
         })
-        # v_all <- local({
-        #     v <- variants[
-        #         is.finite(variants$pos) &
-        #         variants$pos >= min(domain_positions) &
-        #         variants$pos <= max(domain_positions),
-        #         , drop = FALSE
-        #     ]
-        #     if (nrow(v) == 0) return(NULL)
-
-        #     v$x <- map_pos_to_x(v$pos)
-        #     v$y_top <- 0.6
-        #     v
-        # })
 
         # Recompute Top N variants dynamically based on current x-window
         visible_variants <- reactive({
@@ -131,14 +118,6 @@ diagramServer <- function(
             v <- v[order(-ifelse(is.finite(v$value), v$value, -Inf), v$pos), , drop = FALSE]
             head(v, top_n)
         })
-        # visible_variants <- reactive({
-        #     if (is.null(v_all)) return(NULL)
-        #     x_range <- x_window()
-        #     v <- v_all[v_all$x >= x_range[1] & v_all$x <= x_range[2], , drop = FALSE]
-        #     if (nrow(v) == 0) return(v)
-        #     v <- v[order(-ifelse(is.finite(v$value), v$value, -Inf), v$pos), , drop = FALSE]
-        #     head(v, top_n)
-        # })
 
         # Track zoom/pan/autoscale/double-click to update x-window
         observeEvent(plotly::event_data("plotly_relayout", source = id), {
