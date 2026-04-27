@@ -19,3 +19,6 @@ pathogenicity_sources.tsv
 
 # Ignore rsconnect
 rsconnect/
+
+# Ignore old data processing code now handled in VWB
+group_ancestries.py
