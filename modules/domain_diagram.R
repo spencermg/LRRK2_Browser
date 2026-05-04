@@ -416,7 +416,9 @@ diagramServer <- function(
                 }
 
                 # Remove labels that couldn't be placed
-                label_rows <- label_rows[!is.na(label_level)]
+                keep <- !is.na(label_level)
+                label_rows <- label_rows[keep]
+                label_level <- label_level[keep]
 
                 # Compute y positions
                 label_rows$y <- 0.6 + (label_level + label_offset) * label_lift
