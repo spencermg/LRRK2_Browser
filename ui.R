@@ -195,31 +195,7 @@ ui <- dashboardPage(
                     overscroll-behavior-y: none !important;
                 }
                 
-                /* Hide content until authenticated */
-                .content-wrapper {
-                    display: none;
-                }
-
-                .main-sidebar {
-                    display: none;
-                }
-                
-                /* Show when authenticated class is added */
-                .content-wrapper.authenticated {
-                    display: block !important;
-                }
-                
-                .main-sidebar.authenticated {
-                    display: block !important;
-                }
-                
-                /* Blur/white out background when modal showing */
-                .modal-backdrop {
-                    backdrop-filter: blur(10px);
-                    background-color: rgba(255, 255, 255, 0.95) !important;
-                }
-                
-                /* Make entire header uniformly blue - ALL parts */
+                /* Make entire header uniformly blue */
                 .main-header {
                     background-color: #367fa9 !important;
                 }
@@ -286,15 +262,6 @@ ui <- dashboardPage(
                 .main-sidebar .sidebar-menu {
                     background-color: #367fa9 !important;
                 }
-            ")),
-    
-            tags$script(HTML("
-                Shiny.addCustomMessageHandler('show_content', function(message) {
-                    $('.content-wrapper').addClass('authenticated');
-                    $('.content-wrapper').css('display', 'block');
-                    $('.main-sidebar').addClass('authenticated');
-                    $('.main-sidebar').css('display', 'block');
-                });
             "))
         ),
     
