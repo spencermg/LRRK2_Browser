@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Last Updated:** April 2026
+**Last Updated:** May 2026
 
 ## Summary
 This is the online repository for the research project titled ***"LRRK2 in Focus: A Global Browser Linking Genetic Diversity to Functional Effects"***. Here we present an interactive web browser with genomic, clinical, and functional data about *LRRK2* and its relationship with Parkinson's Disease (PD).
@@ -25,7 +25,11 @@ THIS_REPO
 ├── entry.R
 ├── fetch_data.ipynb
 ├── global.R
-├── kinase_activity.tsv
+├── ** kinase_activity.tsv
+├── ** lrrk2_combined_exome.tsv
+├── ** lrrk2_combined_imputed.tsv
+├── ** lrrk2_combined_raw.tsv
+├── ** lrrk2_combined_wgs.tsv
 ├── modules
 │   ├── annotation_summary_table.R
 │   ├── bar_chart.R
@@ -35,7 +39,7 @@ THIS_REPO
 │   ├── other_resources.R
 │   ├── variant_details.R
 │   └── world_map.R
-├── pathogenicity_sources.tsv
+├── ** pathogenicity_sources.tsv
 ├── README.md
 ├── server.R
 ├── ui.R
@@ -57,16 +61,19 @@ THIS_REPO
 
 ```
 
+**Note: kinase_activity.tsv, pathogenicity_sources.tsv, and lrrk2_combined_[exome/imputed/raw/wgs].tsv are required for the browser but are not hosted in this repository to protect sensitive data. For more details about these files...
+- ***kinase_activity.tsv*** includes the columns "Conservation_Score" (Integer between 1-10), "Variant" (ie, A123W), "Mean_pRAB10/RAB10" (Kinase activity measurement), "SD" (Standard deviation), and "Interpretation" ("activating" if that variant is kinase-active, otherwise blank).
+- ***pathogenicity_sources.tsv*** includes the columns "Variant" (ie, p.A123W) and "Source" (comma-separated list of resources used to determine disease-association).
+- ***lrrk2_combined_[exome/imputed/raw/wgs].tsv*** are each produced by running fetch_data.ipynb with the GP2 datasets.
+  
 ---
-### Analysis Notebooks
+### Analysis Scripts
 * Languages: Python, R, RShiny, bash
 
 | **File**                           |                  Description                                          |
 |------------------------------------|-----------------------------------------------------------------------|
-| entry.R                            | Entry script to launch the browser                                    |
 | fetch_data.ipynb                   | Notebook used to fetch and process GP2 data                           |
 | global.R                           | Load RShinhy libraries                                                |
-| kinase_activity.tsv                | Kinase activity measurements                                          |
 | modules/annotation_summary_table.R | Code defining widget for annotation counts across all variants        |
 | modules/bar_chart.R                | Code defining widget for kinase activity bar chart                    |
 | modules/domain_diagram.R           | Code defining widget for protein and cDNA diagrams                    |
@@ -75,16 +82,10 @@ THIS_REPO
 | modules/other_resources.R          | Code defining widget for relevant external resources                  |
 | modules/variant_details.R          | Code defining widget for variant popup window                         |
 | modules/world_map.R                | Code defining widget for world map with variant spectrum donut charts |
-| pathogenicity_sources.tsv          | Table outlining sources used to determine disease-associated variants |
 | server.R                           | Main server code for RShiny                                           |
 | ui.R                               | Main UI code for RShiny                                               |
 | util.R                             | Utility functions                                                     |
 | www/*                              | .png image files                                                      |
-
-Note: kinase_activity.tsv, pathogenicity_sources.tsv, and lrrk2_combined_[exome/imputed/raw/wgs].tsv are required for the browser but are not hosted in this repository to protect sensitive data. For more details about these files...
-- ***kinase_activity.tsv*** includes the columns "Conservation_Score" (Integer between 1-10), "Variant" (ie, A123W), "Mean_pRAB10/RAB10" (Kinase activity measurement), "SD" (Standard deviation), and "Interpretation" ("activating" if that variant is kinase-active, otherwise blank).
-- ***pathogenicity_sources.tsv*** includes the columns "Variant" (ie, p.A123W) and "Source" (comma-separated list of resources used to determine disease-association).
-- ***lrrk2_combined_[exome/imputed/raw/wgs].tsv*** are each produced by running fetch_data.ipynb with the GP2 datasets.
 
 ---
 
