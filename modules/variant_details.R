@@ -499,9 +499,9 @@ variantDetailServer <- function(id, all_tables_cleaned, variant_bus, pathogenici
             output$age_hist <- renderPlotly({
                 # Extract the counts for each age bin
                 age_cols <- c(
-                    "Age (0-10)", "Age (11-20)", "Age (21-30)", "Age (31-40)", 
-                    "Age (41-50)", "Age (51-60)", "Age (61-70)", "Age (71-80)", 
-                    "Age (81-90)", "Age (91-100)", "Age (101-110)", "Age (111-120)"
+                    "Age (11-20)", "Age (21-30)", "Age (31-40)", 
+                    "Age (41-50)", "Age (51-60)", "Age (61-70)", 
+                    "Age (71-80)", "Age (81-90)", "Age (91-100)"
                 )
                 age_counts <- as.numeric(variant_details[Ancestry == "Combined", ..age_cols])
 

@@ -85,7 +85,7 @@ ui <- dashboardPage(
             tags$p("For questions, please contact:"),
             tags$p(
                 tags$a(
-                    href = "mailto:lara.lange@nih.gov", "lara.lange@nih.gov",
+                    href = "mailto:lara@gp2.org", "lara@gp2.org",
                     style = "color: #0C8DC3 !important;"
                 )
             ),
