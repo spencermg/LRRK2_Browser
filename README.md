@@ -10,7 +10,7 @@
 This is the online repository for the research project titled ***"LRRK2 in Focus: A Global Browser Linking Genetic Diversity to Functional Effects"***. Here we present an interactive web browser with genomic, clinical, and functional data about *LRRK2* and its relationship with Parkinson's Disease (PD).
 
 ### Data Statement 
-* All GP2 data are hosted in collaboration with the Accelerating Medicines Partnership in Parkinson's Disease and are available via application on the website. The GP2 PD case and control data are available via the GP2 website (https://gp2.org; release 11: https://doi.org/10.5281/zenodo.14510099). 
+* All GP2 data are hosted in collaboration with the Accelerating Medicines Partnership in Parkinson's Disease and are available via application on the website. The GP2 PD case and control data are available via the GP2 website (https://gp2.org; release 11: https://doi.org/10.5281/zenodo.17753486). 
     * Genotyping imputation, quality control, ancestry prediction, and processing were performed using GenoTools (v1.0.0), publicly available on GitHub
 
 ### Helpful Links 
