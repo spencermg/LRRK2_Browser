@@ -37,10 +37,10 @@ ui <- dashboardPage(
             tags$p(
                 "This browser contains genomic data for participants from the",
                 tags$a(
-                    href = "https://doi.org/10.5281/zenodo.17753486", 
+                    href = "https://doi.org/10.5281/zenodo.20932193", 
                     target = "_blank",
                     style = "color: #0C8DC3 !important;",
-                    "11th data release"
+                    "12th data release"
                 ),
                 "of the Global Parkinson's Genetics Program (GP2). These data include several modalities:"
             ),
@@ -52,25 +52,25 @@ ui <- dashboardPage(
             ),
             
             tags$h4("Sample Information"),
-            tags$p("Total samples: 101,678"),
+            tags$p("Total samples: 116,923"),
             tags$ul(
-                tags$li("WGS: 25,904"),
-                tags$li("Imputed genotyping: 84,654"),
-                tags$li("Raw genotyping: 84,654"),
-                tags$li("CES: 14,555")
+                tags$li("WGS: 43,715"),
+                tags$li("Imputed genotyping: 96,614"),
+                tags$li("Raw genotyping: 96,614"),
+                tags$li("CES: 14,547")
             ),
-            tags$p("Parkinson's Disease cases: 61,709"),
+            tags$p("Parkinson's Disease cases: 71,905"),
             tags$ul(
-                tags$li("WGS: 17,241"),
-                tags$li("Imputed genotyping: 46,349"),
-                tags$li("Raw genotyping: 46,349"),
-                tags$li("CES: 14,555")
+                tags$li("WGS: 28,469"),
+                tags$li("Imputed genotyping: 53,700"),
+                tags$li("Raw genotyping: 53,700"),
+                tags$li("CES: 14,547")
             ),
-            tags$p("Healthy controls: 39,969"),
+            tags$p("Healthy controls: 45,018"),
             tags$ul(
-                tags$li("WGS: 8,663"),
-                tags$li("Imputed genotyping: 38,305"),
-                tags$li("Raw genotyping: 38,305"),
+                tags$li("WGS: 15,246"),
+                tags$li("Imputed genotyping: 42,914"),
+                tags$li("Raw genotyping: 42,914"),
                 tags$li("CES: 0")
             ),
             
